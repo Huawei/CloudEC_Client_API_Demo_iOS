@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina3_5" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="ywn-SE-Zxg" customClass="CallView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xIQ-xY-val">
+                    <rect key="frame" x="0.0" y="257" width="320" height="223"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZtT-3o-OlE" userLabel="hang up">
+                            <rect key="frame" x="128" y="150" width="65" height="65"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="65" id="84y-zu-l2M"/>
+                                <constraint firstAttribute="height" constant="65" id="xiz-I3-vZx"/>
+                            </constraints>
+                            <state key="normal" title="Button" image="voice_call_hangup_normal"/>
+                            <connections>
+                                <action selector="closeCallButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="pFQ-GO-YFH"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ymf-zB-zmT">
+                            <rect key="frame" x="26" y="14" width="45" height="45"/>
+                            <state key="normal" image="voice_call_mute_normal"/>
+                            <connections>
+                                <action selector="muteMicButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="g5q-YY-Pks"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g5q-fE-UCf">
+                            <rect key="frame" x="250" y="14" width="45" height="45"/>
+                            <state key="normal" image="voice_call_video_normal"/>
+                            <connections>
+                                <action selector="changeCallTypeButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="1H1-S4-y6B"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="7AC-NC-YnS">
+                            <rect key="frame" x="98" y="85" width="45" height="45"/>
+                            <state key="normal" image="voice_call_transfer_normal"/>
+                            <connections>
+                                <action selector="transferButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="xbd-gj-ehB"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zsN-Aa-KiU">
+                            <rect key="frame" x="26" y="85" width="45" height="45"/>
+                            <state key="normal" image="voice_call_hold_normal"/>
+                            <connections>
+                                <action selector="holdButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="mqL-H6-owO"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RxM-EU-SQE">
+                            <rect key="frame" x="98" y="14" width="45" height="45"/>
+                            <state key="normal" image="voice_call_speaker_normal"/>
+                            <connections>
+                                <action selector="routeButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="MD3-n4-uDb"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aVJ-Cp-BIe">
+                            <rect key="frame" x="174" y="14" width="45" height="45"/>
+                            <state key="normal" image="voice_call_dial_normal"/>
+                            <connections>
+                                <action selector="dialNumberButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="ALM-Km-Jzz"/>
+                            </connections>
+                        </button>
+                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9mv-bV-r7g">
+                            <rect key="frame" x="250" y="85" width="45" height="45"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wiu-x2-dTv">
+                            <rect key="frame" x="174" y="85" width="45" height="45"/>
+                            <state key="normal" image="voice_call_add_normal"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="9mv-bV-r7g" secondAttribute="trailing" constant="25" id="025-Vl-du7"/>
+                        <constraint firstItem="zsN-Aa-KiU" firstAttribute="leading" secondItem="xIQ-xY-val" secondAttribute="leading" constant="26" id="2Sd-E2-b9j"/>
+                        <constraint firstAttribute="bottom" secondItem="ZtT-3o-OlE" secondAttribute="bottom" constant="8" id="32W-Gr-eX0"/>
+                        <constraint firstItem="ymf-zB-zmT" firstAttribute="leading" secondItem="xIQ-xY-val" secondAttribute="leading" constant="26" id="43N-fK-7ab"/>
+                        <constraint firstItem="RxM-EU-SQE" firstAttribute="leading" secondItem="ymf-zB-zmT" secondAttribute="trailing" constant="27" id="4eH-re-Ybu"/>
+                        <constraint firstAttribute="height" constant="223" id="5we-d3-NjJ"/>
+                        <constraint firstItem="g5q-fE-UCf" firstAttribute="leading" secondItem="aVJ-Cp-BIe" secondAttribute="trailing" constant="31" id="7dz-S9-yFJ"/>
+                        <constraint firstItem="ZtT-3o-OlE" firstAttribute="top" secondItem="wiu-x2-dTv" secondAttribute="bottom" constant="20" id="8Pm-Zt-s2z"/>
+                        <constraint firstItem="zsN-Aa-KiU" firstAttribute="top" secondItem="RxM-EU-SQE" secondAttribute="bottom" constant="26" id="B94-ga-q5x"/>
+                        <constraint firstItem="7AC-NC-YnS" firstAttribute="top" secondItem="RxM-EU-SQE" secondAttribute="bottom" constant="26" id="CPa-38-OaJ"/>
+                        <constraint firstItem="zsN-Aa-KiU" firstAttribute="height" secondItem="ymf-zB-zmT" secondAttribute="height" id="E4c-gf-vwe"/>
+                        <constraint firstItem="9mv-bV-r7g" firstAttribute="height" secondItem="g5q-fE-UCf" secondAttribute="height" id="GDT-d6-bzH"/>
+                        <constraint firstItem="ZtT-3o-OlE" firstAttribute="top" secondItem="7AC-NC-YnS" secondAttribute="bottom" constant="20" id="HMZ-lC-nK7"/>
+                        <constraint firstItem="zsN-Aa-KiU" firstAttribute="top" secondItem="ymf-zB-zmT" secondAttribute="bottom" constant="26" id="I58-Q1-V6N"/>
+                        <constraint firstItem="7AC-NC-YnS" firstAttribute="width" secondItem="zsN-Aa-KiU" secondAttribute="width" id="KYC-ai-K3c"/>
+                        <constraint firstItem="wiu-x2-dTv" firstAttribute="height" secondItem="aVJ-Cp-BIe" secondAttribute="height" id="LEN-wY-eP0"/>
+                        <constraint firstAttribute="bottom" secondItem="9mv-bV-r7g" secondAttribute="bottom" constant="93" id="OVU-5V-L9E"/>
+                        <constraint firstItem="ZtT-3o-OlE" firstAttribute="centerX" secondItem="xIQ-xY-val" secondAttribute="centerX" id="Og5-or-3Dn"/>
+                        <constraint firstItem="7AC-NC-YnS" firstAttribute="height" secondItem="RxM-EU-SQE" secondAttribute="height" id="PxE-ud-4EZ"/>
+                        <constraint firstItem="aVJ-Cp-BIe" firstAttribute="top" secondItem="xIQ-xY-val" secondAttribute="top" constant="14" id="ayb-8z-0cc"/>
+                        <constraint firstItem="RxM-EU-SQE" firstAttribute="top" secondItem="xIQ-xY-val" secondAttribute="top" constant="14" id="b0Y-Cp-LZf"/>
+                        <constraint firstItem="aVJ-Cp-BIe" firstAttribute="leading" secondItem="RxM-EU-SQE" secondAttribute="trailing" constant="31" id="bKq-vb-88R"/>
+                        <constraint firstItem="wiu-x2-dTv" firstAttribute="top" secondItem="aVJ-Cp-BIe" secondAttribute="bottom" constant="26" id="bj0-NL-k1Z"/>
+                        <constraint firstItem="g5q-fE-UCf" firstAttribute="top" secondItem="xIQ-xY-val" secondAttribute="top" constant="14" id="cOa-Va-ujz"/>
+                        <constraint firstItem="9mv-bV-r7g" firstAttribute="width" secondItem="g5q-fE-UCf" secondAttribute="width" id="foC-7c-LHm"/>
+                        <constraint firstItem="7AC-NC-YnS" firstAttribute="leading" secondItem="zsN-Aa-KiU" secondAttribute="trailing" constant="27" id="jd0-3p-OxU"/>
+                        <constraint firstItem="9mv-bV-r7g" firstAttribute="leading" secondItem="wiu-x2-dTv" secondAttribute="trailing" constant="31" id="kJS-Yp-RhJ"/>
+                        <constraint firstItem="g5q-fE-UCf" firstAttribute="width" secondItem="ymf-zB-zmT" secondAttribute="width" id="kpW-A8-Wit"/>
+                        <constraint firstItem="9mv-bV-r7g" firstAttribute="top" secondItem="g5q-fE-UCf" secondAttribute="bottom" constant="26" id="nh4-pe-dgD"/>
+                        <constraint firstItem="wiu-x2-dTv" firstAttribute="width" secondItem="zsN-Aa-KiU" secondAttribute="width" id="no9-SS-SVh"/>
+                        <constraint firstItem="aVJ-Cp-BIe" firstAttribute="width" secondItem="ymf-zB-zmT" secondAttribute="width" id="rOu-hz-Nv7"/>
+                        <constraint firstItem="RxM-EU-SQE" firstAttribute="width" secondItem="ymf-zB-zmT" secondAttribute="width" id="s3b-bf-qIt"/>
+                        <constraint firstAttribute="trailing" secondItem="g5q-fE-UCf" secondAttribute="trailing" constant="25" id="she-uJ-J1O"/>
+                        <constraint firstItem="9mv-bV-r7g" firstAttribute="width" secondItem="zsN-Aa-KiU" secondAttribute="width" id="weW-vo-adr"/>
+                        <constraint firstItem="ymf-zB-zmT" firstAttribute="top" secondItem="xIQ-xY-val" secondAttribute="top" constant="14" id="y0e-gQ-Iqu"/>
+                        <constraint firstItem="wiu-x2-dTv" firstAttribute="leading" secondItem="7AC-NC-YnS" secondAttribute="trailing" constant="31" id="yY2-sV-Nfn"/>
+                        <constraint firstAttribute="bottom" secondItem="zsN-Aa-KiU" secondAttribute="bottom" constant="93" id="ymL-LR-pVW"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DHw-Wg-zBa">
+                    <rect key="frame" x="22" y="33" width="28" height="28"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="28" id="5RN-tx-yvF"/>
+                        <constraint firstAttribute="height" constant="28" id="gsi-Eg-LaL"/>
+                    </constraints>
+                    <state key="normal" image="btn_video_call_camera_modify_normal"/>
+                    <connections>
+                        <action selector="switchCameraButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="0OB-Yv-DEQ"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oga-p9-IUm">
+                    <rect key="frame" x="22" y="75" width="28" height="28"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="28" id="3bM-5I-aF8"/>
+                        <constraint firstAttribute="height" constant="28" id="aMq-S7-yen"/>
+                    </constraints>
+                    <state key="normal" image="btn_video_call_minimum_normal"/>
+                    <connections>
+                        <action selector="closeCameraButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="i5e-Ut-C4s"/>
+                    </connections>
+                </button>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_head_image_0" translatesAutoresizingMaskIntoConstraints="NO" id="7pj-AY-8z4">
+                    <rect key="frame" x="110" y="50" width="100" height="100"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="100" id="inw-I7-0Ul"/>
+                        <constraint firstAttribute="height" constant="100" id="yIM-DT-ARB"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1300000000" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fe3-Tf-1Jd">
+                    <rect key="frame" x="22" y="158" width="276" height="30"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="pWy-y2-Cdf"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="Oga-p9-IUm" firstAttribute="top" secondItem="DHw-Wg-zBa" secondAttribute="bottom" constant="14" id="0It-7A-GR7"/>
+                <constraint firstItem="7pj-AY-8z4" firstAttribute="centerX" secondItem="ywn-SE-Zxg" secondAttribute="centerX" id="0nf-Kk-xid"/>
+                <constraint firstAttribute="trailing" secondItem="xIQ-xY-val" secondAttribute="trailing" id="KZ7-lC-gjb"/>
+                <constraint firstItem="7pj-AY-8z4" firstAttribute="top" secondItem="ywn-SE-Zxg" secondAttribute="top" constant="50" id="LVx-VY-jTP"/>
+                <constraint firstAttribute="trailing" secondItem="fe3-Tf-1Jd" secondAttribute="trailing" constant="22" id="Qk4-YP-qgr"/>
+                <constraint firstItem="DHw-Wg-zBa" firstAttribute="top" secondItem="ywn-SE-Zxg" secondAttribute="top" constant="33" id="Ziw-HW-8IU"/>
+                <constraint firstItem="Oga-p9-IUm" firstAttribute="leading" secondItem="ywn-SE-Zxg" secondAttribute="leading" constant="22" id="d77-s6-c3f"/>
+                <constraint firstItem="DHw-Wg-zBa" firstAttribute="leading" secondItem="ywn-SE-Zxg" secondAttribute="leading" constant="22" id="l9m-3d-z7Y"/>
+                <constraint firstItem="fe3-Tf-1Jd" firstAttribute="top" secondItem="7pj-AY-8z4" secondAttribute="bottom" constant="8" id="nCg-JD-gbH"/>
+                <constraint firstAttribute="bottom" secondItem="xIQ-xY-val" secondAttribute="bottom" id="pCu-g0-9oc"/>
+                <constraint firstItem="fe3-Tf-1Jd" firstAttribute="leading" secondItem="ywn-SE-Zxg" secondAttribute="leading" constant="22" id="uZN-Hg-1F4"/>
+                <constraint firstItem="xIQ-xY-val" firstAttribute="leading" secondItem="ywn-SE-Zxg" secondAttribute="leading" id="vbP-Bl-gsT"/>
+            </constraints>
+            <connections>
+                <outlet property="addContact" destination="wiu-x2-dTv" id="WU8-vB-0cJ"/>
+                <outlet property="changeCallTypeButton" destination="g5q-fE-UCf" id="wwP-jO-GjZ"/>
+                <outlet property="closeCallButton" destination="ZtT-3o-OlE" id="VMv-Nx-8yE"/>
+                <outlet property="closeCameraButton" destination="Oga-p9-IUm" id="kNi-Lm-ZPq"/>
+                <outlet property="headImage" destination="7pj-AY-8z4" id="ZHL-8s-4wN"/>
+                <outlet property="holdButton" destination="zsN-Aa-KiU" id="NaJ-pB-xNd"/>
+                <outlet property="muteMicButton" destination="ymf-zB-zmT" id="ijz-rf-nxX"/>
+                <outlet property="routeButton" destination="RxM-EU-SQE" id="9hO-Nw-SgV"/>
+                <outlet property="switchCameraButton" destination="DHw-Wg-zBa" id="bkl-Lc-9nJ"/>
+                <outlet property="tipLabel" destination="fe3-Tf-1Jd" id="utg-Xq-nkn"/>
+                <outlet property="toolBarView" destination="xIQ-xY-val" id="TOj-OW-OlZ"/>
+                <outlet property="transferButton" destination="7AC-NC-YnS" id="lqL-BA-3Ch"/>
+            </connections>
+            <point key="canvasLocation" x="-854" y="306"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="btn_video_call_camera_modify_normal" width="28" height="28"/>
+        <image name="btn_video_call_minimum_normal" width="28" height="28"/>
+        <image name="default_head_image_0" width="44" height="44"/>
+        <image name="voice_call_add_normal" width="45" height="45"/>
+        <image name="voice_call_dial_normal" width="45" height="45"/>
+        <image name="voice_call_hangup_normal" width="65" height="65"/>
+        <image name="voice_call_hold_normal" width="45" height="45"/>
+        <image name="voice_call_mute_normal" width="45" height="45"/>
+        <image name="voice_call_speaker_normal" width="45" height="45"/>
+        <image name="voice_call_transfer_normal" width="45" height="45"/>
+        <image name="voice_call_video_normal" width="45" height="45"/>
+    </resources>
+</document>

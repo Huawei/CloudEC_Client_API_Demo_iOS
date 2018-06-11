@@ -1,0 +1,220 @@
+//
+//  SettingViewController.m
+//  EC_SDK_DEMO
+//
+//  Created by EC Open support team.
+//  Copyright(C), 2017, Huawei Tech. Co., Ltd. ALL RIGHTS RESERVED.
+//
+
+#import "SettingViewController.h"
+#import "CommonUtils.h"
+
+@interface SettingViewController ()
+@property (nonatomic, weak)IBOutlet UITextField *serverAddressField;
+@property (nonatomic, weak)IBOutlet UITextField *serverPortField;
+//@property (weak, nonatomic) IBOutlet UISwitch *useAppSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *udpSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *tlsSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *tcpSwitch;
+//@property (weak, nonatomic) IBOutlet UITextField *udpPortField;
+//@property (weak, nonatomic) IBOutlet UITextField *tlsPortField;
+@property (weak, nonatomic) IBOutlet UISwitch *srtpDisableSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *srtpOptionSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *srtpForceSwitch;
+//@property (weak, nonatomic) IBOutlet UISwitch *portConfigSwitch;
+@property (strong, nonatomic) UISwitch *currentSwitch;
+
+@property (nonatomic, assign)SRTP_MODE srtpMode;
+@property (nonatomic, assign)TRANSPORT_MODE transportMode;
+@property (nonatomic, assign)CONFIG_PRIORITY_TYPE priorityType;
+@property (nonatomic, assign)BOOL sipPortPriority;
+
+@end
+
+@implementation SettingViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    NSArray *array = [CommonUtils getUserDefaultValueWithKey:SERVER_CONFIG];
+    _serverAddressField.text = array[0];
+    _serverPortField.text = array[1];
+    // Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    NSArray *array = [CommonUtils getUserDefaultValueWithKey:SRTP_TRANSPORT_MODE];
+    _srtpMode = [array[0] intValue];
+    _transportMode = [array[1] intValue];
+//    _priorityType = [array[2] intValue];
+//    if(_priorityType == CONFIG_PRIORITY_TYPE_APP){
+//        _udpSwitch.enabled = YES;
+//        _tlsSwitch.enabled = YES;
+//        _tcpSwitch.enabled = YES;
+//        _srtpDisableSwitch.enabled = YES;
+//        _srtpOptionSwitch.enabled = YES;
+//        _srtpForceSwitch.enabled = YES;
+//        _priorityType = CONFIG_PRIORITY_TYPE_APP;
+//    }else{
+//        _udpSwitch.enabled = NO;
+//        _tlsSwitch.enabled = NO;
+//        _tcpSwitch.enabled = NO;
+//        _srtpDisableSwitch.enabled = NO;
+//        _srtpOptionSwitch.enabled = NO;
+//        _srtpForceSwitch.enabled = NO;
+//        _priorityType = CONFIG_PRIORITY_TYPE_SYSTEM;
+//    }
+//    _udpPortField.text = array[3];
+//    _tlsPortField.text = array[4];
+//    _sipPortPriority = [array[5] boolValue];
+    
+//    if (_sipPortPriority) {
+//        _udpPortField.enabled = YES;
+//        _tlsPortField.enabled = YES;
+//    }else{
+//        _udpPortField.enabled = NO;
+//        _tlsPortField.enabled = NO;
+//    }
+    _srtpDisableSwitch.on = (_srtpMode == SRTP_MODE_DISABLE);
+    _srtpForceSwitch.on = (_srtpMode == SRTP_MODE_FORCE);
+    _srtpOptionSwitch.on = (_srtpMode == SRTP_MODE_OPTION);
+    _udpSwitch.on = (_transportMode == TRANSPORT_MODE_UDP);
+    _tlsSwitch.on = (_transportMode == TRANSPORT_MODE_TLS);
+    _tcpSwitch.on = (_transportMode == TRANSPORT_MODE_TCP);
+//    _useAppSwitch.on = (_priorityType == CONFIG_PRIORITY_TYPE_APP);
+    
+//    _portConfigSwitch.on = _sipPortPriority;
+    
+    
+}
+
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)saveBtnClicked:(id)sender
+{
+    [CommonUtils userDefaultSaveValue:@[_serverAddressField.text, _serverPortField.text] forKey:SERVER_CONFIG];
+    NSString *srtp = [NSString stringWithFormat:@"%d",_srtpMode];
+    NSString *transport = [NSString stringWithFormat:@"%d",_transportMode];
+//    NSString *config = [NSString stringWithFormat:@"%d",_priorityType];
+//    NSString *portPriority = [NSString stringWithFormat:@"%d",_sipPortPriority];
+//    [CommonUtils userDefaultSaveValue:@[srtp, transport, config, _udpPortField.text, _tlsPortField.text, portPriority] forKey:SRTP_TRANSPORT_MODE];
+    [CommonUtils userDefaultSaveValue:@[srtp, transport] forKey:SRTP_TRANSPORT_MODE];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+//- (IBAction)useAppConfig:(id)sender {
+//    UISwitch *swtich = sender;
+//    _currentSwitch = swtich;
+//    if(swtich.on){
+//        _udpSwitch.enabled = YES;
+//        _tlsSwitch.enabled = YES;
+//        _tcpSwitch.enabled = YES;
+//        _srtpDisableSwitch.enabled = YES;
+//        _srtpOptionSwitch.enabled = YES;
+//        _srtpForceSwitch.enabled = YES;
+//        _priorityType = CONFIG_PRIORITY_TYPE_APP;
+//    }else{
+//        _udpSwitch.enabled = NO;
+//        _tlsSwitch.enabled = NO;
+//        _tcpSwitch.enabled = NO;
+//        _srtpDisableSwitch.enabled = NO;
+//        _srtpOptionSwitch.enabled = NO;
+//        _srtpForceSwitch.enabled = NO;
+//        _priorityType = CONFIG_PRIORITY_TYPE_SYSTEM;
+//    }
+//}
+
+- (IBAction)transportUDP:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _tcpSwitch.on = NO;
+        _tlsSwitch.on = NO;
+        _transportMode = TRANSPORT_MODE_UDP;
+    }
+}
+
+- (IBAction)transportTLS:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _udpSwitch.on = NO;
+        _tcpSwitch.on = NO;
+        _transportMode = TRANSPORT_MODE_TLS;
+    }
+}
+
+- (IBAction)transportTCP:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _udpSwitch.on = NO;
+        _tlsSwitch.on = NO;
+        _transportMode = TRANSPORT_MODE_TCP;
+    }
+}
+
+- (IBAction)srtpDisable:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _srtpForceSwitch.on = NO;
+        _srtpOptionSwitch.on = NO;
+        _srtpMode = SRTP_MODE_DISABLE;
+    }
+}
+
+- (IBAction)srtpOption:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _srtpDisableSwitch.on = NO;
+        _srtpForceSwitch.on = NO;
+        _srtpMode = SRTP_MODE_OPTION;
+    }
+}
+
+- (IBAction)srtpForce:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _srtpDisableSwitch.on = NO;
+        _srtpOptionSwitch.on = NO;
+        _srtpMode = SRTP_MODE_FORCE;
+    }
+}
+
+//- (IBAction)sipPortPriority:(id)sender {
+//    UISwitch *swtich = sender;
+//    _currentSwitch = swtich;
+//
+//    if(swtich.on){
+//        _sipPortPriority = YES;
+//        _udpPortField.enabled = YES;
+//        _tlsPortField.enabled = YES;
+//    }else{
+//        _sipPortPriority = NO;
+//        _udpPortField.enabled = NO;
+//        _tlsPortField.enabled = NO;
+//    }
+//}
+
+
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

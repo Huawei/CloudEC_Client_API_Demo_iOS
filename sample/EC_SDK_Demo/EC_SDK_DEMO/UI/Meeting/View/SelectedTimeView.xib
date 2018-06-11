@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="SelectedTimeView">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="296"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="34P-8d-7s1">
+                    <rect key="frame" x="0.0" y="256" width="375" height="40"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="k4g-KX-WgG"/>
+                    </constraints>
+                    <state key="normal" title="OK">
+                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="okButtonAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="ruG-WS-nBX"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gKs-V5-xQA">
+                    <rect key="frame" x="313" y="5" width="46" height="30"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="B7C-hV-Bi9"/>
+                        <constraint firstAttribute="width" constant="46" id="qPf-o5-BHu"/>
+                    </constraints>
+                    <state key="normal" title="Close">
+                        <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="closeButtonAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="5PP-Fp-JKK"/>
+                    </connections>
+                </button>
+                <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="time" minuteInterval="1" translatesAutoresizingMaskIntoConstraints="NO" id="vY9-Cj-R3i">
+                    <rect key="frame" x="0.0" y="40" width="375" height="216"/>
+                    <color key="backgroundColor" red="0.90629083876568828" green="1" blue="0.9582994695653797" alpha="1" colorSpace="calibratedRGB"/>
+                    <date key="date" timeIntervalSinceReferenceDate="505916502.23769403">
+                        <!--2017-01-12 12:21:42 +0000-->
+                    </date>
+                    <connections>
+                        <action selector="datePickerValueChangedAction:" destination="iN0-l3-epB" eventType="valueChanged" id="FGk-Jo-IbK"/>
+                    </connections>
+                </datePicker>
+            </subviews>
+            <color key="backgroundColor" red="0.70566610190000001" green="0.84878540790000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="vY9-Cj-R3i" secondAttribute="trailing" id="Amj-du-sd0"/>
+                <constraint firstItem="34P-8d-7s1" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Fw1-gU-zW5"/>
+                <constraint firstItem="34P-8d-7s1" firstAttribute="top" secondItem="vY9-Cj-R3i" secondAttribute="bottom" id="KVE-tD-p7k"/>
+                <constraint firstAttribute="trailing" secondItem="34P-8d-7s1" secondAttribute="trailing" id="Z8k-fv-ptJ"/>
+                <constraint firstItem="vY9-Cj-R3i" firstAttribute="top" secondItem="gKs-V5-xQA" secondAttribute="bottom" constant="5" id="aR7-zO-xEe"/>
+                <constraint firstAttribute="trailing" secondItem="gKs-V5-xQA" secondAttribute="trailing" constant="16" id="itK-2I-hj7"/>
+                <constraint firstAttribute="bottom" secondItem="34P-8d-7s1" secondAttribute="bottom" id="t67-3a-4Lv"/>
+                <constraint firstItem="gKs-V5-xQA" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="5" id="tdT-qg-3ls"/>
+                <constraint firstItem="vY9-Cj-R3i" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="uI2-cy-RjY"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="datePicker" destination="vY9-Cj-R3i" id="MHZ-wZ-gXe"/>
+            </connections>
+            <point key="canvasLocation" x="-721" y="213"/>
+        </view>
+    </objects>
+</document>
