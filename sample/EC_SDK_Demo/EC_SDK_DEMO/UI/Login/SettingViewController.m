@@ -12,21 +12,24 @@
 @interface SettingViewController ()
 @property (nonatomic, weak)IBOutlet UITextField *serverAddressField;
 @property (nonatomic, weak)IBOutlet UITextField *serverPortField;
-//@property (weak, nonatomic) IBOutlet UISwitch *useAppSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *useAppSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *udpSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *tlsSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *tcpSwitch;
-//@property (weak, nonatomic) IBOutlet UITextField *udpPortField;
-//@property (weak, nonatomic) IBOutlet UITextField *tlsPortField;
+@property (weak, nonatomic) IBOutlet UITextField *udpPortField;
+@property (weak, nonatomic) IBOutlet UITextField *tlsPortField;
 @property (weak, nonatomic) IBOutlet UISwitch *srtpDisableSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *srtpOptionSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *srtpForceSwitch;
-//@property (weak, nonatomic) IBOutlet UISwitch *portConfigSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *portConfigSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *tunnelDefaultSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *tunnelDisableSwitch;
 @property (strong, nonatomic) UISwitch *currentSwitch;
 
 @property (nonatomic, assign)SRTP_MODE srtpMode;
 @property (nonatomic, assign)TRANSPORT_MODE transportMode;
 @property (nonatomic, assign)CONFIG_PRIORITY_TYPE priorityType;
+@property (nonatomic, assign)TUNNEL_MODE tunnelMode;
 @property (nonatomic, assign)BOOL sipPortPriority;
 
 @end
@@ -47,44 +50,52 @@
     NSArray *array = [CommonUtils getUserDefaultValueWithKey:SRTP_TRANSPORT_MODE];
     _srtpMode = [array[0] intValue];
     _transportMode = [array[1] intValue];
-//    _priorityType = [array[2] intValue];
-//    if(_priorityType == CONFIG_PRIORITY_TYPE_APP){
-//        _udpSwitch.enabled = YES;
-//        _tlsSwitch.enabled = YES;
-//        _tcpSwitch.enabled = YES;
-//        _srtpDisableSwitch.enabled = YES;
-//        _srtpOptionSwitch.enabled = YES;
-//        _srtpForceSwitch.enabled = YES;
-//        _priorityType = CONFIG_PRIORITY_TYPE_APP;
-//    }else{
-//        _udpSwitch.enabled = NO;
-//        _tlsSwitch.enabled = NO;
-//        _tcpSwitch.enabled = NO;
-//        _srtpDisableSwitch.enabled = NO;
-//        _srtpOptionSwitch.enabled = NO;
-//        _srtpForceSwitch.enabled = NO;
-//        _priorityType = CONFIG_PRIORITY_TYPE_SYSTEM;
-//    }
-//    _udpPortField.text = array[3];
-//    _tlsPortField.text = array[4];
-//    _sipPortPriority = [array[5] boolValue];
+    _priorityType = [array[2] intValue];
+    if(_priorityType == CONFIG_PRIORITY_TYPE_APP){
+        _udpSwitch.enabled = YES;
+        _tlsSwitch.enabled = YES;
+        _tcpSwitch.enabled = YES;
+        _srtpDisableSwitch.enabled = YES;
+        _srtpOptionSwitch.enabled = YES;
+        _srtpForceSwitch.enabled = YES;
+        _tunnelDisableSwitch.enabled = YES;
+        _tunnelDefaultSwitch.enabled = YES;
+        _priorityType = CONFIG_PRIORITY_TYPE_APP;
+    }else{
+        _udpSwitch.enabled = NO;
+        _tlsSwitch.enabled = NO;
+        _tcpSwitch.enabled = NO;
+        _srtpDisableSwitch.enabled = NO;
+        _srtpOptionSwitch.enabled = NO;
+        _srtpForceSwitch.enabled = NO;
+        _tunnelDisableSwitch.enabled = NO;
+        _tunnelDefaultSwitch.enabled = NO;
+        _priorityType = CONFIG_PRIORITY_TYPE_SYSTEM;
+    }
+    _udpPortField.text = array[3];
+    _tlsPortField.text = array[4];
+    _sipPortPriority = [array[5] boolValue];
+    _tunnelMode = [array[6] intValue];
     
-//    if (_sipPortPriority) {
-//        _udpPortField.enabled = YES;
-//        _tlsPortField.enabled = YES;
-//    }else{
-//        _udpPortField.enabled = NO;
-//        _tlsPortField.enabled = NO;
-//    }
+    if (_sipPortPriority) {
+        _udpPortField.enabled = YES;
+        _tlsPortField.enabled = YES;
+    }else{
+        _udpPortField.enabled = NO;
+        _tlsPortField.enabled = NO;
+    }
+    
     _srtpDisableSwitch.on = (_srtpMode == SRTP_MODE_DISABLE);
     _srtpForceSwitch.on = (_srtpMode == SRTP_MODE_FORCE);
     _srtpOptionSwitch.on = (_srtpMode == SRTP_MODE_OPTION);
     _udpSwitch.on = (_transportMode == TRANSPORT_MODE_UDP);
     _tlsSwitch.on = (_transportMode == TRANSPORT_MODE_TLS);
     _tcpSwitch.on = (_transportMode == TRANSPORT_MODE_TCP);
-//    _useAppSwitch.on = (_priorityType == CONFIG_PRIORITY_TYPE_APP);
+    _useAppSwitch.on = (_priorityType == CONFIG_PRIORITY_TYPE_APP);
+    _tunnelDisableSwitch.on = (_tunnelMode == TUNNEL_MODE_DISABLE);
+    _tunnelDefaultSwitch.on = (_tunnelMode == TUNNEL_MODE_DEFAULT);
     
-//    _portConfigSwitch.on = _sipPortPriority;
+    _portConfigSwitch.on = _sipPortPriority;
     
     
 }
@@ -101,34 +112,38 @@
     [CommonUtils userDefaultSaveValue:@[_serverAddressField.text, _serverPortField.text] forKey:SERVER_CONFIG];
     NSString *srtp = [NSString stringWithFormat:@"%d",_srtpMode];
     NSString *transport = [NSString stringWithFormat:@"%d",_transportMode];
-//    NSString *config = [NSString stringWithFormat:@"%d",_priorityType];
-//    NSString *portPriority = [NSString stringWithFormat:@"%d",_sipPortPriority];
-//    [CommonUtils userDefaultSaveValue:@[srtp, transport, config, _udpPortField.text, _tlsPortField.text, portPriority] forKey:SRTP_TRANSPORT_MODE];
-    [CommonUtils userDefaultSaveValue:@[srtp, transport] forKey:SRTP_TRANSPORT_MODE];
+    NSString *config = [NSString stringWithFormat:@"%d",_priorityType];
+    NSString *portPriority = [NSString stringWithFormat:@"%d",_sipPortPriority];
+    NSString *tunnel = [NSString stringWithFormat:@"%d", _tunnelMode];
+    [CommonUtils userDefaultSaveValue:@[srtp, transport, config, _udpPortField.text, _tlsPortField.text, portPriority, tunnel] forKey:SRTP_TRANSPORT_MODE];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-//- (IBAction)useAppConfig:(id)sender {
-//    UISwitch *swtich = sender;
-//    _currentSwitch = swtich;
-//    if(swtich.on){
-//        _udpSwitch.enabled = YES;
-//        _tlsSwitch.enabled = YES;
-//        _tcpSwitch.enabled = YES;
-//        _srtpDisableSwitch.enabled = YES;
-//        _srtpOptionSwitch.enabled = YES;
-//        _srtpForceSwitch.enabled = YES;
-//        _priorityType = CONFIG_PRIORITY_TYPE_APP;
-//    }else{
-//        _udpSwitch.enabled = NO;
-//        _tlsSwitch.enabled = NO;
-//        _tcpSwitch.enabled = NO;
-//        _srtpDisableSwitch.enabled = NO;
-//        _srtpOptionSwitch.enabled = NO;
-//        _srtpForceSwitch.enabled = NO;
-//        _priorityType = CONFIG_PRIORITY_TYPE_SYSTEM;
-//    }
-//}
+- (IBAction)useAppConfig:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _udpSwitch.enabled = YES;
+        _tlsSwitch.enabled = YES;
+        _tcpSwitch.enabled = YES;
+        _srtpDisableSwitch.enabled = YES;
+        _srtpOptionSwitch.enabled = YES;
+        _srtpForceSwitch.enabled = YES;
+        _tunnelDisableSwitch.enabled = YES;
+        _tunnelDefaultSwitch.enabled = YES;
+        _priorityType = CONFIG_PRIORITY_TYPE_APP;
+    }else{
+        _udpSwitch.enabled = NO;
+        _tlsSwitch.enabled = NO;
+        _tcpSwitch.enabled = NO;
+        _srtpDisableSwitch.enabled = NO;
+        _srtpOptionSwitch.enabled = NO;
+        _srtpForceSwitch.enabled = NO;
+        _tunnelDisableSwitch.enabled = NO;
+        _tunnelDefaultSwitch.enabled = NO;
+        _priorityType = CONFIG_PRIORITY_TYPE_SYSTEM;
+    }
+}
 
 - (IBAction)transportUDP:(id)sender {
     UISwitch *swtich = sender;
@@ -190,21 +205,38 @@
     }
 }
 
-//- (IBAction)sipPortPriority:(id)sender {
-//    UISwitch *swtich = sender;
-//    _currentSwitch = swtich;
-//
-//    if(swtich.on){
-//        _sipPortPriority = YES;
-//        _udpPortField.enabled = YES;
-//        _tlsPortField.enabled = YES;
-//    }else{
-//        _sipPortPriority = NO;
-//        _udpPortField.enabled = NO;
-//        _tlsPortField.enabled = NO;
-//    }
-//}
+- (IBAction)sipPortPriority:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
 
+    if(swtich.on){
+        _sipPortPriority = YES;
+        _udpPortField.enabled = YES;
+        _tlsPortField.enabled = YES;
+    }else{
+        _sipPortPriority = NO;
+        _udpPortField.enabled = NO;
+        _tlsPortField.enabled = NO;
+    }
+}
+
+- (IBAction)tunnelDefault:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _tunnelDisableSwitch.on = NO;
+        _tunnelMode = TUNNEL_MODE_DEFAULT;
+    }
+}
+
+- (IBAction)tunnelDisable:(id)sender {
+    UISwitch *swtich = sender;
+    _currentSwitch = swtich;
+    if(swtich.on){
+        _tunnelDefaultSwitch.on = NO;
+        _tunnelMode = TUNNEL_MODE_DISABLE;
+    }
+}
 
 
 /*

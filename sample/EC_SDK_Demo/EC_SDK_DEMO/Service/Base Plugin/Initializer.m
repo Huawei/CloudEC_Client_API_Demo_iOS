@@ -115,8 +115,9 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     memset(&app_info, 0, sizeof(TSDK_S_APP_INFO_PARAM));
     app_info.client_type = TSDK_E_CLIENT_MOBILE;
     
-    strcpy(app_info.product_name, "Huawei TE Mobile");
+//    strcpy(app_info.product_name, "Huawei TE Mobile");
 //    strcpy(app_info.product_name, "SoftClient on Mobile");
+    strcpy(app_info.product_name, "WeLink-Mobile");
     
     app_info.support_audio_and_video_call = TSDK_TRUE;
     app_info.support_ctd = TSDK_TRUE;

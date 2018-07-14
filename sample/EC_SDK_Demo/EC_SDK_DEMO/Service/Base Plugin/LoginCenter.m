@@ -142,24 +142,45 @@ static LoginCenter *g_loginCenter = nil;
         default:
             break;
     }
-//    CONFIG_PRIORITY_TYPE priorityType = [array[2] intValue];
+    TSDK_E_SECURITY_TUNNEL_MODE securityTunnelMode = TSDK_E_SECURITY_TUNNEL_MODE_DEFAULT;
+    TUNNEL_MODE tunnelMode = [array[6] intValue];
+    switch (tunnelMode) {
+        case TUNNEL_MODE_DEFAULT:
+            securityTunnelMode = TSDK_E_SECURITY_TUNNEL_MODE_DEFAULT;
+            break;
+        case TUNNEL_MODE_DISABLE:
+            securityTunnelMode = TSDK_E_SECURITY_TUNNEL_MODE_DISABLE;
+            break;
+        default:
+            break;
+    }
+    CONFIG_PRIORITY_TYPE priorityType = [array[2] intValue];
     TSDK_S_SERVICE_SECURITY_PARAM securityParam;
     memset(&securityParam, 0, sizeof(TSDK_S_SERVICE_SECURITY_PARAM));
-//    securityParam.is_apply_config_priority = (priorityType == CONFIG_PRIORITY_TYPE_APP);
+    securityParam.is_apply_config_priority = (priorityType == CONFIG_PRIORITY_TYPE_APP);
     securityParam.sip_transport_mode = transportMode;
     securityParam.media_srtp_mode = mediaSrtpMode;
+    securityParam.security_tunnel_mode = securityTunnelMode;
     configResult = tsdk_set_config_param(TSDK_E_CONFIG_SECURITY_PARAM, &securityParam);
     DDLogInfo(@"config security param result: %d", configResult);
     
-//    //config network info
-//    TSDK_S_NETWORK_INFO_PARAM networkInfo;
-//    memset(&networkInfo, 0, sizeof(TSDK_S_NETWORK_INFO_PARAM));
-//    networkInfo.is_apply_config_priority = [array[5] boolValue];
-//    networkInfo.sip_server_udp_port = [array[3] intValue];
-//    networkInfo.sip_server_tls_port = [array[4] intValue];
-//    networkInfo.sip_server_tcp_port = [array[3] intValue];
-//    configResult = tsdk_set_config_param(TSDK_E_CONFIG_NETWORK_INFO, &networkInfo);
-//    DDLogInfo(@"config network info result: %d", configResult);
+    //config network info
+    TSDK_S_NETWORK_INFO_PARAM networkInfo;
+    memset(&networkInfo, 0, sizeof(TSDK_S_NETWORK_INFO_PARAM));
+    BOOL is_apply_config_priority = [array[5] boolValue];
+    if (is_apply_config_priority)
+    {
+        networkInfo.sip_server_udp_port = [array[3] intValue];
+        networkInfo.sip_server_tls_port = [array[4] intValue];
+        networkInfo.sip_server_tcp_port = [array[3] intValue];
+    }else{
+        networkInfo.sip_server_udp_port = 0;
+        networkInfo.sip_server_tls_port = 0;
+        networkInfo.sip_server_tcp_port = 0;
+    }
+
+    configResult = tsdk_set_config_param(TSDK_E_CONFIG_NETWORK_INFO, &networkInfo);
+    DDLogInfo(@"config network info result: %d", configResult);
 }
 
 

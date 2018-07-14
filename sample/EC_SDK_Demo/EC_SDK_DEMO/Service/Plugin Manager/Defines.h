@@ -651,6 +651,16 @@ typedef enum{
 }TRANSPORT_MODE;
 
 /**
+ *This enum is about security tunnel use mode
+ *安全隧道使用模式
+ */
+typedef enum{
+    TUNNEL_MODE_DEFAULT = 0,
+    TUNNEL_MODE_DISABLE,
+    TUNNEL_MODE_FORCE
+}TUNNEL_MODE;
+
+/**
  *This enum is about config priority type
  *采用配置的优先级
  */

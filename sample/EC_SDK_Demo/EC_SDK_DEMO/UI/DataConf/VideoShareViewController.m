@@ -146,7 +146,7 @@
         [self.view addSubview:self.attendTableViewBackFullScreenView];
     }
     [self configBottomViewBtns];
-    if ([self isSelfMaster] && [self isMediaXDataVideoConf]) {
+    if ([self isSelfMaster]) {
         [self.bottomView addSubview:self.setConfModeBtn];
     }
 }

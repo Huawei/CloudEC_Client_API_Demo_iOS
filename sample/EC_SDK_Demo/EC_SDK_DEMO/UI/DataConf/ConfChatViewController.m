@@ -65,12 +65,12 @@
 
 - (IBAction)sendMessage:(id)sender
 {
-//    if (_chatTextField.text.length == 0) {
-//        return;
-//    }
-//    if ([[ManagerService confService] chatSendMsg:_chatTextField.text fromUsername:_selfInfo.name toUserId:0]) {
-//        _chatTextField.text = @"";
-//    }
+    if (_chatTextField.text.length == 0) {
+        return;
+    }
+    if ([[ManagerService confService] chatSendMsg:_chatTextField.text fromUsername:_selfInfo.name toUserId:0]) {
+        _chatTextField.text = @"";
+    }
 }
 
 #pragma mark - Table view data source

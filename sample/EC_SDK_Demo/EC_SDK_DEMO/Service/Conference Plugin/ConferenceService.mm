@@ -28,6 +28,7 @@
 #import "AppDelegate.h"
 #import "ChatMsg.h"
 
+#define JOIN_NUMBER_LEN 256
 @interface ConferenceService()<TupConfNotifacation>
 
 @property (nonatomic, assign) int confHandle;                     // current confHandle
@@ -424,22 +425,22 @@
  *@param userId at p2p chat it represents receiver's user id, at public chat it's ignored
  *@return YES or NO. See call back didReceiveChatMessage:
  */
-//- (BOOL)chatSendMsg:(NSString *)message
-//       fromUsername:(NSString *)username
-//           toUserId:(unsigned int)userId
-//{
-//    if (message.length == 0 || username.length == 0) {
-//        return NO;
-//    }
-//    TSDK_S_CONF_CHAT_MSG_INFO chat_msg_info;
-//    memset(&chat_msg_info, 0, sizeof(TSDK_S_CONF_CHAT_MSG_INFO));
-//    chat_msg_info.chat_type = TSDK_E_CONF_CHAT_PUBLIC;
-//    strcpy(chat_msg_info.sender_display_name, (TSDK_CHAR*)username.UTF8String);
-//    chat_msg_info.chat_msg = (TSDK_CHAR*)message.UTF8String;
-//    chat_msg_info.chat_msg_len = strlen(message.UTF8String);
-//    TSDK_RESULT result = tsdk_send_chat_msg_in_conference(_confHandle, &chat_msg_info);
-//    return result == TSDK_SUCCESS ? YES : NO;
-//}
+- (BOOL)chatSendMsg:(NSString *)message
+       fromUsername:(NSString *)username
+           toUserId:(unsigned int)userId
+{
+    if (message.length == 0 || username.length == 0) {
+        return NO;
+    }
+    TSDK_S_CONF_CHAT_MSG_INFO chat_msg_info;
+    memset(&chat_msg_info, 0, sizeof(TSDK_S_CONF_CHAT_MSG_INFO));
+    chat_msg_info.chat_type = TSDK_E_CONF_CHAT_PUBLIC;
+    strcpy(chat_msg_info.sender_display_name, (TSDK_CHAR*)username.UTF8String);
+    chat_msg_info.chat_msg = (TSDK_CHAR*)message.UTF8String;
+    chat_msg_info.chat_msg_len = strlen(message.UTF8String);
+    TSDK_RESULT result = tsdk_send_chat_msg_in_conference(_confHandle, &chat_msg_info);
+    return result == TSDK_SUCCESS ? YES : NO;
+}
 
 - (void)onRecvConfCtrlOperationNotification:(Notification *)notify
 {
@@ -1024,15 +1025,15 @@
         strcpy(confJoinParam.access_number, [accessNumber UTF8String]);
     }
     
-    TSDK_CHAR join_number;
+    TSDK_CHAR join_number[JOIN_NUMBER_LEN];
     if (!self.selfJoinNumber) {
         self.selfJoinNumber = self.sipAccount;
     }
-    strcpy(&join_number, [self.selfJoinNumber UTF8String]);
+    strcpy(join_number, [self.selfJoinNumber UTF8String]);
     
     TSDK_UINT32 call_id;
-    
-    BOOL result = tsdk_join_conference(&confJoinParam, &join_number, (TSDK_BOOL)isVideoJoin, &call_id);
+    DDLogInfo(@"joinConferenceWithConfId,confid:%s,conf_password:%s,access_number:%s",confJoinParam.conf_id,confJoinParam.conf_password,confJoinParam.access_number);
+    BOOL result = tsdk_join_conference(&confJoinParam, join_number, (TSDK_BOOL)isVideoJoin, &call_id);
     DDLogInfo(@"tsdk_join_conference = %d, call_id is :%d",result,call_id);
     return result == TSDK_SUCCESS ? YES : NO;
 }

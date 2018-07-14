@@ -104,8 +104,8 @@
 		410CF14C1FA9A994002CB4EC /* TUPIOSSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 410CF1471FA9A994002CB4EC /* TUPIOSSDK.framework */; };
 		410CF14D1FA9A994002CB4EC /* TUPMediatorSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 410CF1481FA9A994002CB4EC /* TUPMediatorSDK.framework */; };
 		410CF14E1FA9A994002CB4EC /* TUPNetworkSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 410CF1491FA9A994002CB4EC /* TUPNetworkSDK.framework */; };
-		410CF1C41FA9A9CA002CB4EC /* libACE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 410CF16E1FA9A9CA002CB4EC /* libACE.a */; };
-		410CF1D21FA9A9CA002CB4EC /* libipsi_http.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 410CF17C1FA9A9CA002CB4EC /* libipsi_http.a */; };
+		41476E6F20D8D4A300FE3DB5 /* websockets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 41476E6E20D8D4A300FE3DB5 /* websockets.framework */; };
+		41476E7020D8D50600FE3DB5 /* websockets.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 41476E6E20D8D4A300FE3DB5 /* websockets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		4147BB8D1FBD895300EB373A /* emotion.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4147BB8C1FBD895300EB373A /* emotion.xml */; };
 		414E23D31FC414C800E8043C /* AssistantViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 414E237D1FC414C800E8043C /* AssistantViewController.m */; };
 		414E23D41FC414C800E8043C /* ChatGroupListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 414E237F1FC414C800E8043C /* ChatGroupListViewController.m */; };
@@ -226,6 +226,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				41476E7020D8D50600FE3DB5 /* websockets.framework in CopyFiles */,
 				4195223F1FBC0E2500CA3429 /* TUPNetworkSDK.framework in CopyFiles */,
 				4195223E1FBC0E2200CA3429 /* TUPMediatorSDK.framework in CopyFiles */,
 				4195223D1FBC0E1F00CA3429 /* TUPIOSSDK.framework in CopyFiles */,
@@ -429,8 +430,7 @@
 		410CF1471FA9A994002CB4EC /* TUPIOSSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TUPIOSSDK.framework; sourceTree = "<group>"; };
 		410CF1481FA9A994002CB4EC /* TUPMediatorSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TUPMediatorSDK.framework; sourceTree = "<group>"; };
 		410CF1491FA9A994002CB4EC /* TUPNetworkSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = TUPNetworkSDK.framework; sourceTree = "<group>"; };
-		410CF16E1FA9A9CA002CB4EC /* libACE.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libACE.a; sourceTree = "<group>"; };
-		410CF17C1FA9A9CA002CB4EC /* libipsi_http.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_http.a; sourceTree = "<group>"; };
+		41476E6E20D8D4A300FE3DB5 /* websockets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = websockets.framework; sourceTree = "<group>"; };
 		4147BB8C1FBD895300EB373A /* emotion.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = emotion.xml; sourceTree = "<group>"; };
 		414E237C1FC414C800E8043C /* AssistantViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssistantViewController.h; sourceTree = "<group>"; };
 		414E237D1FC414C800E8043C /* AssistantViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AssistantViewController.m; sourceTree = "<group>"; };
@@ -593,13 +593,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				410CF14A1FA9A994002CB4EC /* TUPContactSDK.framework in Frameworks */,
-				410CF1C41FA9A9CA002CB4EC /* libACE.a in Frameworks */,
 				1258C1EA1F39E27D00654D80 /* libiconv.2.dylib in Frameworks */,
 				1258C1D81F39593100654D80 /* libresolv.9.dylib in Frameworks */,
 				1258C1D91F39593100654D80 /* libstdc++.6.0.9.dylib in Frameworks */,
 				1258C1DA1F39593100654D80 /* libz.1.dylib in Frameworks */,
 				4150E008200DB32D00FEBECE /* libtup_eaddr_h5.a in Frameworks */,
 				1258C1D41F39590400654D80 /* CoreMedia.framework in Frameworks */,
+				41476E6F20D8D4A300FE3DB5 /* websockets.framework in Frameworks */,
 				4150E000200DB29A00FEBECE /* libtup_commonlib.a in Frameworks */,
 				4150DFF8200DB22600FEBECE /* libtup_confctrl.a in Frameworks */,
 				4150E01A200DB44400FEBECE /* libtup_login.a in Frameworks */,
@@ -611,7 +611,6 @@
 				4150E016200DB3D600FEBECE /* libtup_https_clt.a in Frameworks */,
 				4150E00A200DB33E00FEBECE /* libtup_eaddr.a in Frameworks */,
 				410CF14D1FA9A994002CB4EC /* TUPMediatorSDK.framework in Frameworks */,
-				410CF1D21FA9A9CA002CB4EC /* libipsi_http.a in Frameworks */,
 				1258C1D21F3958FF00654D80 /* MediaPlayer.framework in Frameworks */,
 				410CE446207B071600FA36A7 /* libtsdk_service.a in Frameworks */,
 				4150E014200DB3C000FEBECE /* libtup_httpofflinefile.a in Frameworks */,
@@ -1112,9 +1111,8 @@
 		410CEF961FA9A024002CB4EC /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				41476E6E20D8D4A300FE3DB5 /* websockets.framework */,
 				410CE445207B071600FA36A7 /* libtsdk_service.a */,
-				410CF16E1FA9A9CA002CB4EC /* libACE.a */,
-				410CF17C1FA9A9CA002CB4EC /* libipsi_http.a */,
 				4150DFDB200DB0B500FEBECE /* libjsoncpp.a */,
 				4150DFF1200DB15C00FEBECE /* libtup_base.a */,
 				4150DFF5200DB22600FEBECE /* libtup_confctrl.a */,
@@ -1726,6 +1724,7 @@
 					"$(PROJECT_DIR)/Demo_Depand/SDK",
 					"$(PROJECT_DIR)/EC_SDK_DEMO/Demo_Depand/SDK",
 					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/ImSDK",
+					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib",
 				);
 				GCC_PREFIX_HEADER = EC_SDK_DEMO/PrefixHeader.pch;
 				INFOPLIST_FILE = EC_SDK_DEMO/Info.plist;
@@ -1770,6 +1769,7 @@
 					"$(PROJECT_DIR)/Demo_Depand/SDK",
 					"$(PROJECT_DIR)/EC_SDK_DEMO/Demo_Depand/SDK",
 					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/ImSDK",
+					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib",
 				);
 				GCC_PREFIX_HEADER = EC_SDK_DEMO/PrefixHeader.pch;
 				INFOPLIST_FILE = EC_SDK_DEMO/Info.plist;
