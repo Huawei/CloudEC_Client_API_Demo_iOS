@@ -7,20 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ConfStatus.h"
+#import "ConfAttendeeInConf.h"
 
 @interface DataConfBaseViewController : UIViewController
 
 @property (nonatomic,strong) UIView  *barView;
 @property (nonatomic,strong) UIButton* endBtn;
 @property (nonatomic,strong) UIButton* voiceBtn;
+@property (nonatomic,strong) UIButton* muteBtn;
 @property (nonatomic,strong) UIView *bottomView;
-
-@property (nonatomic, strong) ConfStatus *confStatus;
 @property (nonatomic, copy) NSString *selfNumber;
+
 @property (nonatomic, strong)ConfAttendeeInConf *selfConfInfo;
 
-- (instancetype)initWithConfInfo:(ConfStatus *)confInfo;
 
 - (CGFloat)selfViewWidth;
 - (CGFloat)selfViewHeight;

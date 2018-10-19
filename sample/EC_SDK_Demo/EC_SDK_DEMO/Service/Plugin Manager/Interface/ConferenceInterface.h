@@ -11,10 +11,11 @@
 
 #import "Defines.h"
 @class ChatMsg;
+@class ConfBaseInfo;
 extern NSString *const CONFERENCE_END_NOTIFY;
 extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 
-@class TupCallNotifications,ConfMember,TUPConferenceNotifications,ECConfInfo,ECCurrentConfInfo;
+@class TupCallNotifications,ConfMember,TUPConferenceNotifications;
 @protocol ConferenceServiceDelegate <NSObject>
 @required
 
@@ -47,7 +48,7 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  *Indicates conference service delegate
  *会议业务代理
  */
-@property (nonatomic ,assign)id<ConferenceServiceDelegate> delegate;
+@property (nonatomic ,weak)id<ConferenceServiceDelegate> delegate;
 
 /**
  *Indicates data conference chat service delegate
@@ -62,10 +63,22 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 @property (nonatomic, assign) BOOL isJoinDataConf;
 
 /**
+ *Indicates whether have video in conference
+ *判断是否会议中带视频能力
+ */
+@property (nonatomic,assign) BOOL isVideoConfInvited;
+
+/**
  *Indicates whether have joined attendee array
  *与会者列表数组
  */
 @property (nonatomic, strong) NSMutableArray *haveJoinAttendeeArray;     //current conference'attendees
+
+/**
+ *Indicates current base confInfo
+ *当前会议信息
+ */
+@property (nonatomic, strong) ConfBaseInfo *currentConfBaseInfo;
 
 /**
  *Indicates conf type enum
@@ -294,6 +307,8 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 - (BOOL)chatSendMsg:(NSString *)message
        fromUsername:(NSString *)username
            toUserId:(unsigned int)userId;
+
+- (BOOL)joinConferenceWithDisPlayName:(NSString *)disPlayName ConfId:(NSString *)confID PassWord:(NSString *)passWord ServerAdd:(NSString *)serverAdd ServerPort:(int)serverPort;
 
 @end
 

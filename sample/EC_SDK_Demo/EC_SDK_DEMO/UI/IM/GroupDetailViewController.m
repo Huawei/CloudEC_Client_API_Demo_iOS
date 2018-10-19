@@ -14,7 +14,6 @@
 #import "GroupHeadViewCell.h"
 #import "MembersViewController.h"
 #import "GroupInfoModifyController.h"
-//#import "CreateGroupViewController.h"
 
 @interface GroupDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -22,7 +21,6 @@
 @property (nonatomic, strong) UISwitch *lockGroup;                  // group lock switch
 @property (nonatomic, strong) UISwitch *muteChat;                   // group mute seitch
 @property (nonatomic,strong) NSArray *keyPathArray;                 // group cell info array
-
 
 @end
 

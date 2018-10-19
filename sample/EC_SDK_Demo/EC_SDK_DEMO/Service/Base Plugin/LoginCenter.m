@@ -15,13 +15,21 @@
 #import "tsdk_login_interface.h"
 #import "tsdk_manager_interface.h"
 #import "CommonUtils.h"
+#import "ManagerService.h"
+
+#import <TUPIOSSDK/ECSAppConfig.h>
+#import <TUPIOSSDK/TUPMAALoginService.h>
 
 NSString * const UPortalTokenKey = @"UPortalTokenKey";
 NSString * const CallRegisterStatusKey = @"CallRegisterStatusKey";
+NSString * const PushTimeEnableRecoud = @"PushTimeEnableRecoud";
 
 static LoginCenter *g_loginCenter = nil;
 
 @interface LoginCenter ()<TupLoginNotification>
+{
+    dispatch_queue_t _uportalPushConfigQueue;           //push设置队列(串行)
+}
 @property (nonatomic, strong)LoginServerInfo *loginServerInfo;         // LoginServerInfo
 @property (nonatomic, assign)BOOL bSTGTunnel;                          // is connected STG or not
 @property (nonatomic, assign)TUP_FIREWALL_MODE firewallMode;           // fire wall mode
@@ -39,6 +47,7 @@ static LoginCenter *g_loginCenter = nil;
 - (id)init
 {
     if (self = [super init]) {
+        _uportalPushConfigQueue = dispatch_queue_create("com.huawei.tsdk.uportalPushConfig", DISPATCH_QUEUE_SERIAL);
         [Initializer registerLoginCallBack:self];
     }
     return self;
@@ -74,7 +83,7 @@ static LoginCenter *g_loginCenter = nil;
             localAddress:(NSString *)localAddress
               completion:(void (^)(BOOL isSuccess, NSError *error))completionBlock
 {
-    [self configSipRelevantParam];
+//    [self configSipRelevantParam];
     TSDK_S_LOGIN_PARAM loginParam;
     memset(&loginParam, 0, sizeof(TSDK_S_LOGIN_PARAM));
     loginParam.user_id = 1;
@@ -181,6 +190,20 @@ static LoginCenter *g_loginCenter = nil;
 
     configResult = tsdk_set_config_param(TSDK_E_CONFIG_NETWORK_INFO, &networkInfo);
     DDLogInfo(@"config network info result: %d", configResult);
+    
+    TSDK_S_IOS_PUSH_PARAM pushParam;
+    memset(&pushParam, 0, sizeof(TSDK_S_IOS_PUSH_PARAM));
+    pushParam.app_id = 1;
+    pushParam.language = TSDK_E_LANGUAGE_ZH;
+      //苹果推送服务器类型（1：生产环境 ; 2：测试环境）
+    pushParam.apns_env_type = TSDK_E_APNS_TEST_ENV;
+    //推送服务证书编号（1 espace appstore ；2 espace 企业；3 espace hd 企业；4 espace hd appstore）; 5 cloudLink appstore ; 6 cloudLink 企业  ，默认值0
+    pushParam.apns_cret_type = TSDK_E_APNS_CRET_XXX1;
+    strcpy(pushParam.device_token, [[ECSAppConfig sharedInstance].deviceToken UTF8String]);
+    strcpy(pushParam.voip_token, [[ECSAppConfig sharedInstance].voipToken UTF8String]);
+    configResult = tsdk_set_config_param(TSDK_E_CONFIG_IOS_PUSH_PARAM, &pushParam);
+    DDLogInfo(@"config param result: %d", configResult);
+    
 }
 
 
@@ -210,6 +233,8 @@ static LoginCenter *g_loginCenter = nil;
  */
 -(BOOL)logout
 {
+//    [self logoutStopPush];
+    
     TSDK_RESULT ret = tsdk_logout();
     BOOL result = (TSDK_SUCCESS == ret) ? YES : NO;
     return result;
@@ -242,12 +267,27 @@ static LoginCenter *g_loginCenter = nil;
             LoginAccessServer.sipPwd= [NSString stringWithUTF8String:im_login_parama->password];
             LoginAccessServer.token = [NSString stringWithUTF8String:im_login_parama->token];
             self.loginServerInfo = LoginAccessServer;
+            
+//            NSArray *pushTime = [CommonUtils getUserDefaultValueWithKey:PushTimeEnableRecoud];
+//            NSString *noPushStart = nil;
+//            NSString *noPushEnd = nil;
+//            BOOL enableNoPushByTime = NO;
+//            if (pushTime != nil) {
+//                enableNoPushByTime = [pushTime[0] boolValue];
+//                noPushStart = pushTime[1];
+//                noPushEnd = pushTime[2];
+//            }
+//            [self configUportalAPNSEnable:YES noPushStartTime:noPushStart noPushEndTime:noPushEnd enableNoPushByTime:enableNoPushByTime];
+            
             DDLogInfo(@"authorize success");
             break;
         }
         case TSDK_E_LOGIN_EVT_AUTH_FAILED:
         {
             TSDK_UINT32 reasonCode = notify.param2;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_AUTH_FAILED object:nil userInfo:nil];
+            });
             DDLogInfo(@"authorize failed, reason code: %d", reasonCode);
             break;
         }
@@ -262,6 +302,10 @@ static LoginCenter *g_loginCenter = nil;
             DDLogInfo(@"sip have been login");
             sipStatus = kCallSipStatusRegistered;
             [self isSipRegistered:sipStatus];
+            TSDK_S_LOGIN_SUCCESS_INFO *login_success_info = notify.data;
+            if (login_success_info != NULL) {
+                [ManagerService confService].uPortalConfType = [self configDeployMode:login_success_info->conf_env_type];
+            }
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGIN_FAILED:
@@ -311,6 +355,16 @@ static LoginCenter *g_loginCenter = nil;
         {
             break;
         }
+        case TSDK_E_LOGIN_EVT_GET_TEMP_USER_RESULT:
+        {
+            TSDK_UINT32 reasonCode = notify.param2;
+            if (reasonCode != TSDK_SUCCESS) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_GET_TEMP_USER_INFO_FAILD object:nil userInfo:nil];
+                });
+            }
+            break;
+        }
         default:
             break;
     }
@@ -332,9 +386,72 @@ static LoginCenter *g_loginCenter = nil;
     else {
         
     }
-    
-    
-    
 }
+
+/**
+ *This method is used to config deploy mode
+ *配置部署模式（uportal 会议类型）
+ */
+- (EC_CONF_TOPOLOGY_TYPE)configDeployMode:(TSDK_E_CONF_ENV_TYPE)deployMode
+{
+    EC_CONF_TOPOLOGY_TYPE uPortalConfType = CONF_TOPOLOGY_BUTT;
+    switch (deployMode) {
+        case TSDK_E_CONF_ENV_HOSTED_CONVERGENT_CONFERENCE:
+            // mediax组网， mediax会议
+            uPortalConfType = CONF_TOPOLOGY_MEDIAX;
+            break;
+        case TSDK_E_CONF_ENV_ON_PREMISES_CONVERGENT_CONFERENCE:
+            // smc组网， smc会议
+            uPortalConfType = CONF_TOPOLOGY_SMC;
+            break;
+        default:
+            DDLogInfo(@"deploy is error, ignore!");
+            break;
+    }
+//
+    return uPortalConfType;
+}
+
+//- (void)configUportalAPNSEnable:(BOOL)enable noPushStartTime:(NSString*)strartTime noPushEndTime:(NSString*)endTime enableNoPushByTime:(BOOL)enableNoPushByTime
+//{
+//    TSDK_S_PUSH_SERVICE_INFO pushServerInfo;
+//    memset(&pushServerInfo, 0, sizeof(TSDK_S_PUSH_SERVICE_INFO));
+//    pushServerInfo.push_operation = enable ? TSDK_E_PUSH_REGISTER : TSDK_E_PUSH_ClOSE_PUSH;
+//    pushServerInfo.enable_no_push_by_time = enableNoPushByTime;
+//    
+//    if (strartTime.length == 0 || strartTime == nil || endTime.length == 0 || endTime == nil)
+//    {
+//        strcpy(pushServerInfo.no_push_start_time, [@"00:00" UTF8String]);
+//        strcpy(pushServerInfo.no_push_end_time, [@"00:00" UTF8String]);
+//    }else
+//    {
+//        if (enableNoPushByTime) {
+//            strcpy(pushServerInfo.no_push_start_time, [strartTime UTF8String]);
+//            strcpy(pushServerInfo.no_push_end_time, [endTime UTF8String]);
+//        }else{
+//            strcpy(pushServerInfo.no_push_start_time, [@"00:00" UTF8String]);
+//            strcpy(pushServerInfo.no_push_end_time, [@"00:00" UTF8String]);
+//        }
+//        
+//    }
+//    
+//    TSDK_RESULT push_result = tsdk_set_push_service(&pushServerInfo);
+//
+//    DDLogInfo(@"tsdk_set_push_server,result = %d",push_result);
+//}
+
+//- (void)logoutStopPush
+//{
+//    NSArray *pushTime = [CommonUtils getUserDefaultValueWithKey:PushTimeEnableRecoud];
+//    NSString *noPushStart = nil;
+//    NSString *noPushEnd = nil;
+//    BOOL enableNoPushByTime = NO;
+//    if (pushTime != nil) {
+//        enableNoPushByTime = [pushTime[0] boolValue];
+//        noPushStart = pushTime[1];
+//        noPushEnd = pushTime[2];
+//    }
+//    [self configUportalAPNSEnable:NO noPushStartTime:noPushStart noPushEndTime:noPushEnd enableNoPushByTime:NO];
+//}
 
 @end

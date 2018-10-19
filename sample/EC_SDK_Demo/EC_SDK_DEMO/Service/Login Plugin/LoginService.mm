@@ -107,6 +107,15 @@
  */
 -(void)authorizeLoginWithLoginInfo:(LoginInfo *)LoginInfo completionBlock:(void (^)(BOOL isSuccess, NSError *error))completionBlock
 {
+    NSString *currentAccount = [ECSAppConfig sharedInstance].currentUser.account;
+    NSString *userAccount = LoginInfo.account;
+    if ((currentAccount.length == 0 || currentAccount == nil) && userAccount.length > 0 && userAccount != nil) {
+        // 使用登陆maa时的account 作为当前ECSAppConfig的帐号
+        [ECSAppConfig sharedInstance].currentUser.account = userAccount;
+    }
+    
+    [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userAccount];
+    
     self.loginInfo = LoginInfo;
     // 登陆uportal鉴权
     [[LoginCenter sharedInstance] loginWithAccount:LoginInfo.account
@@ -125,6 +134,7 @@
              if (completionBlock) {
                  completionBlock(YES, nil);
              }
+             
 #if NEEDMAALOGIN
              NSString *token = [CommonUtils textFromBase64String:info.token];
              // 第三方鉴权返回账号通过userNameForThirdParth字段返回。 tiket鉴权场景下通过userName字段返回。
@@ -137,9 +147,19 @@
              
              //搜索自己软终端号码
              [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
-             // 使用登陆maa时的account 作为当前ECSAppConfig的帐号
-             [ECSAppConfig sharedInstance].currentUser.account = maaAccount;
-             [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:maaAccount];
+             
+             NSString *currentAccount = [ECSAppConfig sharedInstance].currentUser.account;
+             if (currentAccount.length == 0 || currentAccount == nil || ![currentAccount isEqualToString:maaAccount]) {
+                 // 使用登陆maa时的account 作为当前ECSAppConfig的帐号
+                 [ECSAppConfig sharedInstance].currentUser.account = maaAccount;
+                 [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:maaAccount];
+             }
+             
+             ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
+             if (!userConfig.isAutoLogin) {
+                 userConfig.isAutoLogin = YES;
+                [[ECSAppConfig sharedInstance] save];
+             }
              
 //             BOOL isSTGTunnel = [LoginCenter sharedInstance].isSTGTunnel;
              BOOL isSTGTunnel = NO;
@@ -176,8 +196,10 @@
                                                         retryCount:3
                                                         completion:^(NSError *maaError)
               {
-                  if (!maaError) {
+                  if (maaError) {
                       DDLogError(@"MAA login faild!");
+                  }else{
+                      [[NSNotificationCenter defaultCenter] postNotificationName:MAA_LOGIN_SUCCESSED object:nil userInfo:nil];
                   }
                  
               }];

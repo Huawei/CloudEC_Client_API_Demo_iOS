@@ -9,14 +9,6 @@
 #import "Defines.h"
 #import "CallInfo.h"
 
-typedef enum
-{
-    TRANSFER_CALL,
-    AUDIO_ANSWER_COMMING_CALL,
-    VIDEO_ANSWER_COMMING_CALL,
-    REFUSE_COMMING_CALL
-}COMMING_VIEW_BTNACTION_TYPE;
-
 @protocol CallTipDelegate<NSObject>
 @optional
 -(void)clickCommingTipViewButton:(COMMING_VIEW_BTNACTION_TYPE)actionType;

@@ -14,7 +14,7 @@
 #import "MeetingDatePickViewController.h"
 #import "ConfRunningViewController.h"
 #import "AttendeeTableView.h"
-
+#import "ConfBaseInfo.h"
 
 #define CELL_TITLE_FONT     [UIFont systemFontOfSize:13]
 #define CELL_CONTENT_FONT   [UIFont systemFontOfSize:16]
@@ -188,7 +188,6 @@
 }
 @property (nonatomic, copy) NSDate *beginDate;
 @property (nonatomic, assign) NSTimeInterval lastInterval;
-@property (nonatomic, strong)ECConfInfo *currentConfStatus;
 @property (nonatomic, strong)UITableView *attendeeView;
 
 
@@ -256,23 +255,22 @@
 
 }
 
-- (void)setConferenceInfo:(ECCurrentConfInfo *)conferenceInfo
-{
-    _conferenceInfo = conferenceInfo;
-    if (nil == _conferenceInfo) {
-        return;
-    }
-    _confMediaType = _conferenceInfo.confDetailInfo.media_type;
-    
-    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
-    [formatter setDateFormat:@"yyyy/MM/dd  HH:mm"];
-    
-    self.beginDate = _conferenceInfo.confDetailInfo.start_time  ? [formatter dateFromString:_conferenceInfo.confDetailInfo.start_time ] : [NSDate date];
-    
-    NSTimeInterval timeInterval = [[formatter dateFromString:_conferenceInfo.confDetailInfo.end_time ] timeIntervalSinceDate:[formatter dateFromString:_conferenceInfo.confDetailInfo.start_time ]];
-    
-    self.lastInterval = timeInterval > 60 ? timeInterval : self.lastInterval;
-}
+//- (void)setConferenceInfo:(ECCurrentConfInfo *)conferenceInfo
+//{
+//    if (nil == _conferenceInfo) {
+//        return;
+//    }
+//    _confMediaType = _conferenceInfo.confDetailInfo.media_type;
+//
+//    NSDateFormatter *formatter = [[NSDateFormatter alloc]init];
+//    [formatter setDateFormat:@"yyyy/MM/dd  HH:mm"];
+//
+//    self.beginDate = _conferenceInfo.confDetailInfo.start_time  ? [formatter dateFromString:_conferenceInfo.confDetailInfo.start_time ] : [NSDate date];
+//
+//    NSTimeInterval timeInterval = [[formatter dateFromString:_conferenceInfo.confDetailInfo.end_time ] timeIntervalSinceDate:[formatter dateFromString:_conferenceInfo.confDetailInfo.start_time ]];
+//
+//    self.lastInterval = timeInterval > 60 ? timeInterval : self.lastInterval;
+//}
 
 -(void)viewWillAppear:(BOOL)animated
 {
@@ -474,9 +472,8 @@
     if (!bNeedSetConfSubject) {
         return;
     }
-    if (nil != self.conferenceInfo) {
-        _confSubjectTextField.text = self.conferenceInfo.confDetailInfo.conf_subject;
-    }
+    
+    _confSubjectTextField.text = [ManagerService confService].currentConfBaseInfo.conf_subject;
     
     if (0 == _confSubjectTextField.text.length) {
         _confSubjectTextField.text = [self confDefaultName];
@@ -676,9 +673,7 @@
         return;
     }
     
-    if (nil != self.conferenceInfo) {
-        _selectedNumberLabel.text = self.conferenceInfo.confDetailInfo.conf_subject;
-    }
+    _selectedNumberLabel.text = [ManagerService confService].currentConfBaseInfo.conf_subject;
     
     if (0 == _selectedNumberLabel.text.length) {
         
@@ -773,9 +768,11 @@
 
 - (void)showConfTypeChoosingView
 {
-    //EC6.0的MediaX组网下才支持视频会议的创建
-    BOOL isSupportVideoConf = ([[ManagerService confService] isUportalSMCConf] ||
-                               [[ManagerService confService] isUportalMediaXConf]);
+//    //EC6.0的MediaX组网下才支持视频会议的创建
+//    BOOL isSupportVideoConf = ([[ManagerService confService] isUportalSMCConf] ||
+//                               [[ManagerService confService] isUportalMediaXConf]);
+    
+    BOOL isSupportVideoConf = YES;
 
     CreateConfTypeChooseViewController *confTypeChooseCtrl = [[CreateConfTypeChooseViewController alloc]initWithConfMediaType:_confMediaType
         andIsSupportVideoConf:isSupportVideoConf];
@@ -995,7 +992,6 @@
             }
             case CONF_E_CURRENTCONF_DETAIL:
             {
-                _currentConfStatus = resultDictionary[ECCONF_CURRENTCONF_DETAIL_KEY];
                 BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
                 if (!result)
                 {

@@ -54,6 +54,19 @@ extern NSString *const TUP_CONF_INCOMING_KEY;
 
 extern NSString *const LOGIN_UNREGISTERED_RESULT;
 extern NSString *const SRTP_TRANSPORT_MODE;
+
+extern NSString *const MAA_LOGIN_SUCCESSED;
+
+extern NSString *const USE_IDO_CONFCTRL;
+
+extern NSString *const USER_ACCOUNT;
+extern NSString *const USER_PASSWORD;
+
+extern NSString *const LOGIN_GET_TEMP_USER_INFO_FAILD;
+extern NSString *const LOGIN_AUTH_FAILED;
+
+extern NSString *const CONF_QUITE_TO_CONFLISTVIEW;
+
 /**
  * [en]This enumeration is used to describe the call type.
  * [cn]∫ÙΩ–¿‡–Õ
@@ -256,6 +269,7 @@ typedef enum
     LOCAL  = 0x02,  //local screen operation
     LOCAL_AND_REMOTE = 0x03, //remote and local screen opration
     CAPTURE = 0x04, //camera operation
+    LOCAL_AND_CAPTURE = 0x06,
     ENCODER = 0x08, //encoder
     DECODER = 0x10, //decoder
     RESTARTCAPTUREANDENCODER = 0x0C //restart capture and encoder
@@ -668,6 +682,60 @@ typedef enum{
     CONFIG_PRIORITY_TYPE_SYSTEM = 0,
     CONFIG_PRIORITY_TYPE_APP
 }CONFIG_PRIORITY_TYPE;
+
+typedef NS_ENUM(NSUInteger, CreateGroupType)
+{
+    ADD_USER                =    0,                        //add user
+    CREATE_GROUP            =    1,                        //create group
+};
+
+typedef NS_ENUM(NSInteger, GroupInfoModifyType)
+{
+    GroupInfoModifyTypeName,           // modify name
+    GroupInfoModifyTypeAnnounce,       // modify announce
+    GroupInfoModifyTypeIntroduction    // modify introduction
+};
+
+typedef enum
+{
+    TRANSFER_CALL,
+    AUDIO_ANSWER_COMMING_CALL,
+    VIDEO_ANSWER_COMMING_CALL,
+    REFUSE_COMMING_CALL
+}COMMING_VIEW_BTNACTION_TYPE;
+
+typedef enum
+{
+    JOIN_CALL_BUTTON,
+    CLOSE_CALL_BUTTON,
+    CHANGE_SOUND_ROUTE_BUTTON,
+    DIAL_NUMBER_BUTTON,
+    CHANGE_CALL_TYPE_BUTTON,
+    CLOSE_CAMERA_BUTTON,
+    SWITCH_CAMERA_BUTTON,
+    ROUTE_BUTTON,
+    TRANSFER_BUTTON,
+    HOLD_BUTTON,
+    MUTE_MIC_BUTTON,
+    SITE_LIST_BUTTON,
+    DATA_CONFERENCE_BUTTON
+}CALL_TOOLBAR_BUTTON_TYPE;
+
+typedef NS_ENUM(NSUInteger, EmptyDataOption) {
+    ESpaceEDONoChatHistory = 1,
+    ESpaceEDONoCallHistory,
+    ESpaceEDONoContact,
+    ESpaceEDONoGroup,
+    ESpaceEDONoABPremission,
+    ESpaceEDONoLocalContact,
+    ESpaceEDONoSearchResult,
+    ESpaceEDONoConference,
+    ESpaceEDONoPublicAccount,
+    ESpaceEDONoPAChatHistory,
+    ESPaceEDONoVoiceMail,
+    ESPaceEDONoAddedContact,
+    ESpaceEDONoDeptData
+};
 
 @interface Defines : NSObject
 

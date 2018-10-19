@@ -10,7 +10,9 @@
 #import "DataConfBaseViewController.h"
 #import "ManagerService.h"
 #import "ConfListViewController.h"
-#import "ConfAttendeeInConf.h"
+#import "ConfBaseInfo.h"
+#import "ConfListViewController.h"
+#import "ConfRunningViewController.h"
 
 @interface DataConfBaseViewController () {
     BOOL isHideBar;
@@ -23,12 +25,11 @@
 
 @implementation DataConfBaseViewController
 
-- (instancetype)initWithConfInfo:(ConfStatus *)confInfo
+- (instancetype)init
 {
     self = [super init];
     if (self) {
         
-        self.confStatus = confInfo;
         NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
         self.selfNumber = array[0];
         
@@ -44,9 +45,9 @@
 }
 
 - (ConfAttendeeInConf *)selfConfInfo {
-    for (ConfAttendeeInConf *tempAttendee in self.confStatus.participants)
+    for (ConfAttendeeInConf *tempAttendee in [ManagerService confService].haveJoinAttendeeArray)
     {
-        if ([tempAttendee.number isEqualToString:self.selfNumber])
+        if (tempAttendee.isSelf)
         {
             return tempAttendee;
         }
@@ -57,7 +58,7 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskLandscapeRight;
+    return UIInterfaceOrientationMaskLandscape;
 }
 
 -(BOOL)prefersStatusBarHidden {
@@ -135,14 +136,14 @@
         _barView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"dataconf_navbg"]];
         _barView.translatesAutoresizingMaskIntoConstraints = NO;
         
-        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        UIImage *backImg = [UIImage imageNamed:@"dataconf_back"];
-        [backBtn setImage:backImg forState:UIControlStateNormal];
-        [backBtn setImage:[UIImage imageNamed:@"dataconf_back_highlight"] forState:UIControlStateHighlighted];
-        
-        backBtn.frame = CGRectMake(0, 12, 40, 40);
-        [backBtn addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchUpInside];
-        [_barView addSubview:backBtn];
+//        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//        UIImage *backImg = [UIImage imageNamed:@"dataconf_back"];
+//        [backBtn setImage:backImg forState:UIControlStateNormal];
+//        [backBtn setImage:[UIImage imageNamed:@"dataconf_back_highlight"] forState:UIControlStateHighlighted];
+//        
+//        backBtn.frame = CGRectMake(0, 12, 40, 40);
+//        [backBtn addTarget:self action:@selector(gobackBtnAction) forControlEvents:UIControlEventTouchUpInside];
+//        [_barView addSubview:backBtn];
         
         UITapGestureRecognizer *tapBar = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
         [_barView addGestureRecognizer:tapBar];
@@ -188,7 +189,7 @@
     if (nil == _titleLabel) {
         _titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 0, 300, 64)];
         _titleLabel.textAlignment = NSTextAlignmentLeft;
-        _titleLabel.text = _confStatus.subject;
+        _titleLabel.text = [ManagerService confService].currentConfBaseInfo.conf_subject;
         _titleLabel.textColor = [UIColor whiteColor];
         _titleLabel.font = [UIFont systemFontOfSize:17];
     }
@@ -199,21 +200,34 @@
 -(void)configBasicBtns {
     self.voiceBtn = [self createButtonByImage:[UIImage imageNamed:@"dataconf_tab_voice"]
                                highlightImage:nil
-                                        title:@"Speaker"
+                                        title:@"Speak"
                                        target:self
                                        action:@selector(voiceBtnPressed:)];
-    [self.voiceBtn setImage:[UIImage imageNamed:@"conf_tab_voice_selected"] forState:UIControlStateSelected];
+//    [self.voiceBtn setImage:[UIImage imageNamed:@"conf_tab_voice_selected"] forState:UIControlStateSelected];
     
     self.endBtn   = [self createButtonByImage:[UIImage imageNamed:@"dataconf_tab_quit"]
                                highlightImage:nil
                                         title:@"Quit"
                                        target:self
                                        action:@selector(endBtnPressed:)];
+    
+    self.muteBtn = [self createButtonByImage:[UIImage imageNamed:@"conf_tab_mute"] highlightImage:nil title:@"Mute" target:self action:@selector(mutebtnPressed:)];
+    
+}
+
+- (void)mutebtnPressed:(id)sender{
+    if([[ManagerService confService] confCtrlMuteAttendee:self.selfConfInfo.number isMute:!self.selfConfInfo.is_mute]){
+    }
 }
 
 - (void)voiceBtnPressed:(id)sender {
     ROUTE_TYPE routeType = [[ManagerService callService] obtainMobileAudioRoute];
     ROUTE_TYPE configType = routeType == ROUTE_LOUDSPEAKER_TYPE ? ROUTE_DEFAULT_TYPE : ROUTE_LOUDSPEAKER_TYPE;
+    if (configType == ROUTE_LOUDSPEAKER_TYPE) {
+        [self.voiceBtn setImage:[UIImage imageNamed:@"conf_tab_voice_selected"] forState:UIControlStateSelected];
+    }else{
+        [self.voiceBtn setImage:[UIImage imageNamed:@"dataconf_tab_voice"] forState:UIControlStateSelected];
+    }
     [[ManagerService callService] configAudioRoute:configType];
 }
 
@@ -271,7 +285,7 @@
                                                        handler:^(UIAlertAction *action)
     {
         
-        if (self.confStatus.media_type == CONF_MEDIATYPE_DATA || self.confStatus.media_type == CONF_MEDIATYPE_VIDEO_DATA)
+        if ([ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_DATA || [ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_VIDEO_DATA)
         {
 //            BOOL isEndDataConf = [[ManagerService dataConfService] closeDataConference];
 //            if (!isEndDataConf) {
@@ -329,7 +343,7 @@
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action)
     {
-        if (weakSelf.confStatus.media_type == CONF_MEDIATYPE_DATA || weakSelf.confStatus.media_type == CONF_MEDIATYPE_VIDEO_DATA)
+        if ([ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_DATA || [ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_VIDEO_DATA)
         {
 //            if (![[ManagerService dataConfService] leaveDataConference]) {
 //                DDLogInfo(@"Quit conference(data) failed.");
@@ -338,7 +352,7 @@
 //            [[ManagerService dataConfService].localCameraInfos removeAllObjects];
         }
         // 挂断通话
-        CallInfo *callInfo = [[ManagerService callService] callInfoWithConfId:weakSelf.confStatus.conf_id];
+        CallInfo *callInfo = [[ManagerService callService] callInfoWithConfId:[ManagerService confService].currentConfBaseInfo.conf_id];
         [[ManagerService callService] closeCall:callInfo.stateInfo.callId];
         if (![[ManagerService confService] confCtrlLeaveConference]) {
             DDLogInfo(@"Quit conference(voice) failed.");
@@ -398,9 +412,9 @@
     
     ConfAttendeeInConf *selfAttendee = nil;
     
-    for (ConfAttendeeInConf *tempAttendee in self.confStatus.participants)
+    for (ConfAttendeeInConf *tempAttendee in [ManagerService confService].haveJoinAttendeeArray)
     {
-        if ([tempAttendee.number isEqualToString:self.selfNumber])
+        if (tempAttendee.isSelf)
         {
             selfAttendee = tempAttendee;
         }
@@ -426,6 +440,12 @@
     [alert dismissViewControllerAnimated:YES completion:nil];
     alert = nil;
 }
+
+
+
+
+
+
 
 /*
 #pragma mark - Navigation

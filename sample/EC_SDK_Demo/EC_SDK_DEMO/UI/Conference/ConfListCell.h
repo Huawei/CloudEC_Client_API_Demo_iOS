@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ECConfInfo.h"
+#import "ConfBaseInfo.h"
 
 @interface ConfListCell : UITableViewCell
 
-@property (nonatomic,strong) ECConfInfo *conf;
+@property (nonatomic,strong) ConfBaseInfo *conf;
 
 @end

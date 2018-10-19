@@ -18,6 +18,8 @@
 
 #import <TUPIOSSDK/eSpaceDBService.h>
 #import "PersonDetailViewController.h"
+#import "NoDisturbViewController.h"
+#import "LoginCenter.h"
 
 #define NEEDREGISTERMAALOGOUT 1 // 是否需要MAA注销
 @interface MeViewController ()
@@ -75,6 +77,10 @@
              }
          });
      }];
+    ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
+    if (userConfig.isAutoLogin) {
+        userConfig.isAutoLogin = NO;
+    }
     [[ECSAppConfig sharedInstance] save];
     [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
 #endif
@@ -187,6 +193,21 @@
     if ([[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
     }
+}
+- (IBAction)pushConfig:(id)sender {
+    
+    NSArray *pushTime = [CommonUtils getUserDefaultValueWithKey:PushTimeEnableRecoud];
+    BOOL timeEnable = NO;
+    NSString *noPushStart = nil;
+    NSString *noPushEnd = nil;
+    if (pushTime != nil) {
+        timeEnable = [pushTime[0] boolValue];
+        noPushStart = pushTime[1];
+        noPushEnd = pushTime[2];
+    }
+
+    NoDisturbViewController *noDisturbView = [[NoDisturbViewController alloc] initWithPushConfig:YES noPushStart:noPushStart noPushEnd:noPushEnd timeEnable:timeEnable];
+    [self.navigationController pushViewController:noDisturbView animated:YES];
 }
 
 /*

@@ -94,69 +94,43 @@
     
 }
 
--(void)setConf:(ECConfInfo *)conf{
+-(void)setConf:(ConfBaseInfo *)conf{
     _conf = conf;
     self.titleLabel.text = conf.conf_subject;
     self.titleLabel.font = [UIFont systemFontOfSize:TITLESIZE-2];
     
-//    NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-//    formatter.dateFormat = @"yyyy/MM/dd HH:mm";
-//    NSString *strStartTime = [formatter stringFromDate:conf.startTime];
     
     NSString *displayName = conf.scheduser_name;
     NSString *displayMaster = @"";
     if ([displayName length] > 0) {
         displayMaster = [NSString stringWithFormat:@"emcee:%@",displayName];
     }
-
+    
     self.detailLabel.text = [NSString stringWithFormat:@"%@    %@",conf.start_time,displayMaster];
     self.detailLabel.font = [UIFont systemFontOfSize:DETAILSIZE-2];
     
     self.backgroundColor = CONFLISTCELL_BGCOLOR;
     
     NSString *iconName = nil;
-//    if (ECSServerEnvironmentEC60 == [ECSAppConfig sharedInstance].serverEnv) {
-        switch (conf.conf_state) {
-            case CONF_E_CONF_STATE_GOING:
-                self.titleLabel.textColor = CONFRUNNING_TITLECOLOR;
-                self.detailLabel.textColor = CONFRUNNING_DETAILCOLOR;
-                iconName = @"bookconf_running";
-                break;
-            case CONF_E_CONF_STATE_SCHEDULE:
-                self.titleLabel.textColor = CONFUNOPEN_TITLECOLOR;
-                self.detailLabel.textColor = CONFUNOPEN_DETAILCOLOR;
-                iconName = @"bookconf_unopen";
-                break;
-            case CONF_E_CONF_STATE_DESTROYED:
-            default:
-                self.titleLabel.textColor = CONFCLOSE_TITLECOLOR;
-                self.detailLabel.textColor = CONFCLOSE_DETAILCOLOR;
-                iconName = @"bookconf_close";
-                break;
-        }
-//    }
-//    else
-//    {
-//        switch ([conf.status integerValue]) {
-//            case ESpaceConfStatusRunning:
-//                self.titleLabel.textColor = CONFRUNNING_TITLECOLOR;
-//                self.detailLabel.textColor = CONFRUNNING_DETAILCOLOR;
-//                iconName = ([conf.confType integerValue] == ESpaceConfTypeNormal ? @"conf_running":@"bookconf_running");
-//                break;
-//            case ESpaceConfStatusUnopen:
-//                self.titleLabel.textColor = CONFUNOPEN_TITLECOLOR;
-//                self.detailLabel.textColor = CONFUNOPEN_DETAILCOLOR;
-//                iconName = @"bookconf_unopen";
-//                break;
-//            case ESpaceConfStatusClose:
-//            default:
-//                self.titleLabel.textColor = CONFCLOSE_TITLECOLOR;
-//                self.detailLabel.textColor = CONFCLOSE_DETAILCOLOR;
-//                iconName = ([conf.confType integerValue] == ESpaceConfTypeNormal ? @"conf_close":@"bookconf_close");
-//                break;
-//        }
-//    }
-
+    switch (conf.conf_state) {
+        case CONF_E_STATE_GOING:
+            self.titleLabel.textColor = CONFRUNNING_TITLECOLOR;
+            self.detailLabel.textColor = CONFRUNNING_DETAILCOLOR;
+            iconName = @"bookconf_running";
+            break;
+        case CONF_E_STATE_SCHEDULE:
+            self.titleLabel.textColor = CONFUNOPEN_TITLECOLOR;
+            self.detailLabel.textColor = CONFUNOPEN_DETAILCOLOR;
+            iconName = @"bookconf_unopen";
+            break;
+        case CONF_E_STATE_DESTROYED:
+        default:
+            self.titleLabel.textColor = CONFCLOSE_TITLECOLOR;
+            self.detailLabel.textColor = CONFCLOSE_DETAILCOLOR;
+            iconName = @"bookconf_close";
+            break;
+    }
+    
     if ([iconName length] > 0) {
         self.logo.image = [UIImage imageNamed:iconName];
     }

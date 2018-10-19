@@ -110,6 +110,16 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     configResult = tsdk_set_config_param(TSDK_E_CONFIG_APP_FILE_PATH_INFO, &app_file_path);
     DDLogInfo(@"config app file path info result: %d", configResult);
     
+    NSString *useIDOConfCtrl = [CommonUtils getUserDefaultValueWithKey:USE_IDO_CONFCTRL];
+    if (useIDOConfCtrl == nil) {
+        [CommonUtils userDefaultSaveValue:@"1" forKey:USE_IDO_CONFCTRL];
+        useIDOConfCtrl = @"1";
+    }
+    TSDK_S_CONF_CTRL_PARAM confctrlParam;
+    memset(&confctrlParam, 0, sizeof(TSDK_S_CONF_CTRL_PARAM));
+    confctrlParam.protocol = [useIDOConfCtrl boolValue] ? TSDK_E_CONF_CTRL_PROTOCOL_IDO : TSDK_E_CONF_CTRL_PROTOCOL_REST;
+    configResult = tsdk_set_config_param(TSDK_E_CONFIG_CONF_CTRL_PARAM, &confctrlParam);
+    DDLogInfo(@"config param result: %d", configResult);
     
     TSDK_S_APP_INFO_PARAM app_info;
     memset(&app_info, 0, sizeof(TSDK_S_APP_INFO_PARAM));
@@ -117,7 +127,9 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     
 //    strcpy(app_info.product_name, "Huawei TE Mobile");
 //    strcpy(app_info.product_name, "SoftClient on Mobile");
-    strcpy(app_info.product_name, "WeLink-Mobile");
+//    strcpy(app_info.product_name, "WeLink-Mobile");
+//    strcpy(app_info.product_name, "eSpace Mobile");
+    strcpy(app_info.product_name, "eSDK-Mobile");
     
     app_info.support_audio_and_video_call = TSDK_TRUE;
     app_info.support_ctd = TSDK_TRUE;

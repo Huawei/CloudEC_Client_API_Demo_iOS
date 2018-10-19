@@ -16,18 +16,6 @@
 #import "SettingViewController.h"
 
 NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
-NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
-NSString *const USER_PASSWORD       = @"USER_PASSWORD";
-NSString *const USER_PROXYSERVER_ADDRESS = @"USER_PROXYSERVER_ADDRESS";
-NSString *const USER_REGSERVER_ADDRESS  = @"USER_REGSERVER_ADDRESS";
-NSString *const USER_SERVER_PORT        = @"USER_SERVER_PORT";
-
-NSString *const USER_SIP_ACCOUNT        = @"USER_SIP_ACCOUNT";
-NSString *const USER_SIP_PASSWORD       = @"USER_SIP_PASSWORD";
-NSString *const USER_SIP_PROXYSERVER_ADDRESS = @"USER_SIP_PROXYSERVER_ADDRESS";
-NSString *const USER_SIP_REGSERVER_ADDRESS  = @"USER_SIP_REGSERVER_ADDRESS";
-NSString *const USER_SIP_SERVER_PORT        = @"USER_SIP_SERVER_PORT";
-
 
 @interface LoginViewController ()<LoginServiceDelegate>
 {
@@ -43,6 +31,12 @@ NSString *const USER_SIP_SERVER_PORT        = @"USER_SIP_SERVER_PORT";
 
 @implementation LoginViewController
 
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -55,6 +49,21 @@ NSString *const USER_SIP_SERVER_PORT        = @"USER_SIP_SERVER_PORT";
     
     _versionLabel.text = [NSString stringWithFormat:@"Version: %@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]];
     [self.navigationController.navigationBar setHidden:YES];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginSipUnregistered) name:LOGIN_UNREGISTERED_RESULT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginAuthFailed) name:LOGIN_AUTH_FAILED object:nil];
+}
+
+- (void)loginSipUnregistered
+{
+    [self showMessage:@"lgoin faild! sip unregistered!"];
+    [self hiddenActivityIndicator:YES];
+}
+
+- (void)loginAuthFailed
+{
+    [self showMessage:@"lgoin faild! auth failed!"];
+    [self hiddenActivityIndicator:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -115,8 +124,7 @@ NSString *const USER_SIP_SERVER_PORT        = @"USER_SIP_SERVER_PORT";
             UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
             ViewController *baseViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"ViewController"];
             [UIApplication sharedApplication].delegate.window.rootViewController = baseViewController;
-            //[self setCancelIPTService];
-//            [self configConferenceService];
+
         });
     }];
 }
@@ -176,5 +184,7 @@ NSString *const USER_SIP_SERVER_PORT        = @"USER_SIP_SERVER_PORT";
 -(void)dealloc
 {
     [LoginViewController cancelPreviousPerformRequestsWithTarget:self selector:@selector(loginTimeOut) object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
 @end

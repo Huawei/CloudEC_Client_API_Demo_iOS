@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ManagerService.h"
-#import "ECConfInfo.h"
+
 @interface ConfDetailViewController : UITableViewController
-@property (nonatomic, strong)ECConfInfo *confInfo;
+@property (nonatomic, strong) NSString *confId;
 @end

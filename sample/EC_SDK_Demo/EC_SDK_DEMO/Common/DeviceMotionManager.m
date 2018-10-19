@@ -7,12 +7,12 @@
 //
 
 #import "DeviceMotionManager.h"
-#import <CoreMotion/CoreMotion.h>
+
 #import "Defines.h"
 
 @interface DeviceMotionManager ()
-@property (nonatomic, strong) CMMotionManager *motionManager;
-@property (nonatomic, assign) UIDeviceOrientation lastOrientation;
+//@property (nonatomic, strong) CMMotionManager *motionManager;
+//@property (nonatomic, assign) UIDeviceOrientation lastOrientation;
 @end
 
 static DeviceMotionManager *g_deviceManager = nil;
@@ -172,12 +172,12 @@ static DeviceMotionManager *g_deviceManager = nil;
                 if (index == CameraIndexFront)
                 {
                     *cameraRotation = 0;
-                    *displayRotation = 1;
+                    *displayRotation = 0;
                 }
                 else
                 {
                     *cameraRotation = 2;
-                    *displayRotation = 1;
+                    *displayRotation = 0;
                 }
             }
             else
@@ -201,12 +201,12 @@ static DeviceMotionManager *g_deviceManager = nil;
                 if (index == CameraIndexFront)
                 {
                     *cameraRotation = 2;
-                    *displayRotation = 3;
+                    *displayRotation = 0;
                 }
                 else
                 {
                     *cameraRotation = 0;
-                    *displayRotation = 3;
+                    *displayRotation = 0;
                 }
             }
             else
@@ -230,7 +230,7 @@ static DeviceMotionManager *g_deviceManager = nil;
             {
                 if (index == CameraIndexFront)
                 {
-                    *cameraRotation = 1;
+                    *cameraRotation = 0;
                     *displayRotation = 2;
                 }
                 else

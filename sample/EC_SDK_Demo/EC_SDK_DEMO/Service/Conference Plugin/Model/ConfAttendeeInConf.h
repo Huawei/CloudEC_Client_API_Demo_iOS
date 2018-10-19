@@ -25,6 +25,7 @@
 @property (nonatomic, assign) DATACONF_USER_ROLE_TYPE dataRole; //数据会议角色
 @property (nonatomic, assign) BOOL isJoinDataconf; //是否加入数据会议
 @property (nonatomic, assign) BOOL isPresent; //是否是主讲人
+@property (nonatomic, assign) BOOL isSelf; //是否是自己
 
 @end
 

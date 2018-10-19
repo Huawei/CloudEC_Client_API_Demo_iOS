@@ -571,6 +571,12 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
  */
 - (BOOL)stopTupBfcpCapabilityWithCallId:(unsigned int)callid;
 
+/**
+ * This method is used to config ip call
+ * 设置ip呼叫
+ */
+-(BOOL)ipCallConfig;
+
 @end
 
 

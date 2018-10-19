@@ -19,6 +19,7 @@
 #import "CallView.h"
 #import "CommonUtils.h"
 #import "CallTakingViewController.h"
+#import "AppDelegate.h"
 
 @interface CallWindowController ()<CallServiceDelegate,CallViewDelegate,DialSecondPlateDelegate,CallEndViewDelegate>
 @property (nonatomic, strong)UIWindow *callWindow;
@@ -136,6 +137,11 @@ static CallWindowController *g_windowCtrl = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self removeCallView:_currentTupCallInfo.stateInfo.callId];
         [self.callWindow setHidden:YES];
+        
+//        if ([ManagerService confService].isFirstJumpToRunningView) {
+//            [ManagerService confService].isFirstJumpToRunningView = NO;
+            [AppDelegate goConference];
+//        }
     });
 }
 
@@ -534,7 +540,8 @@ static CallWindowController *g_windowCtrl = nil;
         
         if (isVideo)
         {
-            callView.showOrient = ((1 == _currentTupCallInfo.orientType) ? UIInterfaceOrientationPortrait : UIInterfaceOrientationLandscapeRight);
+//            callView.showOrient = ((1 == _currentTupCallInfo.orientType) ? UIInterfaceOrientationPortrait : UIInterfaceOrientationLandscapeRight);
+            callView.showOrient = UIInterfaceOrientationPortrait;
             [self addGLViewInCallView:callView];
             [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
             _talkingCtrl.orientation = callView.showOrient;

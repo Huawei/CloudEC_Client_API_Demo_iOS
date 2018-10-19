@@ -21,6 +21,7 @@
 #import "ContactGroupListViewController.h"
 #import "ChatViewController.h"
 #import "AssistantViewController.h"
+#import "Defines.h"
 
 @interface ContactChatViewController ()<UISearchBarDelegate, UISearchControllerDelegate, ContactSearchDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate, SelectedContactGroupDelegate>
 
@@ -36,6 +37,8 @@
 @property (nonatomic, strong) NSFetchedResultsController *chatRecentFetchCtrl;  // current chat recent fetchreult controller
 @property (nonatomic, strong) NSFetchedResultsController *contactFetchCtrl;     // current contact fetchresult controller
 @property (nonatomic, strong) EmployeeCategoryEntity* categoryFilter;           // categroy entity
+
+@property (nonatomic, strong) UIActivityIndicatorView *chatViewLoginingActivityIndicator;
 
 @end
 
@@ -63,26 +66,66 @@
     self.searchController.delegate = self;
     self.definesPresentationContext = YES;
     
-    self.searchMemoryContext = [[eSpaceDBService sharedInstance].localDataManager memoryObjectContext];
-    
     [self.tableView registerNib:[UINib nibWithNibName:@"GroupCell" bundle:nil] forCellReuseIdentifier:@"GroupCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"ContactListCell" bundle:nil] forCellReuseIdentifier:@"ContactListCell"];
     [self.tableView registerNib:[UINib nibWithNibName:@"ChatSessionCell" bundle:nil] forCellReuseIdentifier:@"ChatSessionCell"];
     
-    [self loadDataSource];
-    [self.tableView reloadData];
+    if ([ECSAppConfig sharedInstance].currentUser.isAutoLogin) {
+        [self autoLoginAction];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(maaLoginSuccessedAction)
+                                                 name:MAA_LOGIN_SUCCESSED
+                                               object:nil];
+    
+//    [self loadDataSource];
+//    [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 }
 
+-(UIActivityIndicatorView *)chatViewLoginingActivityIndicator
+{
+    if (_chatViewLoginingActivityIndicator == nil) {
+        _chatViewLoginingActivityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 30, 30)];
+    }
+    return _chatViewLoginingActivityIndicator;
+}
+
+- (void)autoLoginAction
+{
+//    dispatch_sync(dispatch_get_main_queue(), ^{
+    
+        UIBarButtonItem *btn = [[UIBarButtonItem alloc]initWithCustomView:self.chatViewLoginingActivityIndicator];
+        
+        self.navigationItem.rightBarButtonItem = btn;
+        
+        self.chatViewLoginingActivityIndicator.hidden = NO;
+        [self.chatViewLoginingActivityIndicator startAnimating];
+//    });
+}
+
+- (void)maaLoginSuccessedAction
+{
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self loadDataSource];
+        [self.tableView reloadData];
+        self.chatViewLoginingActivityIndicator.hidden = YES;
+        [self.chatViewLoginingActivityIndicator stopAnimating];
+    });
+    
+}
 
 /**
  This method is used to load current chat and contact data source
  */
 - (void)loadDataSource
 {
+    self.searchMemoryContext = [[eSpaceDBService sharedInstance].localDataManager memoryObjectContext];
+    
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSPredicate* contentPredicate = [NSPredicate predicateWithFormat:@"parent=%@ AND priority >= 0", [eSpaceDBService sharedInstance].localDataManager.rootChatSessionGroup];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"ChatSessionEntity" inManagedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext]];

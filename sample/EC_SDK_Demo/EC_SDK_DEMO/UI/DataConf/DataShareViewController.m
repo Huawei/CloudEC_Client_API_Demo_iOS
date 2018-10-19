@@ -12,6 +12,8 @@
 #import "DataShareViewController.h"
 #import "VideoShareViewController.h"
 #import "ConfChatViewController.h"
+#include "ConfBaseInfo.h"
+#import "ConfListViewController.h"
 
 #define MAXSCALE 4.0
 #define MINSCALE 1.0
@@ -86,9 +88,9 @@
 
 @implementation DataShareViewController
 
-- (instancetype)initWithConfInfo:(ConfStatus *)confInfo
+- (instancetype)init
 {
-    self = [super initWithConfInfo:confInfo];
+    self = [super init];
     if (self) {
         
     }
@@ -103,7 +105,15 @@
         {
             dispatch_async(dispatch_get_main_queue(), ^{
                 DDLogInfo(@"UILOG: DATACONF_RECEIVE_SHARE_DATA");
-                [self showShareView:resultDictionary];
+                NSData *shareImage = resultDictionary[DATACONF_SHARE_DATA_KEY];
+                UIImage *image = [[UIImage alloc] initWithData:shareImage];
+                if (image == nil)
+                {
+                    DDLogInfo(@"share image from data fail!");
+                    return;
+                }
+                
+                [self showShareView:image];
             });
             break;
         }
@@ -137,8 +147,7 @@
     }
 }
 
--(void)showShareView:(NSDictionary *)shareDataDic {
-    UIImage *shareImage = shareDataDic[DATACONF_SHARE_DATA_KEY];
+-(void)showShareView:(UIImage *)shareImage {
     self.zoomViewImageShare.defaultView.hidden = YES;
     self.shareImageView.image = shareImage;
 }
@@ -203,15 +212,44 @@
         [self.barView addSubview:self.videoShareBtn];
     }
     
+    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *backImg = [UIImage imageNamed:@"dataconf_back"];
+    [backBtn setImage:backImg forState:UIControlStateNormal];
+    [backBtn setImage:[UIImage imageNamed:@"dataconf_back_highlight"] forState:UIControlStateHighlighted];
+    
+    backBtn.frame = CGRectMake(0, 12, 40, 40);
+    [backBtn addTarget:self action:@selector(gotoVideoShareViewControllerBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
+    [self.barView addSubview:backBtn];
+    
     [self.barView addSubview:self.chatBtn];
     
     [self configBottomViewBtns];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+    
+}
+
+- (void)quitToListViewCtrl
+{
+    
+    UIViewController *list = nil;
+    for (UIViewController *vc in self.navigationController.viewControllers) {
+        if ([vc isKindOfClass:[ConfListViewController class]]) {
+            list = vc;
+            break;
+        }
+    }
+    
+    if (list) {
+        [self.navigationController popToViewController:list animated:YES];
+    }else{
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (BOOL)isNeedAddVideoBtn {
     
-    EC_CONF_MEDIATYPE confType = self.confStatus.media_type;
+    EC_CONF_MEDIATYPE confType = [ManagerService confService].currentConfBaseInfo.media_type;
     BOOL isVideoConf = (confType == CONF_MEDIATYPE_VIDEO_DATA);
     BOOL isVideoDataConf = (confType == CONF_MEDIATYPE_VIDEO_DATA);
     return isVideoConf || isVideoDataConf;
@@ -222,9 +260,10 @@
     
     self.voiceBtn.frame = CGRectMake(width/2-110, 0, 100, 71);
     self.endBtn.frame = CGRectMake(width/2+10, 0, 100, 71);
-    
+    self.muteBtn.frame = CGRectMake(width/2+130, 0, 100, 71);
     [self.bottomView addSubview:self.voiceBtn];
     [self.bottomView addSubview:self.endBtn];
+    [self.bottomView addSubview:self.muteBtn];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -318,7 +357,8 @@
     if ([ary containsObject:self]) {
         [ary removeObject:self];
     }
-    VideoShareViewController *videoShareCtrl = [[VideoShareViewController alloc] initWithConfInfo:self.confStatus];
+    VideoShareViewController *videoShareCtrl = [[VideoShareViewController alloc] init];
+    videoShareCtrl.hidesBottomBarWhenPushed = YES;
     [ary addObject:videoShareCtrl];
     
     [self.navigationController setViewControllers:ary animated:NO];
@@ -327,13 +367,13 @@
 - (void)showChatView
 {
     ConfChatViewController *chatCtrl = [[ConfChatViewController alloc] initWithNibName:@"ConfChatViewController" bundle:nil];
-    chatCtrl.confAttendees = self.confStatus.participants;
+    chatCtrl.confAttendees = [ManagerService confService].haveJoinAttendeeArray;
     chatCtrl.selfInfo = self.selfConfInfo;
     [self.navigationController pushViewController:chatCtrl animated:YES];
 }
 
 - (void)dealloc {
-    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 /*

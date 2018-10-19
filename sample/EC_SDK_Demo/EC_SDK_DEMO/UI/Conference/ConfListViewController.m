@@ -7,18 +7,13 @@
 //
 
 #import "ConfListViewController.h"
-//#import "ESpaceUtile.h"
 #import "ConfListCell.h"
-//#import "ConfRunningViewController.h"
 #import "CreateConfViewController.h"
-//#import "ConfDetailViewController.h"
 #import "ManagerService.h"
-#import "ECConfInfo.h"
-//#import "UIView+HUD.h"
-//#import "UIControl+Event.h"
 #import "EmptyDataView.h"
 #import "ConfDetailViewController.h"
 #import "CommonUtils.h"
+#import "ConfBaseInfo.h"
 
 typedef NS_ENUM(NSInteger, ESpaceConfListSection){
     ESpaceConfListSection_Running   = 0,         //正在进行的会议section
@@ -53,7 +48,12 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
     [super viewWillAppear:animated];
 
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
+    
+    if (UIDeviceOrientationPortrait != [[UIDevice currentDevice] orientation])
+    {
+        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationPortrait] forKey:@"orientation"];
+    }
+//    [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
     
     [ManagerService confService].delegate = self;
     
@@ -159,10 +159,6 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
         NSString *account = accountTxf1.text;
         NSString *password = accountTxf2.text;
         if (confId.length > 0 && account.length > 0 && password.length > 0) {
-            ECConfInfo *confInfo = [[ECConfInfo alloc]init];
-            confInfo.general_pwd = password;
-            confInfo.conf_id = confId;
-            confInfo.access_number = account;
             [[ManagerService confService] joinConferenceWithConfId:confId AccessNumber:account confPassWord:password joinNumber:nil isVideoJoin:YES];
         }
         
@@ -189,15 +185,15 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
     [_runningConfAry removeAllObjects];
     [_closeConfAry removeAllObjects];
     [_unopenConfAry removeAllObjects];
-    for (ECConfInfo *conf in listArray) {
+    for (ConfBaseInfo *conf in listArray) {
         switch (conf.conf_state) {
-            case CONF_E_CONF_STATE_GOING:
+            case CONF_E_STATE_GOING:
                 [_runningConfAry addObject:conf];
                 break;
-            case CONF_E_CONF_STATE_SCHEDULE:
+            case CONF_E_STATE_SCHEDULE:
                 [_unopenConfAry addObject:conf];
                 break;
-            case CONF_E_CONF_STATE_DESTROYED:
+            case CONF_E_STATE_DESTROYED:
                 [_closeConfAry addObject:conf];
                 break;
             default:
@@ -207,8 +203,8 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 }
 
 
--(ECConfInfo*)confAtIndexPath:(NSIndexPath*)indexPath{
-    ECConfInfo *conf = nil;
+-(ConfBaseInfo*)confAtIndexPath:(NSIndexPath*)indexPath{
+    ConfBaseInfo *conf = nil;
     switch (indexPath.section) {
         case ESpaceConfListSection_Running:
             if ([_runningConfAry count] > indexPath.row) {
@@ -281,7 +277,7 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
             cell = [[ConfListCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                              reuseIdentifier:@"confListCell"];
         }
-        ECConfInfo  *conf = [self confAtIndexPath:indexPath];
+        ConfBaseInfo  *conf = [self confAtIndexPath:indexPath];
         cell.conf = conf;
         return cell;
     }
@@ -290,8 +286,8 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    ECConfInfo  *conf = [self confAtIndexPath:indexPath];
-    if (conf.conf_state == CONF_E_CONF_STATE_DESTROYED) {
+    ConfBaseInfo  *conf = [self confAtIndexPath:indexPath];
+    if (conf.conf_state == CONF_E_STATE_DESTROYED) {
         return YES;
     }
     return NO;
@@ -304,7 +300,7 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
             return;
         }
         if ([self.closeConfAry count] > indexPath.row) {
-            ECConfInfo* conf = [self.closeConfAry objectAtIndex:indexPath.row];
+            ConfBaseInfo* conf = [self.closeConfAry objectAtIndex:indexPath.row];
             if ([_confListAll containsObject:conf]) {
                 [_confListAll removeObject:conf];
             }
@@ -321,7 +317,7 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (tableView == self.confListTableView){
-        ECConfInfo* confInfo = [self confAtIndexPath:indexPath];
+        ConfBaseInfo* confInfo = [self confAtIndexPath:indexPath];
         [self performSegueWithIdentifier:@"confDetail" sender:confInfo];
     }
 }
@@ -391,7 +387,7 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     ConfDetailViewController *confDetailCtrl = segue.destinationViewController;
-    confDetailCtrl.confInfo = sender;
+    confDetailCtrl.confId =((ConfBaseInfo *)sender).conf_id;
 }
 
 - (void)showEmptyDataViewWithOption:(EmptyDataOption)option hiddenActionBtn:(BOOL)yesOrNo{

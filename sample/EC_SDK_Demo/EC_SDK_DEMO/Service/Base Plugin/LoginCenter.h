@@ -61,7 +61,21 @@ typedef NS_ENUM(NSInteger, CallSipStatus)
  */
 - (BOOL)isSTGTunnel;
 
+///**
+// * This method is used to set push service
+// * 设置PUSH服务
+// */
+//- (void)configUportalAPNSEnable:(BOOL)enable noPushStartTime:(NSString*)strartTime noPushEndTime:(NSString*)endTime enableNoPushByTime:(BOOL)enableNoPushByTime;
+
+/**设置PUSH服务
+ * This method is used to set configuration information
+ * 设置配置信息
+ */
+-(void)configSipRelevantParam;
+
 @end
 
 extern NSString * const UPortalTokenKey;
 extern NSString * const CallRegisterStatusKey;
+extern NSString * const PushTimeEnableRecoud;
+

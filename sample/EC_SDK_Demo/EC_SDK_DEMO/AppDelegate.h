@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-@class ConfStatus;
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
@@ -16,7 +15,7 @@
  *This method is used to switch to the conf running page
  *切换到正在召开的会议页面
  */
-+(void)goConference:(ConfStatus *)confStatus;
++(void)goConference;
 
 @end
 

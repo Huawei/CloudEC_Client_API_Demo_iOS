@@ -9,6 +9,7 @@
 #import "LocalNotificationCenter.h"
 #import <TUPIMSDK/TUPIMSDK.h>
 #import <TUPIOSSDK/TUPIOSSDK.h>
+#import "CallService.h"
 
 static LocalNotificationCenter * g_notificationCenter = nil;
 
@@ -30,12 +31,13 @@ static LocalNotificationCenter * g_notificationCenter = nil;
 
 - (void)start
 {
-    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge|UIUserNotificationTypeAlert|UIUserNotificationTypeSound) categories:nil];
-    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
+//    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge|UIUserNotificationTypeAlert|UIUserNotificationTypeSound) categories:nil];
+//    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+//    [[UIApplication sharedApplication] registerForRemoteNotifications];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onReceiveNewMessage:) name:TUP_RECEIVE_SINGLE_MESSAGE_NOTIFY object:nil];//person chatMessage notification
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onReceiveNewMessage:) name:TUP_RECEIVE_GROUP_MESSAGE_NOTIFY object:nil];//group chatMessage notification
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onReceiveNewCall:) name:TSDK_COMING_CALL_NOTIFY object:nil];//coming call notification
 }
 
 - (void)onReceiveNewMessage:(NSNotification *)notification
@@ -60,6 +62,39 @@ static LocalNotificationCenter * g_notificationCenter = nil;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber += 1;
 
+}
+
+- (void)onReceiveNewCall:(NSNotification *)notification
+{
+    CallInfo *callInfo = (CallInfo *)notification.object;
+    
+    if (nil == callInfo)
+    {
+        DDLogWarn(@"nil calldata for the new conf invite message!");
+        return;
+    }
+    __block NSString *tipMsg = @"%@的来电";
+    if (CALL_VIDEO == callInfo.stateInfo.callType)
+    {
+        tipMsg = @"%@的视频来电";
+    }
+    
+    if (nil != callInfo.stateInfo)
+    {
+        NSString *callName = callInfo.stateInfo.callName;
+        if (callName.length == 0 || callName == nil) {
+            callName = callInfo.stateInfo.callNum;
+        }
+        tipMsg = [NSString stringWithFormat:tipMsg, callName];
+
+    }
+    
+    
+    UILocalNotification *localNTF = [[UILocalNotification alloc] init];
+    localNTF.alertBody = tipMsg;
+    localNTF.fireDate = [[NSDate date] dateByAddingTimeInterval:0.2];
+    
+    [[UIApplication sharedApplication] scheduleLocalNotification:localNTF];
 }
 
 /**

@@ -20,6 +20,12 @@
 
 #define CALL_TYPE_CONFIG    @"CALL_TYPE_CONFIG"
 
+typedef enum
+{
+    CALL_TYPE_VOIP,
+    CALL_TYPE_CTD
+}CURRENT_CALL_TYPE;
+
 @interface CallViewController ()
 
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *callingActivityIndicator;
@@ -54,10 +60,10 @@
 {
     NSNumber *callType = [CommonUtils getUserDefaultValueWithKey:CALL_TYPE_CONFIG];
     switch (callType.integerValue) {
-        case 0:
+        case CALL_TYPE_VOIP:
             _callTypeBtn.title = @"Setting(VoIP)";
             break;
-        case 1:
+        case CALL_TYPE_CTD:
             _callTypeBtn.title = @"Setting(CTD)";
             break;
         default:
@@ -77,10 +83,10 @@
 
     NSNumber *callType = [CommonUtils getUserDefaultValueWithKey:CALL_TYPE_CONFIG];
     switch (callType.integerValue) {
-        case 0:
+        case CALL_TYPE_VOIP:
             [self startCallWithType:CALL_AUDIO isCTD:NO];
             break;
-        case 1:
+        case CALL_TYPE_CTD:
             [self startCallWithType:CALL_AUDIO isCTD:YES];
             break;
         default:

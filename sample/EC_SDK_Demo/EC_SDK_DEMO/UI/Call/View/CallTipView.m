@@ -10,7 +10,6 @@
 
 @interface CallTipView()
 
-
 @end
 
 @implementation CallTipView

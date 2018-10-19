@@ -7,9 +7,6 @@
 //
 
 #import "AttendeeListCell.h"
-//#import "AttendeeEntity+ServiceObject.h"
-//#import "EmployeeEntity+ServiceObject.h"
-//#import "ConferenceService.h"
 #import "ManagerService.h"
 #import "ConfAttendeeInConf.h"
 
@@ -56,7 +53,7 @@ dispatch_async(dispatch_get_main_queue(), block);\
     if ([ManagerService confService].selfJoinNumber) {
         selfNumber = [ManagerService confService].selfJoinNumber;
     }
-    return [selfNumber isEqualToString:self.attendee.number];
+    return [selfNumber isEqualToString:self.attendee.number] || self.attendee.isSelf;
 }
 
 - (void)updateMediaStatus

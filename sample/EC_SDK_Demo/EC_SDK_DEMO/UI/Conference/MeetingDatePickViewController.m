@@ -49,6 +49,16 @@
 
 #define FONTSIZE_TBV_GROUP_CONTENT 15
 
+typedef enum {
+    WEEK_DAY_SUNDAY = 1,
+    WEEK_DAY_MONDAY,
+    WEEK_DAY_TUESDAY,
+    WEEK_DAY_WEDNESDAY,
+    WEEK_DAY_THURSDAY,
+    WEEK_DAY_FRIDAY,
+    WEEK_DAY_SATURDAY
+}WEEK_DAY_TYPE;
+
 @interface MeetingDatePickViewController ()
 
 @property (nonatomic,strong) UITableView        *timeChooseTableView;
@@ -503,25 +513,25 @@
 - (NSString *)weekStringtTrans:(NSInteger)weeks {
 	NSString *weekString = @"";
 	switch (weeks) {
-		case 1:
+		case WEEK_DAY_SUNDAY:
 			weekString = @"Sunday";
 			break;
-		case 2:
+		case WEEK_DAY_MONDAY:
 			weekString = @"Monday";
 			break;
-		case 3:
+		case WEEK_DAY_TUESDAY:
 			weekString =  @"Tuesday";
 			break;
-		case 4:
+		case WEEK_DAY_WEDNESDAY:
 			weekString = @"Wednesday";
 			break;
-		case 5:
+		case WEEK_DAY_THURSDAY:
 			weekString = @"Thursday";
 			break;
-		case 6:
+		case WEEK_DAY_FRIDAY:
 			weekString = @"Friday";
 			break;
-		case 7:
+		case WEEK_DAY_SATURDAY:
 			weekString = @"Saturday";
 			break;
 		default:

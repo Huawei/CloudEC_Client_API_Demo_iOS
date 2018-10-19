@@ -11,6 +11,7 @@
 #import "ChatMsg.h"
 #import "CommonUtils.h"
 #import "ConfAttendeeInConf.h"
+#import "ConfListViewController.h"
 
 @interface ConfChatViewController ()<UITextFieldDelegate,DataConferenceChatMessageDelegate>
 @property (nonatomic,weak)IBOutlet UITextField *chatTextField;
@@ -38,6 +39,26 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillChangeFrameNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWilHide:) name:UIKeyboardWillHideNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+}
+
+- (void)quitToListViewCtrl
+{
+    
+    UIViewController *list = nil;
+    for (UIViewController *vc in self.navigationController.viewControllers) {
+        if ([vc isKindOfClass:[ConfListViewController class]]) {
+            list = vc;
+            break;
+        }
+    }
+    
+    if (list) {
+        [self.navigationController popToViewController:list animated:YES];
+    }else{
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (void)dealloc

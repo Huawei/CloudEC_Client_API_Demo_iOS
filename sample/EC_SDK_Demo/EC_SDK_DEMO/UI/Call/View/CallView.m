@@ -144,6 +144,11 @@
 
 - (IBAction)dialNumberButtonAction:(id)sender
 {
+    if ([DialSecondPlate shareInstance].isShow)
+    {
+        [[DialSecondPlate shareInstance] hideView];
+        return;
+    }
     [self respondsDelegateWithType:DIAL_NUMBER_BUTTON];
 }
 

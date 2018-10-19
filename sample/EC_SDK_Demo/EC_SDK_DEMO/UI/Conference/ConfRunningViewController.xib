@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16G1036" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,10 +17,13 @@
                 <outlet property="keyPadBtn" destination="B8x-91-IJ7" id="NWB-ce-xhY"/>
                 <outlet property="lockConfBtn" destination="7lZ-j5-wXG" id="G8R-ob-VOY"/>
                 <outlet property="lockConfLabel" destination="OB0-92-PUY" id="wMx-LN-TrA"/>
+                <outlet property="muteAttendeeLabel" destination="tSP-l8-8hF" id="x6L-X1-iVf"/>
                 <outlet property="muteBtn" destination="tSP-l8-8hF" id="MBB-iB-Jsu"/>
                 <outlet property="muteallBtn" destination="WoE-4b-JYs" id="hsc-ur-7Xe"/>
                 <outlet property="raiseHand" destination="xof-tB-FhM" id="c26-DM-yo1"/>
+                <outlet property="raiseHandView" destination="r97-Rp-MdM" id="vc6-FY-Mor"/>
                 <outlet property="requestChairBtn" destination="rrI-Cw-zwu" id="ZVS-kM-dq7"/>
+                <outlet property="requestChairLabel" destination="CPp-qr-CR0" id="fC8-4W-7rs"/>
                 <outlet property="speakerBtn" destination="fbx-lW-7mE" id="Koi-ta-Lqf"/>
                 <outlet property="unmuteallBtn" destination="jzZ-As-pd9" id="O3o-WX-TmN"/>
                 <outlet property="view" destination="iN0-l3-epB" id="TTv-6v-mFL"/>
@@ -67,7 +70,6 @@
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tSP-l8-8hF">
                                     <rect key="frame" x="0.0" y="0.0" width="45" height="45"/>
                                     <state key="normal" image="conf_tab_mute"/>
-                                    <state key="selected" image="conf_tab_mute_selected"/>
                                     <connections>
                                         <action selector="muteSelf:" destination="-1" eventType="touchUpInside" id="kY9-Ef-9eJ"/>
                                     </connections>
@@ -436,7 +438,6 @@
         <image name="conf_tab_dial" width="45" height="45"/>
         <image name="conf_tab_handup_normal" width="45" height="45"/>
         <image name="conf_tab_mute" width="45" height="45"/>
-        <image name="conf_tab_mute_selected" width="45" height="45"/>
         <image name="conf_tab_muteall" width="45" height="45"/>
         <image name="conf_tab_request_chairman_normal" width="45" height="45"/>
         <image name="conf_tab_upgrade" width="45" height="45"/>

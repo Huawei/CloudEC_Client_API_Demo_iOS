@@ -7,10 +7,14 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <CoreMotion/CoreMotion.h>
 
 #define ESPACE_DEVICE_ORIENTATION_CHANGED   @"#define ESPACE_DEVICE_ORIENTATION_CHANGED"
 
 @interface DeviceMotionManager : NSObject
+
+@property (nonatomic, assign) UIDeviceOrientation lastOrientation;
+@property (nonatomic, strong) CMMotionManager *motionManager;
 
 + (instancetype)sharedInstance;
 

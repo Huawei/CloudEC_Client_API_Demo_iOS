@@ -9,11 +9,10 @@
 #import "ConfDetailViewController.h"
 #import "ManagerService.h"
 #import "LoginInfo.h"
-#import "ECCurrentConfInfo.h"
-#import "ConfAttendee.h"
 #import "CommonUtils.h"
 #import "ConfRunningViewController.h"
 #import "AppDelegate.h"
+#import "ConfBaseInfo.h"
 
 @interface ConfDetailViewController ()<ConferenceServiceDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *idLabel;
@@ -38,7 +37,7 @@
 {
     [super viewWillAppear:animated];
     [ManagerService confService].delegate = self;
-    BOOL result = [[ManagerService confService] obtainConferenceDetailInfoWithConfId:_confInfo.conf_id Page:1 pageSize:10];
+    BOOL result = [[ManagerService confService] obtainConferenceDetailInfoWithConfId:_confId Page:1 pageSize:10];
     if (!result)
     {
         [self dismissViewControllerAnimated:YES completion:nil];
@@ -67,18 +66,19 @@
             [self dismissViewControllerAnimated:YES completion:nil];
             return;
         }
-        ECCurrentConfInfo *currentConfInfo = resultDictionary[ECCONF_CURRENTCONF_DETAIL_KEY];
-        _confInfo = currentConfInfo.confDetailInfo;
-        _idLabel.text = _confInfo.conf_id;
-        _subjectLabel.text = _confInfo.conf_subject;
-        _accessNumberLabel.text = _confInfo.access_number;
-        _startTimeLabel.text = _confInfo.start_time;
-        _endTimeLabel.text = _confInfo.end_time;
-        _chairmanPwdLabel.text = _confInfo.chairman_pwd;
-        _generalPwdLabel.text = _confInfo.general_pwd;
-        _scheduserNameLabel.text = _confInfo.scheduser_name;
-        _scheduserNumberLabel.text = _confInfo.scheduser_number;
-        switch (_confInfo.media_type)
+        
+        ConfBaseInfo *baseInfo = [ManagerService confService].currentConfBaseInfo;
+        _idLabel.text = baseInfo.conf_id;
+        _subjectLabel.text = baseInfo.conf_subject;
+        _accessNumberLabel.text = baseInfo.access_number;
+        _startTimeLabel.text = baseInfo.start_time;
+        _endTimeLabel.text = baseInfo.end_time;
+        _chairmanPwdLabel.text = baseInfo.chairman_pwd;
+        _generalPwdLabel.text = baseInfo.general_pwd;
+        _scheduserNameLabel.text = baseInfo.scheduser_name;
+        _scheduserNumberLabel.text = baseInfo.scheduser_number;
+        
+        switch (baseInfo.media_type)
         {
             case CONF_MEDIATYPE_VOICE:
                 _mediaType.text = @"Voice conference";
@@ -95,18 +95,18 @@
             default:
                 break;
         }
-        switch (_confInfo.conf_state)
+        switch (baseInfo.conf_state)
         {
-            case CONF_E_CONF_STATE_SCHEDULE:
+            case CONF_E_STATE_SCHEDULE:
                 _confStatusLabel.text = @"SCHEDULE";
                 break;
-            case CONF_E_CONF_STATE_CREATING:
+            case CONF_E_STATE_CREATING:
                 _confStatusLabel.text = @"CREATING";
                 break;
-            case CONF_E_CONF_STATE_GOING:
+            case CONF_E_STATE_GOING:
                 _confStatusLabel.text = @"ON GOING";
                 break;
-            case CONF_E_CONF_STATE_DESTROYED:
+            case CONF_E_STATE_DESTROYED:
                 _confStatusLabel.text = @"END";
                 break;
             default:
@@ -120,12 +120,12 @@
 
 - (IBAction)joinConferenceButtonAction:(id)sender
 {
-    if (_confInfo.conf_state == CONF_E_CONF_STATE_DESTROYED)
+    if ([ManagerService confService].currentConfBaseInfo.conf_state == CONF_E_STATE_DESTROYED)
     {
         [self showMessage:@"This conference have been end!"];
         return;
     }
-    if (_confInfo.conf_state != CONF_E_CONF_STATE_GOING)
+    if ([ManagerService confService].currentConfBaseInfo.conf_state != CONF_E_STATE_GOING)
     {
         [self showMessage:@"This conference have not start going!"];
         return;
@@ -133,12 +133,12 @@
     
     NSString *joinNumber = self.joinNumberTextField.text;
     
-    NSString *pwd = _confInfo.chairman_pwd.length > 0 ? _confInfo.chairman_pwd :_confInfo.general_pwd;
+    NSString *pwd = [ManagerService confService].currentConfBaseInfo.chairman_pwd.length > 0 ? [ManagerService confService].currentConfBaseInfo.chairman_pwd :[ManagerService confService].currentConfBaseInfo.general_pwd;
     BOOL isVideoJoin = NO;
-    if (_confInfo.media_type == CONF_MEDIATYPE_VIDEO || _confInfo.media_type == CONF_MEDIATYPE_VIDEO_DATA) {
+    if ([ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_VIDEO || [ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_VIDEO_DATA) {
         isVideoJoin = YES;
     }
-    [[ManagerService confService] joinConferenceWithConfId:_confInfo.conf_id AccessNumber:_confInfo.access_number confPassWord:pwd joinNumber:joinNumber isVideoJoin:isVideoJoin];
+    [[ManagerService confService] joinConferenceWithConfId:[ManagerService confService].currentConfBaseInfo.conf_id AccessNumber:[ManagerService confService].currentConfBaseInfo.access_number confPassWord:pwd joinNumber:joinNumber isVideoJoin:isVideoJoin];
 
 }
 - (IBAction)TextFiledReturnEditing:(id)sender {

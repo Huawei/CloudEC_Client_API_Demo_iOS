@@ -14,19 +14,17 @@
 
 #include <arpa/inet.h>
 #import <string.h>
-#import "ECConfInfo+StructParase.h"
 #import "ConfAttendee+StructParase.h"
 #import "ManagerService.h"
 #import "ConfData.h"
-#import "ECCurrentConfInfo.h"
 #import "ConfAttendeeInConf.h"
-#import "ConfStatus.h"
 #import "Initializer.h"
 #import "LoginInfo.h"
 #import "LoginServerInfo.h"
 #import "Defines.h"
-#import "AppDelegate.h"
 #import "ChatMsg.h"
+#import "ConfBaseInfo.h"
+#import "CommonUtils.h"
 
 #define JOIN_NUMBER_LEN 256
 @interface ConferenceService()<TupConfNotifacation>
@@ -60,7 +58,13 @@
 //creat getter and setter method of selfJoinNumber
 @synthesize selfJoinNumber;
 
+@synthesize isVideoConfInvited;
+
 @synthesize chatDelegate;
+
+@synthesize currentConfBaseInfo;
+
+
 
 /**
  *This method is used to get sip account from call service
@@ -105,6 +109,8 @@
         self.selfJoinNumber = nil;
         _hasReportMediaxSpeak = NO;
         _currentCallId = 0;
+        self.isVideoConfInvited = NO;
+        self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
     }
     return self;
 }
@@ -148,23 +154,38 @@
             }
             
             TSDK_S_CONF_BASE_INFO *confListInfo = (TSDK_S_CONF_BASE_INFO *)notify.data;
-            ECCurrentConfInfo *currentConfInfo = [[ECCurrentConfInfo alloc] init];
             if (confListInfo != NULL)
             {
                 TSDK_S_CONF_BASE_INFO confInfo = (TSDK_S_CONF_BASE_INFO)confListInfo[0];
-                ECConfInfo *ecConfInfo = [ECConfInfo returnECConfInfoWith:confListInfo[0]];
-                currentConfInfo.confDetailInfo = ecConfInfo;
-                _dataConfIdWaitConfInfo = currentConfInfo.confDetailInfo.conf_id;
-                if (strlen(confInfo.token)) {
-                    NSString *smcToken = [NSString stringWithUTF8String:confInfo.token];
-                    [self updateSMCConfToken:smcToken inConf:currentConfInfo.confDetailInfo.conf_id];
+                
+                if (self.currentConfBaseInfo == nil) {
+                    self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
                 }
+                self.currentConfBaseInfo.conf_id = [NSString stringWithUTF8String:confInfo.conf_id];
+                self.currentConfBaseInfo.conf_subject = [NSString stringWithUTF8String:confInfo.subject];
+                self.currentConfBaseInfo.access_number = [NSString stringWithUTF8String:confInfo.access_number];
+                self.currentConfBaseInfo.chairman_pwd = [NSString stringWithUTF8String:confInfo.chairman_pwd];
+                self.currentConfBaseInfo.general_pwd = [NSString stringWithUTF8String:confInfo.guest_pwd];
+                NSString *utcDataStartString = [NSString stringWithUTF8String:confInfo.start_time];
+                self.currentConfBaseInfo.start_time = [CommonUtils getLocalDateFormateUTCDate:utcDataStartString];
+                NSString *utcDataEndString = [NSString stringWithUTF8String:confInfo.end_time];
+                self.currentConfBaseInfo.end_time = [CommonUtils getLocalDateFormateUTCDate:utcDataEndString];
+                self.currentConfBaseInfo.scheduser_number = [NSString stringWithUTF8String:confInfo.scheduser_account];
+                self.currentConfBaseInfo.scheduser_name = [NSString stringWithUTF8String:confInfo.scheduser_name];
+                self.currentConfBaseInfo.media_type = (EC_CONF_MEDIATYPE)confInfo.conf_media_type;
+                self.currentConfBaseInfo.conf_state = (CONF_E_STATE)confInfo.conf_state;
+                self.currentConfBaseInfo.isHdConf = confInfo.is_hd_conf;
+                self.currentConfBaseInfo.token = [NSString stringWithUTF8String:confInfo.token];
+                self.currentConfBaseInfo.chairJoinUri = [NSString stringWithUTF8String:confInfo.chair_join_uri];
+                self.currentConfBaseInfo.guestJoinUri = [NSString stringWithUTF8String:confInfo.guest_join_uri];
+                
+                _dataConfIdWaitConfInfo = self.currentConfBaseInfo.conf_id;
                 
             }
             
             NSDictionary *resultInfo = @{
                                          ECCONF_RESULT_KEY : [NSNumber numberWithBool:result],
-                                         ECCONF_BOOK_CONF_INFO_KEY : currentConfInfo
+                                         //ECCONF_BOOK_CONF_INFO_KEY : currentConfInfo
                                          };
             [self respondsECConferenceDelegateWithType:CONF_E_CREATE_RESULT result:resultInfo];
             
@@ -209,13 +230,18 @@
             TSDK_S_JOIN_CONF_IND_INFO *confInfo = (TSDK_S_JOIN_CONF_IND_INFO *)notify.data;
             _currentCallId = confInfo->call_id;
             
+            if (confInfo->conf_media_type == TSDK_E_CONF_MEDIA_VIDEO || confInfo->conf_media_type == TSDK_E_CONF_MEDIA_VIDEO_DATA) {
+                self.isVideoConfInvited = YES;
+            }
+            [self respondsECConferenceDelegateWithType:CONF_E_CONNECT result:nil];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 // go conference
                 DDLogInfo(@"goConferenceRunView");
-                [self goConferenceRunView:nil];
-                [self respondsECConferenceDelegateWithType:CONF_E_CONNECT result:nil];
                 [[NSNotificationCenter defaultCenter] postNotificationName:TUP_CALL_REMOVE_CALL_VIEW_NOTIFY object:nil];
+                
             });
+            
         }
             break;
         
@@ -291,7 +317,12 @@
         case TSDK_E_CONF_EVT_CONF_END_IND:
         {
             DDLogInfo(@"TSDK_E_CONF_EVT_CONF_END_IND");
-            [self respondsECConferenceDelegateWithType:CONF_E_END_RESULT result:nil];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+            });
+//            [self respondsECConferenceDelegateWithType:CONF_E_END_RESULT result:nil];
+            [self confCtrlLeaveConference];
+            [self restoreConfParamsInitialValue];
             
         }
             break;
@@ -376,14 +407,13 @@
     char *data = (char *)screenData.data;
     TSDK_UINT32 ssize = *((TSDK_UINT32 *)((char *)data + sizeof(TSDK_UINT16)));
     NSData *imageData = [NSData dataWithBytes:data length:ssize];
-    UIImage *image = [[UIImage alloc] initWithData:imageData];
-    if (image == nil)
+    if (imageData == nil)
     {
-        DDLogInfo(@"share image from data fail!");
+        DDLogInfo(@"share imageData from data fail!");
         return;
     }
     NSDictionary *shareDataInfo = @{
-                                    DATACONF_SHARE_DATA_KEY:image
+                                    DATACONF_SHARE_DATA_KEY:imageData
                                     };
     [self respondsECConferenceDelegateWithType:DATA_CONF_AS_ON_SCREEN_DATA result:shareDataInfo];
 }
@@ -534,7 +564,7 @@
         {
             DDLogInfo(@"TSDK_E_CONF_MUTE_ATTENDEE");
             NSDictionary *resultInfo = @{
-                                         ECCONF_RESULT_KEY : [NSNumber numberWithInt:result]
+                                         ECCONF_RESULT_KEY : [NSNumber numberWithInt:YES]
                                          };
             [self respondsECConferenceDelegateWithType:CONF_E_MUTE_ATTENDEE_RESULT result:resultInfo];
         }
@@ -543,7 +573,7 @@
         {
             DDLogInfo(@"TSDK_E_CONF_UNMUTE_ATTENDEE");
             NSDictionary *resultInfo = @{
-                                         ECCONF_RESULT_KEY : [NSNumber numberWithInt:result]
+                                         ECCONF_RESULT_KEY : [NSNumber numberWithInt:NO]
                                          };
             [self respondsECConferenceDelegateWithType:CONF_E_MUTE_ATTENDEE_RESULT result:resultInfo];
         }
@@ -637,82 +667,22 @@
 -(void)handleAttendeeUpdateNotify:(Notification *)notify
 {
     TSDK_S_CONF_STATUS_INFO *confStatusStruct = (TSDK_S_CONF_STATUS_INFO *)notify.data;
-    ConfStatus *confStatus  = [[ConfStatus alloc] init];
-    confStatus.num_of_participant = confStatusStruct->attendee_num;
-    confStatus.size = confStatusStruct->size;
-    confStatus.media_type = (EC_CONF_MEDIATYPE)confStatusStruct->conf_media_type;
-    confStatus.conf_state = (EC_E_CONF_STATE)confStatusStruct->conf_state;
-    confStatus.conf_id = [NSString stringWithUTF8String:confStatusStruct->conf_id];
-    confStatus.call_id = _currentCallId;
-    confStatus.createor = [NSString stringWithUTF8String:confStatusStruct->scheduser_account];
-    confStatus.subject = [NSString stringWithUTF8String:confStatusStruct->subject];
-    confStatus.record_status = confStatusStruct->is_record;
-    confStatus.lock_state = confStatusStruct->is_lock;
-    confStatus.is_all_mute = confStatusStruct->is_all_mute;
+    
+    if (self.currentConfBaseInfo == nil) {
+        self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
+    }
+    self.currentConfBaseInfo.num_of_participant = confStatusStruct->attendee_num;
+    self.currentConfBaseInfo.size = confStatusStruct->size;
+    self.currentConfBaseInfo.media_type = (EC_CONF_MEDIATYPE)confStatusStruct->conf_media_type;
+    self.currentConfBaseInfo.conf_state = (CONF_E_STATE)confStatusStruct->conf_state;
+    self.currentConfBaseInfo.conf_id = [NSString stringWithUTF8String:confStatusStruct->conf_id];
+    self.currentConfBaseInfo.call_id = _currentCallId;
+    self.currentConfBaseInfo.conf_subject = [NSString stringWithUTF8String:confStatusStruct->subject];
+    self.currentConfBaseInfo.record_status = confStatusStruct->is_record;
+    self.currentConfBaseInfo.lock_state = confStatusStruct->is_lock;
+    self.currentConfBaseInfo.is_all_mute = confStatusStruct->is_all_mute;
+    
     TSDK_S_ATTENDEE *participants = confStatusStruct->attendee_list;
-    
-    
-//    // attendee in haveJoinAttendeeArray
-//    [self.haveJoinAttendeeArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendee, NSUInteger idx, BOOL * _Nonnull stop) {
-//        BOOL isAttendeeInConf = NO;;
-//        for (int i = 0; i<confStatusStruct->attendee_num; i++)
-//        {
-//            TSDK_S_ATTENDEE participant = participants[i];
-//            if ([attendee.number isEqualToString:[NSString stringWithUTF8String:participant.base_info.number]]) {
-//                attendee.name = [NSString stringWithUTF8String:participant.base_info.display_name];
-//                attendee.number = [NSString stringWithUTF8String:participant.base_info.number];
-//                attendee.participant_id = [NSString stringWithUTF8String:participant.base_info.account_id];
-//                attendee.is_mute = (participant.status_info.is_mute == TUP_TRUE);
-//                attendee.hand_state = (participant.status_info.is_handup == TUP_TRUE);
-//                attendee.role = (CONFCTRL_CONF_ROLE)participant.base_info.role;
-//                attendee.state = (ATTENDEE_STATUS_TYPE)participant.status_info.state;
-//                isAttendeeInConf = YES;
-//                break;
-//            }
-//        }
-//        //if attendee is not in participants ,update to leave conf.
-//        if (!isAttendeeInConf) {
-//            attendee.state = ATTENDEE_STATUS_LEAVED;
-//            attendee.role = CONF_ROLE_ATTENDEE;
-//            attendee.hand_state = NO;
-//            attendee.is_mute = NO;
-//        }
-//    }];
-//
-//    // new attendee
-//    for (int i = 0; i<confStatusStruct->attendee_num; i++)
-//    {
-//        __block BOOL isExist = NO;
-//        TSDK_S_ATTENDEE participant = participants[i];
-//        [self.haveJoinAttendeeArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendee, NSUInteger idx, BOOL * _Nonnull stop) {
-//            if ([attendee.number isEqualToString:[NSString stringWithUTF8String:participant.base_info.number]]) {
-//                isExist = YES;
-//                *stop = YES;
-//            }
-//        }];
-//
-//        if (!isExist) {
-//            ConfAttendeeInConf *addAttendee = [[ConfAttendeeInConf alloc] init];
-//            addAttendee.name = [NSString stringWithUTF8String:participant.base_info.display_name];
-//            addAttendee.number = [NSString stringWithUTF8String:participant.base_info.number];
-//            addAttendee.participant_id = [NSString stringWithUTF8String:participant.base_info.account_id];
-//            addAttendee.is_mute = (participant.status_info.is_mute == TUP_TRUE);
-//            addAttendee.hand_state = (participant.status_info.is_handup == TUP_TRUE);
-//            addAttendee.role = (CONFCTRL_CONF_ROLE)participant.base_info.role;
-//            addAttendee.state = (ATTENDEE_STATUS_TYPE)participant.status_info.state;
-//
-//            [self.haveJoinAttendeeArray addObject:addAttendee];
-//        }
-//
-//        if ([self.selfJoinNumber isEqualToString:[NSString stringWithUTF8String:participant.base_info.number]]) {
-//            // if conference'uPortalConfType is CONF_TOPOLOGY_MEDIAX and self role is CONFCTRL_E_CONF_ROLE_CHAIRMAN ,need to open report function ,only once time;
-//            if (participant.base_info.role == TSDK_E_CONF_ROLE_CHAIRMAN && [self isUportalMediaXConf] && !_hasReportMediaxSpeak) {
-//                _hasReportMediaxSpeak = YES;
-//                [self configMediaxSpeakReport];
-//            }
-//        }
-//    }
-    
     
     [self.haveJoinAttendeeArray removeAllObjects];
     for (int i = 0; i<confStatusStruct->attendee_num; i++)
@@ -729,6 +699,7 @@
         addAttendee.state = (ATTENDEE_STATUS_TYPE)participant.status_info.state;
         addAttendee.isJoinDataconf = participant.status_info.is_join_dataconf;
         addAttendee.isPresent = participant.status_info.is_present;
+        addAttendee.isSelf = participant.status_info.is_self;
         
         [self.haveJoinAttendeeArray addObject:addAttendee];
         if (!self.selfJoinNumber) {
@@ -744,11 +715,7 @@
     }
         
     dispatch_async(dispatch_get_main_queue(), ^{
-        confStatus.participants = self.haveJoinAttendeeArray;
-        NSDictionary *resultInfo = @{
-                                     ECCONF_ATTENDEE_UPDATE_KEY: confStatus
-                                     };
-        [self respondsECConferenceDelegateWithType:CONF_E_ATTENDEE_UPDATE_INFO result:resultInfo];
+        [self respondsECConferenceDelegateWithType:CONF_E_ATTENDEE_UPDATE_INFO result:nil];
     });
 }
 
@@ -764,28 +731,28 @@
 
     DDLogInfo(@"conf_id : %s, subject : %s, conf_media_type: %d,size:%d,scheduser_name:%s,scheduser_account:%s, start_time:%s, end_time:%s, conf_state: %d, confListInfo.chairman_pwd : %s",confListInfo.conf_id,confListInfo.subject,confListInfo.conf_media_type,confListInfo.size,confListInfo.scheduser_name,confListInfo.scheduser_account,confListInfo.start_time,confListInfo.end_time,confListInfo.conf_state,confListInfo.chairman_pwd);
 
-    DDLogInfo(@"num_of_addendee :%d",confInfo->attendee_num);
-    NSMutableArray *tempArray = [[NSMutableArray alloc] init];
-    TSDK_S_ATTENDEE_BASE_INFO* attendee = confInfo->attendee_list;
-    for (int i = 0; i< confInfo->attendee_num; i++)
-    {
-        DDLogInfo(@"attendee->display_name :%s,attendee->number: %s",attendee[i].display_name,attendee[i].number);
-        ConfAttendee *confAttendee = [ConfAttendee returnConfAttendeeWith:attendee[i]];
-        [tempArray addObject:confAttendee];
+    if (self.currentConfBaseInfo == nil) {
+        self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
     }
-
-    ECCurrentConfInfo *currentConfInfo = [[ECCurrentConfInfo alloc] init];
-    ECConfInfo *ecConfInfo = [ECConfInfo returnECConfInfoWith:confListInfo];
-    currentConfInfo.confDetailInfo = ecConfInfo;
-    currentConfInfo.attendeeArray = [NSArray arrayWithArray:tempArray];
-    NSString *confID = ecConfInfo.conf_id;
-    if (strlen(confListInfo.token)) {
-        NSString *smcToken = [NSString stringWithUTF8String:confListInfo.token];
-        [self updateSMCConfToken:smcToken inConf:confID];
-    }
+    self.currentConfBaseInfo.conf_id = [NSString stringWithUTF8String:confListInfo.conf_id];
+    self.currentConfBaseInfo.conf_subject = [NSString stringWithUTF8String:confListInfo.subject];
+    self.currentConfBaseInfo.access_number = [NSString stringWithUTF8String:confListInfo.access_number];
+    self.currentConfBaseInfo.chairman_pwd = [NSString stringWithUTF8String:confListInfo.chairman_pwd];
+    self.currentConfBaseInfo.general_pwd = [NSString stringWithUTF8String:confListInfo.guest_pwd];
+    NSString *utcDataStartString = [NSString stringWithUTF8String:confListInfo.start_time];
+    self.currentConfBaseInfo.start_time = [CommonUtils getLocalDateFormateUTCDate:utcDataStartString];
+    NSString *utcDataEndString = [NSString stringWithUTF8String:confListInfo.end_time];
+    self.currentConfBaseInfo.end_time = [CommonUtils getLocalDateFormateUTCDate:utcDataEndString];
+    self.currentConfBaseInfo.scheduser_number = [NSString stringWithUTF8String:confListInfo.scheduser_account];
+    self.currentConfBaseInfo.scheduser_name = [NSString stringWithUTF8String:confListInfo.scheduser_name];
+    self.currentConfBaseInfo.media_type = (EC_CONF_MEDIATYPE)confListInfo.conf_media_type;
+    self.currentConfBaseInfo.conf_state = (CONF_E_STATE)confListInfo.conf_state;
+    self.currentConfBaseInfo.isHdConf = confListInfo.is_hd_conf;
+    self.currentConfBaseInfo.token = [NSString stringWithUTF8String:confListInfo.token];
+    self.currentConfBaseInfo.chairJoinUri = [NSString stringWithUTF8String:confListInfo.chair_join_uri];
+    self.currentConfBaseInfo.guestJoinUri = [NSString stringWithUTF8String:confListInfo.guest_join_uri];
     
     NSDictionary *resultInfo = @{
-                                 ECCONF_CURRENTCONF_DETAIL_KEY : currentConfInfo,
                                  ECCONF_RESULT_KEY : [NSNumber numberWithBool:YES]
                                  };
     //post current conf info detail to UI
@@ -804,28 +771,35 @@
     NSMutableArray *tempArray = [[NSMutableArray alloc] init];
     for (int i = 0; i< confListInfoResult->current_count; i++)
     {
-        ECConfInfo *confInfo = [ECConfInfo returnECConfInfoWith:confList[i]];
-        if (confInfo.conf_state != CONF_E_CONF_STATE_DESTROYED)
+        ConfBaseInfo *confBaseInfo = [[ConfBaseInfo alloc] init];
+        
+        confBaseInfo.conf_id = [NSString stringWithUTF8String:confList[i].conf_id];
+        confBaseInfo.conf_subject = [NSString stringWithUTF8String:confList[i].subject];
+        confBaseInfo.access_number = [NSString stringWithUTF8String:confList[i].access_number];
+        confBaseInfo.chairman_pwd = [NSString stringWithUTF8String:confList[i].chairman_pwd];
+        confBaseInfo.general_pwd = [NSString stringWithUTF8String:confList[i].guest_pwd];
+        NSString *utcDataStartString = [NSString stringWithUTF8String:confList[i].start_time];
+        confBaseInfo.start_time = [CommonUtils getLocalDateFormateUTCDate:utcDataStartString];
+        NSString *utcDataEndString = [NSString stringWithUTF8String:confList[i].end_time];
+        confBaseInfo.end_time = [CommonUtils getLocalDateFormateUTCDate:utcDataEndString];
+        confBaseInfo.scheduser_number = [NSString stringWithUTF8String:confList[i].scheduser_account];
+        confBaseInfo.scheduser_name = [NSString stringWithUTF8String:confList[i].scheduser_name];
+        confBaseInfo.media_type = (EC_CONF_MEDIATYPE)confList[i].conf_media_type;
+        confBaseInfo.conf_state = (CONF_E_STATE)confList[i].conf_state;
+        confBaseInfo.isHdConf = confList[i].is_hd_conf;
+        confBaseInfo.token = [NSString stringWithUTF8String:confList[i].token];
+        confBaseInfo.chairJoinUri = [NSString stringWithUTF8String:confList[i].chair_join_uri];
+        confBaseInfo.guestJoinUri = [NSString stringWithUTF8String:confList[i].guest_join_uri];
+                
+        if (confBaseInfo.conf_state != CONF_E_STATE_DESTROYED)
         {
-            [tempArray addObject:confInfo];
+            [tempArray addObject:confBaseInfo];
         }
     }
     NSDictionary *resultInfo = @{
                                  ECCONF_LIST_KEY : tempArray
                                  };
     [self respondsECConferenceDelegateWithType:CONF_E_GET_CONFLIST result:resultInfo];
-}
-
-/**
- *This method is used to switch to the conf running page
- *切换到正在召开的会议页面
- */
--(void)goConferenceRunView:(ConfStatus *)confStatus
-{
-//    if (needRemoveCallWindow) {
-//        [[NSNotificationCenter defaultCenter] postNotificationName:TUP_CALL_REMOVE_CALL_VIEW_NOTIFY object:nil];
-//    }
-        [AppDelegate goConference:confStatus];
 }
 
 #pragma mark  public
@@ -1404,98 +1378,8 @@
     _hasReportMediaxSpeak = NO;
     [self stopHeartBeat];
     _currentCallId = 0;
-}
-
-/**
- *This method is used to save token to token dictionary as the key of conf id if con network is SMC
- *smc组网下。将当前token以conf id为键存入token词典
- */
-- (void)updateSMCConfToken:(NSString *)confToken inConf:(NSString *)confId
-{
-    BOOL isSMCConf = self.uPortalConfType == CONF_TOPOLOGY_SMC ? YES : NO;
-    if (!isSMCConf)
-    {
-        DDLogWarn(@"not smc conf, ignore!");
-        return;
-    }
-    if (nil == confToken || 0 == confToken.length || nil == confId || 0 == confId.length)
-    {
-        DDLogWarn(@"param is empty!");
-        return;
-    }
-    @synchronized (_confTokenDic) {
-        if ([_confTokenDic objectForKey:confId])
-        {
-            DDLogWarn(@"confToken in conf:%@ has already exist!", confId);
-        }
-        else
-        {
-            [_confTokenDic setObject:confToken forKey:confId];
-        }
-    }
-}
-
-/**
- *This method is used to get token from dictionary according to conf id
- *从token字典中拿出conf id对应的token
- */
-- (NSString *)smcConfTokenByConfId:(NSString *)confId
-{
-    BOOL isSMCConf = self.uPortalConfType == CONF_TOPOLOGY_SMC ? YES : NO;
-    if (!isSMCConf)
-    {
-        DDLogWarn(@"not smc conf, has no token!");
-        return nil;
-    }
-    if (nil == confId || 0 == confId.length)
-    {
-        DDLogWarn(@"confId is empty!");
-        return nil;
-    }
-    @synchronized (_confTokenDic) {
-        return [_confTokenDic objectForKey:confId];
-    }
-}
-
-/**
- *This method is used to remove token from dictionary according to conf id
- *从token字典中移除conf id对应的token
- */
-- (void)clearSMCConfTokenByConfId:(NSString *)confId
-{
-    BOOL isSMCConf = self.uPortalConfType == CONF_TOPOLOGY_SMC ? YES : NO;
-    if (!isSMCConf)
-    {
-        DDLogWarn(@"not smc conf, ignore!");
-        return;
-    }
-    if (nil == confId || 0 == confId.length)
-    {
-        DDLogWarn(@"confId is empty!");
-        return;
-    }
-    @synchronized (_confTokenDic) {
-        [_confTokenDic removeObjectForKey:confId];
-    }
-}
-
-//get mainConfId with confId in CONF_TOPOLOGY_MEDIAX
-- (NSString *)mainConfIdByDBConfID:(NSString *)confId
-{
-    //if uPortalConfType is not CONF_TOPOLOGY_MEDIAX ,use current confId.
-    BOOL isMediaXConf = self.uPortalConfType == CONF_TOPOLOGY_MEDIAX ? YES : NO;
-    if (!isMediaXConf)
-    {
-        return confId;
-    }
-    NSString *mainConfId = confId;
-    NSRange range = [confId rangeOfString:@"sub"];
-    if (range.length > 0)
-    {
-        mainConfId = [confId substringToIndex:range.location];
-    }
-    DDLogInfo(@"confId is:%@, mainConfID is:%@", confId, mainConfId);
-    return mainConfId;
+    self.isVideoConfInvited = NO;
+    self.currentConfBaseInfo = nil;
 }
 
 /**
@@ -1504,10 +1388,8 @@
  */
 - (BOOL)isUportalMediaXConf
 {
-    
     //Mediax conference
-//    return  (CONF_TOPOLOGY_MEDIAX == self.uPortalConfType);
-    return YES;
+    return  (CONF_TOPOLOGY_MEDIAX == self.uPortalConfType);
 }
 
 /**
@@ -1517,8 +1399,7 @@
 - (BOOL)isUportalSMCConf
 {
     //SMC conference
-//    return (CONF_TOPOLOGY_SMC == self.uPortalConfType);
-    return YES;
+    return (CONF_TOPOLOGY_SMC == self.uPortalConfType);
 }
 
 /**
@@ -1528,8 +1409,7 @@
 - (BOOL)isUportalUSMConf
 {
     //UC conference
-//    return (CONF_TOPOLOGY_UC == self.uPortalConfType);
-    return NO;
+    return (CONF_TOPOLOGY_UC == self.uPortalConfType);
 }
 
 ///**
@@ -1541,5 +1421,21 @@
 //    TSDK_RESULT result = tup_confctrl_set_speaker_report(_confHandle, TUP_TRUE);
 //    DDLogInfo(@"tup_confctrl_set_speaker_report, result : %d",result);
 //}
+
+- (BOOL)joinConferenceWithDisPlayName:(NSString *)disPlayName ConfId:(NSString *)confID PassWord:(NSString *)passWord ServerAdd:(NSString *)serverAdd ServerPort:(int)serverPort
+{
+    TSDK_S_CONF_ANONYMOUS_JOIN_PARAM anonymousParam;
+    memset(&anonymousParam, 0, sizeof(TSDK_S_CONF_ANONYMOUS_JOIN_PARAM));
+    
+    strcpy(anonymousParam.display_name, [disPlayName UTF8String]);
+    strcpy(anonymousParam.conf_id, [confID UTF8String]);
+    strcpy(anonymousParam.conf_password, [passWord UTF8String]);
+    strcpy(anonymousParam.server_addr, [serverAdd UTF8String]);
+    anonymousParam.server_port = serverPort;
+    
+    TSDK_RESULT joinConfResult = tsdk_join_conference_by_anonymous(&anonymousParam);
+    
+    return joinConfResult == TSDK_SUCCESS;
+}
 
 @end

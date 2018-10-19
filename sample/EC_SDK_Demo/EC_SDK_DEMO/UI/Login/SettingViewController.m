@@ -8,6 +8,8 @@
 
 #import "SettingViewController.h"
 #import "CommonUtils.h"
+#import "ManagerService.h"
+#import "LoginCenter.h"
 
 @interface SettingViewController ()
 @property (nonatomic, weak)IBOutlet UITextField *serverAddressField;
@@ -24,6 +26,7 @@
 @property (weak, nonatomic) IBOutlet UISwitch *portConfigSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *tunnelDefaultSwitch;
 @property (weak, nonatomic) IBOutlet UISwitch *tunnelDisableSwitch;
+@property (weak, nonatomic) IBOutlet UISwitch *useIDOConCtrl;
 @property (strong, nonatomic) UISwitch *currentSwitch;
 
 @property (nonatomic, assign)SRTP_MODE srtpMode;
@@ -47,6 +50,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    NSString *useIDOConfCtrl = [CommonUtils getUserDefaultValueWithKey:USE_IDO_CONFCTRL];
+    _useIDOConCtrl.on = [useIDOConfCtrl boolValue];
+    
     NSArray *array = [CommonUtils getUserDefaultValueWithKey:SRTP_TRANSPORT_MODE];
     _srtpMode = [array[0] intValue];
     _transportMode = [array[1] intValue];
@@ -116,6 +123,11 @@
     NSString *portPriority = [NSString stringWithFormat:@"%d",_sipPortPriority];
     NSString *tunnel = [NSString stringWithFormat:@"%d", _tunnelMode];
     [CommonUtils userDefaultSaveValue:@[srtp, transport, config, _udpPortField.text, _tlsPortField.text, portPriority, tunnel] forKey:SRTP_TRANSPORT_MODE];
+    
+    [CommonUtils userDefaultSaveValue:[NSString stringWithFormat:@"%d",_useIDOConCtrl.on] forKey:USE_IDO_CONFCTRL];
+    
+    [[LoginCenter sharedInstance] configSipRelevantParam];
+    
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -236,6 +248,14 @@
         _tunnelDefaultSwitch.on = NO;
         _tunnelMode = TUNNEL_MODE_DISABLE;
     }
+}
+
+- (IBAction)ipCallSkipLogin:(id)sender {
+    [[ManagerService callService] ipCallConfig];
+}
+
+- (IBAction)useIDOConfCtrlAction:(id)sender {
+
 }
 
 

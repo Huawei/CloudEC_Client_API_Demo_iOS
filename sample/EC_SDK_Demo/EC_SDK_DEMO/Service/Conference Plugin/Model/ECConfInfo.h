@@ -36,4 +36,12 @@ typedef enum
 @property (nonatomic, copy) NSString *guestJoinUri; //来宾加入会议uri链接
 
 
+@property (nonatomic, assign) int call_id; // call id
+@property (nonatomic, assign) int size; //会议大小
+@property (nonatomic, assign) int num_of_participant; //与会者个数
+@property (nonatomic, assign) BOOL record_status; //会议录制状态
+@property (nonatomic, assign) BOOL lock_state; //会议锁定状态
+@property (nonatomic, assign) BOOL is_all_mute; //是否全员禁言
+
+
 @end

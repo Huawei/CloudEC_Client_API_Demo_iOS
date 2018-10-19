@@ -7,22 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSUInteger, EmptyDataOption) {
-    ESpaceEDONoChatHistory = 1,
-    ESpaceEDONoCallHistory,
-    ESpaceEDONoContact,
-    ESpaceEDONoGroup,
-    ESpaceEDONoABPremission,
-    ESpaceEDONoLocalContact,
-    ESpaceEDONoSearchResult,
-    ESpaceEDONoConference,
-    ESpaceEDONoPublicAccount,
-    ESpaceEDONoPAChatHistory,
-    ESPaceEDONoVoiceMail,
-    ESPaceEDONoAddedContact,
-    ESpaceEDONoDeptData
-};
+#import "Defines.h"
 
 @class EmptyDataView;
 

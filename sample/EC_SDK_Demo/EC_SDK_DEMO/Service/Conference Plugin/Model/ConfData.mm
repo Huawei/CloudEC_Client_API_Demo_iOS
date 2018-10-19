@@ -12,7 +12,8 @@
 
 /**
  *This method is used to init this class, init value of memberList
- *初始化该类，初始化数组memberlist
+ *初始化该类，初始化数组
+ 
  */
 - (instancetype)init
 {

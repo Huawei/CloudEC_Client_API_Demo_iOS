@@ -28,12 +28,14 @@
 #import "tsdk_def.h"
 #import "tsdk_error_def.h"
 #import "tsdk_manager_def.h"
+#import "tsdk_manager_interface.h"
 #import "tsdk_call_interface.h"
 #import "tsdk_ctd_def.h"
 #import "tsdk_ctd_interface.h"
 
-NSString *const NTF_AUDIOROUTE_CHANGED = @"NTF_AUDIOROUTE_CHANGED";
-NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
+#import "LocalNotificationCenter.h"
+
+NSString* const TSDK_COMING_CALL_NOTIFY = @"TSDK_COMING_CALL_NOTIFY";
 
 #define CHECKCSTR(str) (((str) == NULL) ? "" : (str))
 
@@ -298,6 +300,8 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
                                          };
             [self respondsCallDelegateWithType:CALL_INCOMMING result:resultInfo]; //post incoming call info to UI
             
+            [[NSNotificationCenter defaultCenter] postNotificationName:TSDK_COMING_CALL_NOTIFY object:tsdkCallInfo];
+            
             CallLogMessage *callLogMessage = [[CallLogMessage alloc]init];
             callLogMessage.calleePhoneNumber = tsdkCallInfo.stateInfo.callNum;
             callLogMessage.durationTime = 0;
@@ -529,6 +533,9 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
             NSString *accountId = [CommonUtils getUserDefaultValueWithKey:USER_ACCOUNT];
             NSData *archiveCarPriceData = [NSKeyedArchiver archivedDataWithRootObject:iptConfig]; //将iptConfig实例序列化，以便保存
             DDLogInfo(@"........%@", accountId);
+            if (accountId.length == 0 || accountId == nil) {
+                return;
+            }
             NSDictionary *dicInfo = @{
                                       @"ACCOUNT" : accountId,
                                       @"IPT" : archiveCarPriceData
@@ -1135,7 +1142,7 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
     else if (TSDK_E_VIDEO_WND_REMOTE == renderType)
     {
         mirrorType = 0;
-        displaytype = 1;
+        displaytype = 2;
     }
     else
     {
@@ -1192,7 +1199,7 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
 {
     if (openCamera)
     {
-        [self videoControlWithCmd:OPEN_AND_START andModule:LOCAL andIsSync:NO callId:callId];
+        [self videoControlWithCmd:OPEN_AND_START andModule:LOCAL_AND_CAPTURE andIsSync:NO callId:callId];
 //        [self pauseVideoCapture:NO callId:callId];
         _cameraRotation = 0;
         TSDK_RESULT ret = tsdk_set_capture_rotation((TSDK_UINT32)callId , (TSDK_UINT32)_cameraCaptureIndex, (TSDK_UINT32)_cameraRotation);
@@ -1201,7 +1208,7 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
     else
     {
         [self setVideoCaptureFileWithcallId:callId];
-        [self videoControlWithCmd:STOP andModule:CAPTURE andIsSync:YES callId:callId];
+        [self videoControlWithCmd:STOP andModule:LOCAL_AND_CAPTURE andIsSync:YES callId:callId];
 //        [self pauseVideoCapture:YES callId:callId];
     }
     return YES;
@@ -1240,7 +1247,7 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
     TSDK_S_VIDEO_CTRL_INFO videoControlInfos;
     memset_s(&videoControlInfos, sizeof(TSDK_S_VIDEO_CTRL_INFO), 0, sizeof(TSDK_S_VIDEO_CTRL_INFO));
     TSDK_UINT32 call_id = (TSDK_UINT32)callId;
-    videoControlInfos.object = module;
+    videoControlInfos.object = 6;
     videoControlInfos.operation = control;
     videoControlInfos.is_sync = isSync;
     TSDK_RESULT ret = tsdk_video_control(call_id, &videoControlInfos);
@@ -1511,6 +1518,27 @@ NSString *const USER_ACCOUNT        = @"USER_ACCOUNT";
     DDLogInfo(@"Call_Log: tsdk_ctd_end_call = %d, callId:%d", ret, _ctdCallId);
     _ctdCallId = 0;
     return ret == TSDK_SUCCESS ? YES : NO;
+}
+
+/**
+ * This method is used to config ip call
+ * 设置ip呼叫
+ */
+-(BOOL)ipCallConfig
+{
+    //config local ip
+    TSDK_S_LOCAL_ADDRESS local_ip;
+    memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
+    NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
+    strcpy(local_ip.ip_address, [ip UTF8String]);
+    TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
+    DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
+    
+    TSDK_BOOL ip_call_switch = true;
+    configResult = tsdk_set_config_param(TSDK_E_CONFIG_IPCALL_SWITCH, &ip_call_switch);
+    DDLogInfo(@"config ip call result: %d", configResult);
+    
+    return configResult;
 }
 
 

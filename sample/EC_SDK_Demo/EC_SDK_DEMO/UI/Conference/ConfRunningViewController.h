@@ -7,8 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-@class ConfStatus;
 @interface ConfRunningViewController : UIViewController
-@property(nonatomic, strong)ConfStatus *currentStatus;
 
 @end

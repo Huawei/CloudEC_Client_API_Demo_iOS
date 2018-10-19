@@ -1,0 +1,43 @@
+//
+//  ConfBaseInfo.h
+//  EC_SDK_DEMO
+//
+//  Created by huawei on 2018/9/10.
+//  Copyright © 2018年 cWX160907. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "Defines.h"
+
+typedef enum
+{
+    CONF_E_STATE_SCHEDULE = 0,    //预定状态
+    CONF_E_STATE_CREATING,        //正在创建状态
+    CONF_E_STATE_GOING,           //会议已经开始
+    CONF_E_STATE_DESTROYED        //会议已经关闭
+} CONF_E_STATE;
+
+@interface ConfBaseInfo : NSObject
+@property (nonatomic, copy) NSString *conf_id; //会议id
+@property (nonatomic, copy) NSString *conf_subject; //会议主题
+@property (nonatomic, copy) NSString *access_number; //会议介入码
+@property (nonatomic, copy) NSString *chairman_pwd; //会议主席密码
+@property (nonatomic, copy) NSString *general_pwd; //普通与会者密码
+@property (nonatomic, copy) NSString *start_time; //会议开始时间
+@property (nonatomic, copy) NSString *end_time; //会议结束时间
+@property (nonatomic, copy) NSString *scheduser_number; //会议预约者号码
+@property (nonatomic, copy) NSString *scheduser_name; //会议预约者名字
+@property (nonatomic, assign) EC_CONF_MEDIATYPE media_type; //媒体类型
+@property (nonatomic, assign) CONF_E_STATE conf_state; //会议状态
+@property (nonatomic, assign) BOOL isHdConf; //是否高清视频会议
+@property (nonatomic, copy) NSString *token; //会议token
+@property (nonatomic, copy) NSString *chairJoinUri; //主持人加入会议uri链接
+@property (nonatomic, copy) NSString *guestJoinUri; //来宾加入会议uri链接
+
+@property (nonatomic, assign) int call_id; // call id
+@property (nonatomic, assign) int size; //会议大小
+@property (nonatomic, assign) int num_of_participant; //与会者个数
+@property (nonatomic, assign) BOOL record_status; //会议录制状态
+@property (nonatomic, assign) BOOL lock_state; //会议锁定状态
+@property (nonatomic, assign) BOOL is_all_mute; //是否全员禁言
+@end

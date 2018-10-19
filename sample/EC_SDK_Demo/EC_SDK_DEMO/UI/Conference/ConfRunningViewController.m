@@ -8,16 +8,14 @@
 
 #import "ConfRunningViewController.h"
 #import "ManagerService.h"
-//#import "ECConfInfo.h"
-//#import "ECCurrentConfInfo.h"
 #import "ConfAttendee.h"
 #import "ConfAttendeeInConf.h"
-#import "ConfStatus.h"
 #import "AttendeeListCell.h"
 #import "ConfListViewController.h"
 #import "VideoShareViewController.h"
 #import "DataShareViewController.h"
 #import "DialSecondPlate.h"
+#import "ConfBaseInfo.h"
 
 #import "ChatMsg.h"
 #import "EAGLView.h"
@@ -28,7 +26,7 @@
 @property (nonatomic, strong)ConfAttendeeInConf *mineConfInfo;
 
 @property (nonatomic,strong) IBOutlet UITableView *attendeeListTableView;
-@property (nonatomic, strong) NSMutableArray *currentAttendees;
+//@property (nonatomic, strong) NSMutableArray *currentAttendees;
 
 @property (nonatomic,strong) UIImageView *enterDataSharedView;
 @property (nonatomic,strong) UIImageView *enterVideoShareView;
@@ -37,6 +35,7 @@
 
 @property (nonatomic, assign) BOOL isJoinDataConfSuccess;
 
+@property (weak, nonatomic) IBOutlet UIView *raiseHandView;
 @property (nonatomic,copy) NSString *sipAccount;
 @property (weak, nonatomic) IBOutlet UIButton *muteBtn;
 @property (weak, nonatomic) IBOutlet UIButton *speakerBtn;
@@ -49,9 +48,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *dataMeetingBtn;
 @property (weak, nonatomic) IBOutlet UIButton *lockConfBtn;
 @property (weak, nonatomic) IBOutlet UILabel *lockConfLabel;
+@property (weak, nonatomic) IBOutlet UILabel *requestChairLabel;
+@property (weak, nonatomic) IBOutlet UIButton *muteAttendeeLabel;
 
 @property (nonatomic, assign) BOOL isMicMute;
-@property (nonatomic, assign) BOOL __block isLock;
 @property (nonatomic, strong) NSMutableArray *currentSpeakArray;
 
 
@@ -66,12 +66,8 @@
         case CONF_E_ATTENDEE_UPDATE_INFO:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                _currentStatus = resultDictionary[ECCONF_ATTENDEE_UPDATE_KEY];
-                DDLogInfo(@"_currentStatus.participants.count:%d",_currentStatus.participants.count);
             
-                if (_currentStatus.participants.count > 0) {
-                    [_currentAttendees removeAllObjects];
-                    _currentAttendees = [NSMutableArray arrayWithArray:_currentStatus.participants];
+                if ([ManagerService confService].haveJoinAttendeeArray.count > 0) {
                     [self.attendeeListTableView reloadData];
                 }
                 
@@ -79,9 +75,9 @@
                 if ([ManagerService confService].selfJoinNumber) {
                     selfNumber = [ManagerService confService].selfJoinNumber;
                 }
-                for (ConfAttendeeInConf *tempAttendee in _currentAttendees)
+                for (ConfAttendeeInConf *tempAttendee in [ManagerService confService].haveJoinAttendeeArray)
                 {
-                    if ([tempAttendee.number isEqualToString:selfNumber])
+                    if ([tempAttendee.number isEqualToString:selfNumber] || tempAttendee.isSelf)
                     {
                         _mineConfInfo = tempAttendee;
                         
@@ -89,7 +85,7 @@
                 }
                 
                 [self updateBtnStatus];
-                [self updateRightBarBottonItems];
+//                [self updateRightBarBottonItems];
             });
         }
             break;
@@ -132,14 +128,12 @@
             BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (result) {
-                    if(_isLock == NO){
+                    if(![ManagerService confService].currentConfBaseInfo.lock_state){
                         [self showMessage:@"Lock conference success."];
                         _lockConfLabel.text = @"UnlockConf";
-                        _isLock = YES;
                     }else{
                         [self showMessage:@"Unlock conference success."];
                         _lockConfLabel.text = @"LockConf";
-                        _isLock = NO;
                     }
                     
                 }
@@ -157,11 +151,9 @@
         }
         case CONF_E_END_RESULT:
         {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[ManagerService confService] confCtrlLeaveConference];
-                [[ManagerService confService] restoreConfParamsInitialValue];
-                [self quitToListViewCtrl];
-            });
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [self quitToListViewCtrl];
+//            });
             
         }
             break;
@@ -178,8 +170,48 @@
                     [self showMessage:@"Join data conf failed."];
                     _isJoinDataConfSuccess = NO;
                 }
-                [self updateRightBarBottonItems];
+//                [self updateRightBarBottonItems];
             });
+            break;
+        }
+        case CONF_E_REQUEST_CHAIRMAN_RESULT:
+        {
+            BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (result) {
+                    [self showMessage:@"request chairman success."];
+                }else {
+                    [self showMessage:@"request chairman failed."];
+                }
+            });
+            break;
+        }
+        case CONF_E_RELEASE_CHAIRMAN_RESULT:
+        {
+            BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (result) {
+                    [self showMessage:@"release chairman success."];
+                }else {
+                    [self showMessage:@"release chairman failed."];
+                }
+            });
+            break;
+        }
+        case CONF_E_MUTE_ATTENDEE_RESULT:
+        {
+//            BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                if(result){
+//                    [_muteBtn setImage:[UIImage imageNamed:@"conf_tab_mute_selected"] forState:UIControlStateNormal];
+//                    [_muteAttendeeLabel setTitle:@"unMute" forState:UIControlStateNormal];
+//                    [self showMessage:@"Mute self success"];
+//                }else{
+//                    [_muteBtn setImage:[UIImage imageNamed:@"conf_tab_mute"] forState:UIControlStateNormal];
+//                    [_muteAttendeeLabel setTitle:@"Mute" forState:UIControlStateNormal];
+//                    [self showMessage:@"Unmute self success"];
+//                }
+//            });
             break;
         }
         default:
@@ -190,7 +222,7 @@
 -(void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [ManagerService confService].delegate = nil;
+//    [ManagerService confService].delegate = nil;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -198,6 +230,10 @@
     [super viewWillAppear:animated];
     [ManagerService confService].delegate = self;
     [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
+    if (self.attendeeListTableView != nil) {
+        [self.attendeeListTableView reloadData];
+    }
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -208,13 +244,20 @@
     [super viewDidLoad];
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.title = _currentStatus.subject;
+    self.title = [ManagerService confService].currentConfBaseInfo.conf_subject;
+    
+    for (ConfAttendeeInConf *tempAttendee in [ManagerService confService].haveJoinAttendeeArray)
+    {
+        if (tempAttendee.isSelf)
+        {
+            _mineConfInfo = tempAttendee;
+            
+        }
+    }
     
     _isJoinDataConfSuccess = NO;
     self.view.backgroundColor = [UIColor clearColor];
-    if (_currentStatus != nil && _currentStatus.participants.count > 0) {
-        _currentAttendees = [NSMutableArray arrayWithArray:_currentStatus.participants];
-    }
+
     _attendeeListTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [_attendeeListTableView registerNib:[UINib nibWithNibName:@"AttendeeListCell" bundle:nil] forCellReuseIdentifier:@"ConfAttendeeCell"];
     // Do any additional setup after loading the view.
@@ -226,13 +269,20 @@
     _speakerBtn.selected = currentRoute == ROUTE_LOUDSPEAKER_TYPE;
     
     _isMicMute = NO;
-    _isLock = NO;
     _currentSpeakArray = [[NSMutableArray alloc]init];;
     
     [self updateBtnStatus];
-    [self updateRightBarBottonItems];
+//    [self updateRightBarBottonItems];
+    [self.attendeeListTableView reloadData];
+    
+    if ([ManagerService confService].isUportalSMCConf) {
+        _raiseHandView.hidden = YES;
+    }
+    
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSpeakerStatus:) name:NTF_AUDIOROUTE_CHANGED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
     
 }
 
@@ -244,29 +294,7 @@
 - (void)gobackBtnAction
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Info" message:@"Exit the meeting?" preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *closeMeetingAction = [UIAlertAction actionWithTitle:@"End" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
-            [[ManagerService confService] confCtrlEndConference];
-            [self finishConference];
-            [self quitToListViewCtrl];
-        }];
-        
-        UIAlertAction *leaveMeetingAction = [UIAlertAction actionWithTitle:@"Leave" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-
-            [[ManagerService confService] confCtrlLeaveConference];
-            [self finishConference];
-            [self quitToListViewCtrl];
-            
-        }];
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-        if ([self checkMineRoleIsChairman])
-        {
-            [alertController addAction:closeMeetingAction];
-        }
-        [alertController addAction:leaveMeetingAction];
-        [alertController addAction:cancelAction];
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self.navigationController popViewControllerAnimated:YES];
     });
 }
 
@@ -284,8 +312,6 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.navigationController.navigationBarHidden = NO;
-        _currentStatus = nil;
-        _currentAttendees = nil;
     });
 }
 
@@ -334,7 +360,7 @@
 }
 
 - (void)enterVideoSharedController {
-    VideoShareViewController *videoShareVC = [[VideoShareViewController alloc] initWithConfInfo:self.currentStatus];
+    VideoShareViewController *videoShareVC = [[VideoShareViewController alloc] init];
     [self.navigationController pushViewController:videoShareVC animated:YES];
 }
 
@@ -349,52 +375,53 @@
 }
 
 - (void)enterDataSharedController {
-    DataShareViewController *dataShareVC = [[DataShareViewController alloc] initWithConfInfo:self.currentStatus];
+    DataShareViewController *dataShareVC = [[DataShareViewController alloc] init];
     [self.navigationController pushViewController:dataShareVC animated:YES];
 }
 
-- (void)updateRightBarBottonItems {
-    
-    NSMutableArray *rightItems = [[NSMutableArray alloc] init];
-    UIBarButtonItem *enterDataShared = [[UIBarButtonItem alloc] initWithCustomView:self.enterDataSharedBtn];
-    UIBarButtonItem *enterVideoShared = [[UIBarButtonItem alloc]initWithCustomView:self.enterVideoShareBtn];
-    switch (_currentStatus.media_type) {
-        case CONF_MEDIATYPE_VIDEO:
-            if ([ManagerService callService].isShowTupBfcp) {
-                [rightItems addObject:enterDataShared];
-            }
-            
-            [rightItems addObject:enterVideoShared];
-            break;
-            
-        case CONF_MEDIATYPE_DATA:
-            if (!_isJoinDataConfSuccess) {
-                return;
-            }
-            if ([[ManagerService confService] isUportalSMCConf] || [[ManagerService confService] isUportalMediaXConf]) {
-                [rightItems addObject:enterDataShared];
-            }else {
-                [rightItems addObject:enterDataShared];
-                [rightItems addObject:enterVideoShared];
-            }
-            break;
-            
-        case CONF_MEDIATYPE_VIDEO_DATA:
-            if (_isJoinDataConfSuccess) {
-               [rightItems addObject:enterDataShared];
-            }
-            [rightItems addObject:enterVideoShared];
-            break;
-            
-        default:
-            break;
-    }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (rightItems.count > 0) {
-            self.navigationItem.rightBarButtonItems = rightItems;
-        }
-    });
-}
+//- (void)updateRightBarBottonItems {
+//
+//    self.title = [ManagerService confService].currentConfBaseInfo.conf_subject;
+//    NSMutableArray *rightItems = [[NSMutableArray alloc] init];
+//    UIBarButtonItem *enterDataShared = [[UIBarButtonItem alloc] initWithCustomView:self.enterDataSharedBtn];
+//    UIBarButtonItem *enterVideoShared = [[UIBarButtonItem alloc]initWithCustomView:self.enterVideoShareBtn];
+//    switch ([ManagerService confService].currentConfBaseInfo.media_type) {
+//        case CONF_MEDIATYPE_VIDEO:
+//            if ([ManagerService callService].isShowTupBfcp) {
+//                [rightItems addObject:enterDataShared];
+//            }
+//
+//            [rightItems addObject:enterVideoShared];
+//            break;
+//
+//        case CONF_MEDIATYPE_DATA:
+//            if (!_isJoinDataConfSuccess) {
+//                return;
+//            }
+//            if ([[ManagerService confService] isUportalSMCConf] || [[ManagerService confService] isUportalMediaXConf]) {
+//                [rightItems addObject:enterDataShared];
+//            }else {
+//                [rightItems addObject:enterDataShared];
+//                [rightItems addObject:enterVideoShared];
+//            }
+//            break;
+//
+//        case CONF_MEDIATYPE_VIDEO_DATA:
+//            if (_isJoinDataConfSuccess) {
+//               [rightItems addObject:enterDataShared];
+//            }
+//            [rightItems addObject:enterVideoShared];
+//            break;
+//
+//        default:
+//            break;
+//    }
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        if (rightItems.count > 0) {
+//            self.navigationItem.rightBarButtonItems = rightItems;
+//        }
+//    });
+//}
 
 - (UIImageView *)animationImageViewWithNormalImage:(UIImage *)normalImage
                                   highLightedImage:(UIImage *)highLightedImage
@@ -454,12 +481,13 @@
     
     if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN) {
         [_requestChairBtn setImage:[UIImage imageNamed:@"conf_tab_release_chairman_normal"] forState:UIControlStateNormal];
+        _requestChairLabel.text = @"releaseChair";
         [_lockConfBtn setEnabled:YES];
         [_addMemberBtn setEnabled:YES];
         [_muteallBtn setEnabled:YES];
         [_unmuteallBtn setEnabled:YES];
-        if (_currentStatus.media_type == CONF_MEDIATYPE_DATA
-            || _currentStatus.media_type == CONF_MEDIATYPE_VIDEO_DATA) {
+        if ([ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_DATA
+            || [ManagerService confService].currentConfBaseInfo.media_type == CONF_MEDIATYPE_VIDEO_DATA) {
             [_dataMeetingBtn setEnabled:NO];
         }
         else {
@@ -469,6 +497,7 @@
     }
     else {
         [_requestChairBtn setImage:[UIImage imageNamed:@"conf_tab_request_chairman_normal"] forState:UIControlStateNormal];
+        _requestChairLabel.text = @"requestChair";
         [_lockConfBtn setEnabled:NO];
         [_addMemberBtn setEnabled:NO];
         [_muteallBtn setEnabled:NO];
@@ -483,6 +512,13 @@
     // toso jl
 //    [_raiseHand setEnabled:([ManagerService confService].uPortalConfType == CONF_TOPOLOGY_MEDIAX)];
     [_raiseHand setEnabled:YES];
+    
+    
+    if([ManagerService confService].currentConfBaseInfo.lock_state){
+        _lockConfLabel.text = @"UnlockConf";
+    }else{
+        _lockConfLabel.text = @"LockConf";
+    }
 
     
     
@@ -559,13 +595,23 @@
 
 - (IBAction)muteSelf:(id)sender { 
     if([[ManagerService confService] confCtrlMuteAttendee:_mineConfInfo.number isMute:!_mineConfInfo.is_mute]){
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(_mineConfInfo.is_mute){
-                [self showMessage:@"Unmute self success"];
-            }else{
-                [self showMessage:@"Mute self success"];
-            }
-        });
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            if(_mineConfInfo.is_mute){
+//                [self showMessage:@"Unmute self success"];
+//            }else{
+//                [self showMessage:@"Mute self success"];
+//            }
+//        });
+        
+        if(_mineConfInfo.is_mute){
+            [_muteBtn setImage:[UIImage imageNamed:@"conf_tab_mute"] forState:UIControlStateNormal];
+            [_muteAttendeeLabel setTitle:@"Mute" forState:UIControlStateNormal];
+            [self showMessage:@"Unmute self success"];
+        }else{
+            [_muteBtn setImage:[UIImage imageNamed:@"conf_tab_mute_selected"] forState:UIControlStateNormal];
+            [_muteAttendeeLabel setTitle:@"unMute" forState:UIControlStateNormal];
+            [self showMessage:@"Mute self success"];
+        }
     }
 }
 
@@ -581,7 +627,7 @@
         [self showMessage:@"You are not chairman!"];
         return;
     }
-    [[ManagerService confService] confCtrlVoiceUpgradeToDataConference:(_currentStatus.media_type==CONF_MEDIATYPE_VIDEO)];
+    [[ManagerService confService] confCtrlVoiceUpgradeToDataConference:([ManagerService confService].currentConfBaseInfo.media_type==CONF_MEDIATYPE_VIDEO)];
 }
 - (IBAction)keypadButtonAction:(id)sender {
     if ([DialSecondPlate shareInstance].isShow) {
@@ -592,14 +638,14 @@
 }
 
 - (IBAction)lockConference:(id)sender {
-    [[ManagerService confService] confCtrlLockConference:!_currentStatus.lock_state];
+    [[ManagerService confService] confCtrlLockConference:![ManagerService confService].currentConfBaseInfo.lock_state];
     
 }
 
 #pragma mark - DialSecondDelegate
 -(void)clickDialSecondPlate:(NSString *)string
 {
-    CallInfo *callInfo = [[ManagerService callService] callInfoWithConfId:_currentStatus.conf_id];
+    CallInfo *callInfo = [[ManagerService callService] callInfoWithConfId:[ManagerService confService].currentConfBaseInfo.conf_id];
      [[ManagerService callService] sendDTMFWithDialNum:string callId:callInfo.stateInfo.callId];
 }
 
@@ -609,7 +655,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (_currentStatus.lock_state) {
+    if ([ManagerService confService].currentConfBaseInfo.lock_state) {
         return 20;
     }
     return 0;
@@ -631,7 +677,7 @@
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if ([self.attendeeListTableView isEqual:tableView]){
-        return _currentAttendees.count;
+        return [ManagerService confService].haveJoinAttendeeArray.count;
     }
     return 0;
 }
@@ -639,7 +685,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     AttendeeListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ConfAttendeeCell"];
-    ConfAttendeeInConf *attendee = _currentAttendees[indexPath.row];
+    ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
     cell.attendee = attendee;
     cell.isSpeaking = NO;
     for (ConfCtrlSpeaker *speaker in _currentSpeakArray) {
@@ -660,7 +706,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN) {
-        ConfAttendeeInConf *attendee = _currentAttendees[indexPath.row];
+        ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
 //        unsigned int userId = [attendee.userID intValue];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:attendee.name
                                                                                  message:@""

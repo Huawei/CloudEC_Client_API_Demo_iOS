@@ -7,12 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSUInteger, CreateGroupType)
-{
-    ADD_USER				=	0,						//add user
-    CREATE_GROUP			=	1,						//create group
-};
+#import "Defines.h"
 
 @class GroupEntity;
 @interface CreateGroupController : UIViewController
