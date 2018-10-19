@@ -191,18 +191,18 @@ static LoginCenter *g_loginCenter = nil;
     configResult = tsdk_set_config_param(TSDK_E_CONFIG_NETWORK_INFO, &networkInfo);
     DDLogInfo(@"config network info result: %d", configResult);
     
-    TSDK_S_IOS_PUSH_PARAM pushParam;
-    memset(&pushParam, 0, sizeof(TSDK_S_IOS_PUSH_PARAM));
-    pushParam.app_id = 1;
-    pushParam.language = TSDK_E_LANGUAGE_ZH;
-      //苹果推送服务器类型（1：生产环境 ; 2：测试环境）
-    pushParam.apns_env_type = TSDK_E_APNS_TEST_ENV;
-    //推送服务证书编号（1 espace appstore ；2 espace 企业；3 espace hd 企业；4 espace hd appstore）; 5 cloudLink appstore ; 6 cloudLink 企业  ，默认值0
-    pushParam.apns_cret_type = TSDK_E_APNS_CRET_XXX1;
-    strcpy(pushParam.device_token, [[ECSAppConfig sharedInstance].deviceToken UTF8String]);
-    strcpy(pushParam.voip_token, [[ECSAppConfig sharedInstance].voipToken UTF8String]);
-    configResult = tsdk_set_config_param(TSDK_E_CONFIG_IOS_PUSH_PARAM, &pushParam);
-    DDLogInfo(@"config param result: %d", configResult);
+//    TSDK_S_IOS_PUSH_PARAM pushParam;
+//    memset(&pushParam, 0, sizeof(TSDK_S_IOS_PUSH_PARAM));
+//    pushParam.app_id = 1;
+//    pushParam.language = TSDK_E_LANGUAGE_ZH;
+//      //苹果推送服务器类型（1：生产环境 ; 2：测试环境）
+//    pushParam.apns_env_type = TSDK_E_APNS_TEST_ENV;
+//    //推送服务证书编号（1 espace appstore ；2 espace 企业；3 espace hd 企业；4 espace hd appstore）; 5 cloudLink appstore ; 6 cloudLink 企业  ，默认值0
+//    pushParam.apns_cret_type = TSDK_E_APNS_CRET_XXX1;
+//    strcpy(pushParam.device_token, [[ECSAppConfig sharedInstance].deviceToken UTF8String]);
+//    strcpy(pushParam.voip_token, [[ECSAppConfig sharedInstance].voipToken UTF8String]);
+//    configResult = tsdk_set_config_param(TSDK_E_CONFIG_IOS_PUSH_PARAM, &pushParam);
+//    DDLogInfo(@"config param result: %d", configResult);
     
 }
 
