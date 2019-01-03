@@ -44,16 +44,17 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 
 #pragma mark - life circle
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
 
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     
-    if (UIDeviceOrientationPortrait != [[UIDevice currentDevice] orientation])
-    {
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationPortrait] forKey:@"orientation"];
-    }
-//    [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
+    [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
     
     [ManagerService confService].delegate = self;
     
@@ -68,7 +69,7 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.title = @"Conferecne";
+    //self.title = @"Conferecne";
     
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor whiteColor];
@@ -132,26 +133,26 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 - (IBAction)createConf:(id)sender {
     CreateConfViewController *ctrl = [[CreateConfViewController alloc] init];
     ctrl.hidesBottomBarWhenPushed = YES;
-    ctrl.title = @"Create Meeting";
+    //ctrl.title = @"Create Meeting";
     [self.navigationController pushViewController:ctrl animated:YES];
 }
 
 - (IBAction)accessConfByCode:(id)sender {
     UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:nil message:@"Access conference" preferredStyle:UIAlertControllerStyleAlert];
     [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.placeholder = @"conference id";
+        textField.placeholder = @"Conference id";
         textField.secureTextEntry = NO;
     }];
     [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.placeholder = @"account";
+        textField.placeholder = @"Access code";
         textField.secureTextEntry = NO;
     }];
     [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.placeholder = @"conf password";
+        textField.placeholder = @"Password";
         textField.secureTextEntry = NO;
     }];
     
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Access" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UITextField *accountTxf0 = alertCon.textFields.firstObject;
         UITextField *accountTxf1 = alertCon.textFields[1];
         UITextField *accountTxf2 = alertCon.textFields[2];

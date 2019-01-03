@@ -177,7 +177,6 @@
 		8DF8381D1F43EA86009BA0C1 /* UIImage+Stretchable.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF838131F43EA86009BA0C1 /* UIImage+Stretchable.m */; };
 		8DF838461F44019A009BA0C1 /* ConfDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF838441F44019A009BA0C1 /* ConfDetailViewController.m */; };
 		DE59FD62215DD0C700724BC1 /* libtup_cwmp_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */; };
-		DE59FD63215DD0C700724BC1 /* libHW_H265dec_IOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE59FD61215DD0C700724BC1 /* libHW_H265dec_IOS.a */; };
 		DE7410EF2119731F00FC9EBC /* JoinConfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */; };
 		DE87F1C3214A89B3006D50DC /* BaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C2214A89B3006D50DC /* BaseNavigationController.m */; };
 		DE87F1C6214B6534006D50DC /* ConfBaseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C5214B6534006D50DC /* ConfBaseInfo.m */; };
@@ -629,7 +628,6 @@
 		DE53D8062138E9D200804D42 /* tsdk_eaddr_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_eaddr_def.h; sourceTree = "<group>"; };
 		DE53D8072138E9D200804D42 /* tsdk_login_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_login_interface.h; sourceTree = "<group>"; };
 		DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cwmp_h5.a; sourceTree = "<group>"; };
-		DE59FD61215DD0C700724BC1 /* libHW_H265dec_IOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_H265dec_IOS.a; sourceTree = "<group>"; };
 		DE7410ED2119731E00FC9EBC /* JoinConfViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoinConfViewController.h; sourceTree = "<group>"; };
 		DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JoinConfViewController.m; sourceTree = "<group>"; };
 		DE87F1C1214A89B3006D50DC /* BaseNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseNavigationController.h; sourceTree = "<group>"; };
@@ -835,7 +833,6 @@
 				DEAB8FF9212E9824005BC744 /* libtup_commonlib.a in Frameworks */,
 				DEAB8FF8212E9824005BC744 /* libtup_cmpt_service.a in Frameworks */,
 				DEAB901A212E9824005BC744 /* libtup_msg.a in Frameworks */,
-				DE59FD63215DD0C700724BC1 /* libHW_H265dec_IOS.a in Frameworks */,
 				DEAB8FDB212E9823005BC744 /* libHW_MPT_IOS_G729AB_LIB.a in Frameworks */,
 				DEAB8FE0212E9823005BC744 /* libipsi_http.a in Frameworks */,
 				1258C1CC1F3958EF00654D80 /* AudioToolbox.framework in Frameworks */,
@@ -1469,7 +1466,6 @@
 		DEAB8F26212E9823005BC744 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				DE59FD61215DD0C700724BC1 /* libHW_H265dec_IOS.a */,
 				DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */,
 				DEAB8F32212E9823005BC744 /* libACE.a */,
 				DEAB8F33212E9823005BC744 /* libcrypto.a */,

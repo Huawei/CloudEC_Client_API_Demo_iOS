@@ -17,6 +17,7 @@
 #import "ConfRunningViewController.h"
 #import "ConfAttendee.h"
 #import "ConfListViewController.h"
+#import "CommonUtils.h"
 
 #define SCREEN_WIDTH MIN(self.view.bounds.size.width, self.view.bounds.size.height)
 #define SCREEN_HIGHT MAX(self.view.bounds.size.height, self.view.bounds.size.width)
@@ -61,7 +62,7 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    if (![ManagerService confService].isVideoConfInvited) {
+    if (![self isVideoConf]) {
         return UIInterfaceOrientationMaskPortrait;
     }
     return UIInterfaceOrientationMaskAllButUpsideDown;
@@ -101,12 +102,6 @@
         }
     }
     
-//    if ([self isSelfMaster]) {
-//        if (_setConfModeBtn == nil) {
-//            [self.bottomView addSubview:self.setConfModeBtn];
-//        }
-//    }
-    
     [self updateConfCtrlArray];
     
     
@@ -115,32 +110,6 @@
     }else{
         [self.muteBtn setImage:[UIImage imageNamed:@"conf_tab_mute"] forState:UIControlStateNormal];
     }
-    
-//    [self.confCtrlArray removeAllObjects];
-//    if ([ManagerService confService].isVideoConfInvited) {
-//        [self.confCtrlArray addObject:@"Camera Change"];
-//        [self.confCtrlArray addObject:@"Lock Conf"];
-//        EC_CONF_MEDIATYPE mediaType = [ManagerService confService].currentConfBaseInfo.media_type;
-//        if (mediaType == CONF_MEDIATYPE_VOICE || mediaType == CONF_MEDIATYPE_VIDEO) {
-//            [self.confCtrlArray addObject:@"Update Date Meeting"];
-//        }
-//    }
-//    if (self.selfConfInfo.role == CONF_ROLE_CHAIRMAN) {
-//        [self.confCtrlArray addObject:@"Release Chair"];
-//    }else{
-//        [self.confCtrlArray addObject:@"Request Chair"];
-//    }
-    
-//    [self.moreBtn setEnabled:YES];
-    
-//    NSInteger count = [ManagerService confService].haveJoinAttendeeArray.count;
-//    if (count > 0) {
-//        [self.barView addSubview:self.attendCameraChooseBtn];
-//        if (![self isUseTupVideo] || ([self isVideoConf])) {
-//            [self.view addSubview:self.attendTableViewBackFullScreenView];
-//        }
-//    }
-
 }
 
 - (NSMutableArray *)localCameraInfos {
@@ -160,7 +129,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        if ([self isUseTupVideo]) {
+        if ([self isVideoConf]) {
             _isCameraOpen = YES;
         }else {
             _isCameraOpen = NO;
@@ -231,6 +200,9 @@
         [self.barView addSubview:self.confDataShareBtn];
     }
     [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
+    if (![self isVideoConf]) {
+        [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -245,29 +217,19 @@
     
     self.view.backgroundColor = [UIColor clearColor];
     
-    if ([ManagerService confService].isVideoConfInvited) {
+    if ([self isVideoConf]) {
         [self.view insertSubview:self.backImageView belowSubview:self.bottomView];
-        if ([self isUseTupVideo]) {
-            [self.view insertSubview:self.remoteView aboveSubview:self.backImageView];
-        }
+        [self.view insertSubview:self.remoteView aboveSubview:self.backImageView];
         [self.view addSubview:self.localViewShower];
         [self.barView addSubview:self.attendCameraChooseBtn];
     }else{
         [self.view insertSubview:self.audioBackImageView belowSubview:self.bottomView];
     }
     
-//    if ([self isNeedAddDataBtn]) {
-//        [self.barView addSubview:self.confDataShareBtn];
-//    }
-//    [self.barView addSubview:self.attendCameraChooseBtn];
-//    if (![self isUseTupVideo] || ([self isVideoConf])) {
-//        [self.view addSubview:self.attendTableViewBackFullScreenView];
-//    }
-    if ([ManagerService confService].isVideoConfInvited) {
-//        [self configVideoBottomViewBtnsWithWidth:SCREEN_HIGHT];
+    if ([self isVideoConf]) {
         [self updateBtnViewFrame];
     }else{
-        [self configAudioBottomViewBtnsWithWidth:SCREEN_WIDTH];
+        [self configBottomViewBtnsWithWidth:SCREEN_WIDTH];
     }
     
 //    if ([self isSelfMaster]) {
@@ -302,45 +264,47 @@
     return isVideoDataConf;
 }
 
-- (void)configVideoBottomViewBtnsWithWidth:(CGFloat)width {
-//    CGFloat width = [self selfViewWidth];
-//    self.cameraHandleBtn.frame = CGRectMake(width/2-170, 0, 100, 71);
-    self.voiceBtn.frame = CGRectMake(width/2-110, 0, 100, 71);
-    self.muteBtn.frame = CGRectMake(width/2+10, 0, 100, 71);
-    self.attendeeListBtn.frame = CGRectMake(width/2-220, 0, 100, 71);
-    self.moreBtn.frame = CGRectMake(width/2+110, 0, 100, 71);
-    
-//    [self.bottomView addSubview:self.cameraHandleBtn];
-    [self.bottomView addSubview:self.voiceBtn];
-    [self.bottomView addSubview:self.muteBtn];
-    [self.bottomView addSubview:self.attendeeListBtn];
-    [self.bottomView addSubview:self.moreBtn];
-    
+- (BOOL)isInterfaceOrientationPortrait
+{
+    UIInterfaceOrientation interface = [UIApplication sharedApplication].statusBarOrientation;
+    if (interface == UIInterfaceOrientationPortrait) {
+        return YES;
+    }
+    return NO;
 }
 
-- (void)configAudioBottomViewBtnsWithWidth:(CGFloat)width
-{
-    self.voiceBtn.frame = CGRectMake(width/2-85, 0, 85, 85);
-    self.muteBtn.frame = CGRectMake(width/2, 0, 85, 85);
-    self.attendeeListBtn.frame = CGRectMake(width/2-170, 0, 85, 85);
-    self.moreBtn.frame = CGRectMake(width/2+85, 0, 85, 85);
+- (void)configBottomViewBtnsWithWidth:(CGFloat)width {
+
+    self.voiceBtn.frame = CGRectMake(width/2-35, 0, 50, 70);
+    [self changeBtnContent:self.voiceBtn];
+    
+    self.attendeeListBtn.frame = CGRectMake(width/2+35, 0, 50, 70);
+    [self changeBtnContent:self.attendeeListBtn];
+    
+    self.muteBtn.frame = CGRectMake(width/2-105, 0, 50, 70);
+    [self changeBtnContent:self.muteBtn];
+    
+    self.moreBtn.frame = CGRectMake(width/2+105, 0, 50, 70);
+    [self changeBtnContent:self.moreBtn];
+    
+    self.endBtn.frame = CGRectMake(width/2-175, 0, 50, 70);
+    [self changeBtnContent:self.endBtn];
+    
     [self.bottomView addSubview:self.voiceBtn];
     [self.bottomView addSubview:self.muteBtn];
     [self.bottomView addSubview:self.attendeeListBtn];
     [self.bottomView addSubview:self.moreBtn];
+    [self.bottomView addSubview:self.endBtn];
+    
 }
 
 - (void)moreBtnPressed
 {
     [self updateConfCtrlArray];
     if (_confCtrlTableViewBackFullScreenView) {
-        CGFloat backViewX = SCREEN_WIDTH-5-264;
-        if ([ManagerService confService].isVideoConfInvited) {
-            backViewX = SCREEN_HIGHT-5-264;
-            UIDeviceOrientation orientation = [[DeviceMotionManager sharedInstance] lastOrientation];
-            if (orientation == UIDeviceOrientationPortrait) {
-                backViewX = SCREEN_WIDTH-5-264;
-            }
+        CGFloat backViewX = SCREEN_HIGHT-5-264;
+        if ([self isInterfaceOrientationPortrait]) {
+            backViewX = SCREEN_WIDTH-5-264;
         }
         CGFloat hight = [self heightOfConfCtrlRealTableView];
         CGRect frame = CGRectMake(backViewX, self.view.frame.size.height - 100 - hight + 2*5, 264, hight + 2*5);
@@ -361,7 +325,7 @@
 - (void)updateConfCtrlArray
 {
     [self.confCtrlArray removeAllObjects];
-    if ([ManagerService confService].isVideoConfInvited) {
+    if ([self isVideoConf]) {
         [self.confCtrlArray addObject:@"Camera Change"];
         
         if (self.selfConfInfo.role == CONF_ROLE_CHAIRMAN) {
@@ -443,6 +407,7 @@
 - (UIImageView *)backImageView {
     if (!_backImageView) {
         _backImageView = [[UIImageView alloc] init];
+        
         _backImageView.frame = CGRectMake(([self selfViewWidth] - 142)/2, ([self selfViewHeight] - 142)/2, 142, 142);
         _backImageView.image = [UIImage imageNamed:@"image_conf_video_back"];
     }
@@ -460,7 +425,7 @@
 
 -(EAGLView *)localView{
     if (nil == _localView) {
-        if ([self isUseTupVideo]) {
+        if ([self isVideoConf]) {
             _localView = [EAGLView getLocalView];
         }else {
             _localView = [EAGLView getDataLocalView];
@@ -471,7 +436,7 @@
 
 -(EAGLView *)remoteView {
     if (nil == _remoteView) {
-        if ([self isUseTupVideo]) {
+        if ([self isVideoConf]) {
             _remoteView = [EAGLView getRemoteView];
         }
         else {
@@ -483,18 +448,17 @@
 
 - (void)updateBtnViewFrame
 {
-    if ([ManagerService confService].isVideoConfInvited) {
+    if ([self isVideoConf]) {
         CGFloat width = 0;
         CGFloat hight = 0;
-//            UIDeviceOrientation orientation8 = [[UIDevice currentDevice] orientation];
+
         UIInterfaceOrientation interface2 = [UIApplication sharedApplication].statusBarOrientation;
-//        UIDeviceOrientation orientation = [[DeviceMotionManager sharedInstance] lastOrientation];
-//        if (orientation == UIDeviceOrientationPortrait) {
+
         if (interface2 == UIInterfaceOrientationPortrait) {
             width = SCREEN_WIDTH;
             hight = SCREEN_HIGHT;
             
-            [self configAudioBottomViewBtnsWithWidth:width];
+            [self configBottomViewBtnsWithWidth:width];
             if (nil != _remoteView) {
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
@@ -503,23 +467,12 @@
                 _localView.frame = CGRectMake(0, 0, 95, 126);
             }
             
-            if (nil != _confCtrlTableViewBackImageView) {
-                CGFloat backViewX = SCREEN_WIDTH-5-264;
-
-                CGFloat hight = [self heightOfConfCtrlRealTableView];
-                CGRect frame = CGRectMake(backViewX, self.view.frame.size.height - 100 - hight + 2*5, 264, hight + 2*5);
-                _confCtrlTableViewBackImageView.frame = frame;
-            }
-            
-//        }else if (orientation == UIDeviceOrientationLandscapeLeft || orientation == UIDeviceOrientationLandscapeRight)
-//        {
-            
         }else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeRight)
         {
             width = SCREEN_HIGHT;
             hight = SCREEN_WIDTH;
             
-            [self configVideoBottomViewBtnsWithWidth:width];
+            [self configBottomViewBtnsWithWidth:width];
             if (nil != _remoteView) {
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
@@ -527,17 +480,39 @@
                 _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(5, 64 + 5, 126, 95)];
                 _localView.frame = CGRectMake(0, 0, 126, 95);
             }
-            
-            if (nil != _confCtrlTableViewBackImageView) {
-                CGFloat backViewX = SCREEN_HIGHT-5-264;
-
-                CGFloat hight = [self heightOfConfCtrlRealTableView];
-                CGRect frame = CGRectMake(backViewX, self.view.frame.size.height - 100 - hight + 2*5, 264, hight + 2*5);
-                _confCtrlTableViewBackImageView.frame = frame;
-            }
         }
+        
+        if (nil != _attendTableViewBackImageView) {
+            CGFloat backViewX = width-5-264;
+            CGFloat hight1 = [self heightOfRealTableView];
+            _attendTableViewBackFullScreenView.frame = CGRectMake(0, 0, width, hight);
+            _attendTableViewBackImageView.frame = CGRectMake(backViewX, 65, 264, hight1 + 2*5);
+            
+        }
+        
+        if (nil != _confCtrlTableViewBackImageView) {
+            CGFloat backViewX = width-5-264;
+            
+            CGFloat hight2 = [self heightOfConfCtrlRealTableView];
+            CGRect frame = CGRectMake(backViewX, self.view.frame.size.height - 100 - hight2 + 2*5, 264, hight2 + 2*5);
+            _confCtrlTableViewBackImageView.frame = frame;
+            _confCtrlTableViewBackFullScreenView.frame = CGRectMake(0, 0, width, hight);
+        }
+        
+        if (_attendCameraChooseBtn != nil) {
+            [_attendCameraChooseBtn setFrame:CGRectMake(width-40, 15, 34, 34)];
+        }
+        
+        if (_confDataShareBtn != nil) {
+            CGFloat DateShareBtnwidth = width - 40;
+            if ([self isVideoConf]) {
+                DateShareBtnwidth = width - 80;
+                
+            }
+            [_confDataShareBtn setFrame:CGRectMake(DateShareBtnwidth, 15, 34, 34)];
+        }
+        
     }
-    
 }
 
 - (void)deviceMotionOrientationChanged
@@ -593,7 +568,7 @@
 -(UIButton *)attendeeListBtn
 {
     if (nil == _attendeeListBtn) {
-        _attendeeListBtn = [self createButtonByImage:[UIImage imageNamed:@"attendee_list"] highlightImage:nil title:@"List" target:self action:@selector(attendeeListBtnPressed)];
+        _attendeeListBtn = [self createButtonByImage:[UIImage imageNamed:@"participant_list"] highlightImage:nil title:@"List" target:self action:@selector(attendeeListBtnPressed)];
     }
     return _attendeeListBtn;
 }
@@ -690,16 +665,21 @@
                                                     [UIImage imageNamed:@"enter_datashare2"],[UIImage imageNamed:@"enter_datashare3"]];
         _confDataShareImageView.animationDuration = 2;
         
+        
         _confDataShareBtn = [[UIButton alloc]initWithFrame:_confDataShareImageView.bounds];
         
-        CGFloat width = SCREEN_WIDTH -40;
-        if ([ManagerService confService].isVideoConfInvited) {
-            width = SCREEN_HIGHT -80;
+        CGFloat width = SCREEN_WIDTH - 40;
+        if ([self isVideoConf]) {
+            width = SCREEN_HIGHT - 80;
+            if ([self isInterfaceOrientationPortrait]) {
+                width = SCREEN_WIDTH - 80;
+            }
         }
         [_confDataShareBtn setFrame:CGRectMake(width, 15, 34, 34)];
         
         [_confDataShareBtn addTarget:self action:@selector(confDataShareBtnClicked:) forControlEvents:UIControlEventTouchUpInside];
         [_confDataShareBtn addSubview:_confDataShareImageView];
+        _confDataShareImageView.center = CGPointMake(17, 17);
     }
     return _confDataShareBtn;
 }
@@ -729,8 +709,11 @@
                                                      title:nil
                                                     target:self
                                                     action:@selector(attendCameraChooseBtnClicked:)];
-        CGFloat width = [self selfViewWidth];
-        [_attendCameraChooseBtn setFrame:CGRectMake(width-40, 15, 34, 34)];
+        CGFloat backViewX = SCREEN_HIGHT - 5 -264;
+        if ([self isInterfaceOrientationPortrait]) {
+            backViewX = SCREEN_WIDTH-5-264;
+        }
+        [_attendCameraChooseBtn setFrame:CGRectMake(backViewX-40, 15, 34, 34)];
     }
     return _attendCameraChooseBtn;
 }
@@ -738,9 +721,9 @@
 - (void)attendCameraChooseBtnClicked:(id)sender {
     
     if (_attendTableViewBackFullScreenView) {
-        CGFloat backViewX = SCREEN_WIDTH-5-264;
-        if ([ManagerService confService].isVideoConfInvited) {
-            backViewX = SCREEN_HIGHT-5-264;
+        CGFloat backViewX = SCREEN_HIGHT-5-264;
+        if ([self isInterfaceOrientationPortrait]) {
+            backViewX = SCREEN_WIDTH-5-264;
         }
         CGFloat hight = [self heightOfRealTableView];
         
@@ -752,18 +735,21 @@
     else{
         NSInteger count = [ManagerService confService].haveJoinAttendeeArray.count;
         if (count > 0) {
-            
-            if (![self isUseTupVideo] || ([self isVideoConf])) {
+            if ([self isVideoConf]) {
                 [self.view addSubview:self.attendTableViewBackFullScreenView];
             }
-            [self.attendTableView reloadData];
         }
     }
+    [self.attendTableView reloadData];
 }
 
 - (UIView *)attendTableViewBackFullScreenView {
     if(nil == _attendTableViewBackFullScreenView) {
-        _attendTableViewBackFullScreenView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, [self selfViewWidth], [self selfViewHeight])];
+        if ([self isInterfaceOrientationPortrait]) {
+            _attendTableViewBackFullScreenView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HIGHT)];
+        }else{
+            _attendTableViewBackFullScreenView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_HIGHT, SCREEN_WIDTH)];
+        }
         _attendTableViewBackFullScreenView.backgroundColor = [UIColor clearColor];
         [_attendTableViewBackFullScreenView addSubview:self.attendTableViewBackImageView];
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(attendTableViewFullScreenViewTap:)];
@@ -779,7 +765,10 @@
 
 - (UIView *)attendTableViewBackImageView {
     if (nil == _attendTableViewBackImageView) {
-        CGFloat backViewX = [self selfViewWidth]-5-264;
+        CGFloat backViewX = SCREEN_HIGHT-5-264;
+        if ([self isInterfaceOrientationPortrait]) {
+            backViewX = SCREEN_WIDTH-5-264;
+        }
         CGRect frame = CGRectMake(backViewX, 65, 264, [self heightOfRealTableView] + 2*5);
         _attendTableViewBackImageView = [[UIImageView alloc]initWithFrame:frame];
         _attendTableViewBackImageView.userInteractionEnabled = YES;
@@ -793,7 +782,7 @@
 }
 
 - (CGFloat)heightOfRealTableView {
-    NSInteger rowNumber = [ManagerService confService].haveJoinAttendeeArray.count;
+    NSInteger rowNumber = [ManagerService confService].haveJoinAttendeeArray.count + 1;
     if (rowNumber <= 4) {
         return rowNumber*44+30;
     }
@@ -829,7 +818,7 @@
 }
 
 - (void)updateRemoteViewInTupVideoConf:(BOOL)isAddView {
-    if (![self isUseTupVideo]) {
+    if (![self isVideoConf]) {
         DDLogInfo(@"not use tup video, ignore!");
         return;
     }
@@ -842,7 +831,7 @@
 }
 
 - (void)updateLocalViewInTupVideoConf:(BOOL)isAddView {
-    if (![self isUseTupVideo]) {
+    if (![self isVideoConf]) {
         DDLogInfo(@"not tup video conf, ignore!");
         return;
     }
@@ -854,7 +843,7 @@
 }
 
 - (void)tupLocalVideoViewRefreshViewWithCallId:(NSNotification *)notify {
-    if (![ManagerService confService].isVideoConfInvited) {
+    if (![self isVideoConf]) {
         DDLogInfo(@"not tup video conf,ignore!");
         return;
     }
@@ -871,7 +860,7 @@
 }
 
 - (void)tupRemoteVideoViewDecodeSuccessWithCallId:(NSNotification *)notify {
-    if (![self isUseTupVideo]) {
+    if (![self isVideoConf]) {
         DDLogInfo(@"not tup video conf,ignore!");
         return;
     }
@@ -892,7 +881,7 @@
     NSInteger count = 0;
     
     if (tableView == _attendTableView) {
-        count = [ManagerService confService].haveJoinAttendeeArray.count;
+        count = [ManagerService confService].haveJoinAttendeeArray.count + 1;
     }
     if (tableView == _confCtrlTableView) {
         count = self.confCtrlArray.count;
@@ -922,11 +911,15 @@
                                       reuseIdentifier:NSStringFromClass([UITableViewCell class])];
     }
     if (tableView == _attendTableView) {
-        ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
-        if ([attendee.number isEqualToString:self.selfNumber]) {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@(me)", attendee.number];
-        }else {
-            cell.textLabel.text = [NSString stringWithFormat:@"%@", attendee.number];
+        if (indexPath.row == 0) {
+            cell.textLabel.text = @"Main Conf Hall";
+        }else{
+            ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row - 1];
+            if ([attendee.number isEqualToString:self.selfNumber]) {
+                cell.textLabel.text = [NSString stringWithFormat:@"%@(me)", attendee.number];
+            }else {
+                cell.textLabel.text = [NSString stringWithFormat:@"%@", attendee.number];
+            }
         }
         cell.textLabel.textColor = [UIColor blackColor];
     }
@@ -943,26 +936,31 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (tableView == _attendTableView) {
-        ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
-        if ([self isVideoConf]) {
-            if ([self isSelfMaster]) {
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Tips"
-                                                                                         message:[NSString stringWithFormat:@"Broadcast %@'s video?", attendee.number]
-                                                                                  preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction *sureAction = [UIAlertAction actionWithTitle:@"Sure"
-                                                                     style:UIAlertActionStyleDefault
-                                                                   handler:^(UIAlertAction * _Nonnull action) {
-                                                                       [[ManagerService confService] boardcastAttendee:attendee.number isBoardcast:YES];
-                                                                   }];
-                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
-                                                                       style:UIAlertActionStyleDefault
-                                                                     handler:nil];
-                [alertController addAction:sureAction];
-                [alertController addAction:cancelAction];
-                [self.navigationController presentViewController:alertController animated:YES completion:nil];
-            }
-            else
-            {
+        if (indexPath.row == 0) {
+            [[ManagerService confService] watchAttendeeNumber:@""];
+        }
+        else
+        {
+            ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row - 1];
+            if ([self isVideoConf]) {
+                //            if ([self isSelfMaster]) {
+                //                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Tips"
+                //                                                                                         message:[NSString stringWithFormat:@"Broadcast %@'s video?", attendee.number]
+                //                                                                                  preferredStyle:UIAlertControllerStyleAlert];
+                //                UIAlertAction *sureAction = [UIAlertAction actionWithTitle:@"Sure"
+                //                                                                     style:UIAlertActionStyleDefault
+                //                                                                   handler:^(UIAlertAction * _Nonnull action) {
+                //                                                                       [[ManagerService confService] broadcastAttendee:attendee.number isBoardcast:YES];
+                //                                                                   }];
+                //                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                //                                                                       style:UIAlertActionStyleDefault
+                //                                                                     handler:nil];
+                //                [alertController addAction:sureAction];
+                //                [alertController addAction:cancelAction];
+                //                [self.navigationController presentViewController:alertController animated:YES completion:nil];
+                //            }
+                //            else
+                //            {
                 UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Tips"
                                                                                          message:[NSString stringWithFormat:@"watch %@'s video?", attendee.number]
                                                                                   preferredStyle:UIAlertControllerStyleAlert];
@@ -978,14 +976,16 @@
                 [alertController addAction:sureAction];
                 [alertController addAction:cancelAction];
                 [self.navigationController presentViewController:alertController animated:YES completion:nil];
+                //            }
             }
         }
+        
     }
     if (tableView == _confCtrlTableView) {
         NSString *confCtrlAction = self.confCtrlArray[indexPath.row];
         if ([confCtrlAction isEqualToString:@"Camera Change"]) {
             if (_isCameraOpen) {
-                if ([self isUseTupVideo]) {
+                if ([self isVideoConf]) {
                     _cameraCaptureIndex = _cameraCaptureIndex == 1 ? 0 : 1;
                     BOOL isSuccess = [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:[ManagerService confService].currentConfBaseInfo.call_id];
                     if (isSuccess) {
@@ -1039,16 +1039,34 @@
 {
     UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:nil message:@"Please enter participant number" preferredStyle:UIAlertControllerStyleAlert];
     [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.placeholder = @"Please enter participant number...";
+        textField.placeholder = @"Number";
+        textField.secureTextEntry = NO;
+    }];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Name";
+        textField.secureTextEntry = NO;
+    }];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Account";
         textField.secureTextEntry = NO;
     }];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        UITextField *accountTxf = alertCon.textFields.firstObject;
-        ConfAttendee *cAttendee = [[ConfAttendee alloc] init];
-        cAttendee.name = accountTxf.text;
-        cAttendee.number = accountTxf.text;
+        UITextField *numberFiled = alertCon.textFields.firstObject;
+        UITextField *nameFiled = alertCon.textFields[1];
+        UITextField *accountField = alertCon.textFields[2];
+        
+        NSString *number = numberFiled.text;
+        NSString *name = nameFiled.text;
+        NSString *account = accountField.text;
+        
+        ConfAttendee *cAttendee = [[ConfAttendee alloc]init];
+        cAttendee.number = number;
+        cAttendee.name = name ? name : number;
+        cAttendee.account = account;
         NSArray *addAttendeeArray = @[cAttendee];
-        [[ManagerService confService] confCtrlAddAttendeeToConfercene:addAttendeeArray];
+        if (cAttendee.number != nil && cAttendee.number.length > 0) {
+            [[ManagerService confService] confCtrlAddAttendeeToConfercene:addAttendeeArray];
+        }
     }];
     [alertCon addAction:okAction];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
@@ -1082,16 +1100,7 @@
 }
 
 - (BOOL)isVideoConf {
-//    BOOL isVideoConf = NO;
-//    if (CONF_MEDIATYPE_VIDEO == [ManagerService confService].currentConfBaseInfo.media_type || CONF_MEDIATYPE_VIDEO_DATA == [ManagerService confService].currentConfBaseInfo.media_type) {
-//        isVideoConf = YES;
-//    }
-//    return isVideoConf;
     return [ManagerService confService].isVideoConfInvited;
-}
-
-- (BOOL)isUseTupVideo {
-    return [self isVideoConf];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -1123,12 +1132,9 @@
 - (UIView *)confCtrlTableViewBackImageView {
     if (nil == _confCtrlTableViewBackImageView) {
         
-        CGFloat backViewX = SCREEN_WIDTH-5-264;
-        if ([ManagerService confService].isVideoConfInvited) {
-            backViewX = SCREEN_HIGHT-5-264;
-            if ([DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationPortrait) {
-                backViewX = SCREEN_WIDTH-5-264;
-            }
+        CGFloat backViewX = SCREEN_HIGHT-5-264;
+        if ([self isInterfaceOrientationPortrait]) {
+            backViewX = SCREEN_WIDTH-5-264;
         }
         CGFloat hight = [self heightOfConfCtrlRealTableView];
         CGRect frame = CGRectMake(backViewX, self.view.frame.size.height - 100 - hight + 2*5, 264, hight + 2*5);
@@ -1141,10 +1147,10 @@
 
 - (UIView *)confCtrlTableViewBackFullScreenView {
     if(nil == _confCtrlTableViewBackFullScreenView) {
-        if ([ManagerService confService].isVideoConfInvited) {
-            _confCtrlTableViewBackFullScreenView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_HIGHT, SCREEN_WIDTH)];
-        }else{
+        if ([self isInterfaceOrientationPortrait]) {
             _confCtrlTableViewBackFullScreenView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HIGHT)];
+        }else{
+            _confCtrlTableViewBackFullScreenView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, SCREEN_HIGHT, SCREEN_WIDTH)];
         }
         
         _confCtrlTableViewBackFullScreenView.backgroundColor = [UIColor clearColor];

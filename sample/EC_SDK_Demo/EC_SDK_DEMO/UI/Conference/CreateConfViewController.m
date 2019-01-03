@@ -219,11 +219,17 @@
 
 -(void)fillSelfAttendeeInfo
 {
-    NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
-    NSString *shortSipNum = array[0];
+//    NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
+//    NSString *shortSipNum = array[0];
+    
+    LoginInfo *mine = [[ManagerService loginService] obtainCurrentLoginInfo];
+    NSArray *array = [mine.account componentsSeparatedByString:@"@"];
+    NSString *name = array[0];
+    
     ConfAttendee *attendee = [[ConfAttendee alloc] init];
-    attendee.name = shortSipNum;
-    attendee.number = shortSipNum;
+    attendee.name = name;
+    attendee.number = [ManagerService callService].sipAccount;
+    attendee.account = mine.account;
     attendee.type = ATTENDEE_TYPE_NORMAL;
     attendee.role = CONF_ROLE_CHAIRMAN;
     [self.selectedAttendeArray addObject:attendee];
@@ -290,8 +296,9 @@
     
     
     
+    
     UIButton *createBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 60, 30)];
-    [createBtn setTitle:@"Finish" forState:UIControlStateNormal];
+    [createBtn setTitle:@"Create Meeting" forState:UIControlStateNormal];
     [createBtn addTarget:self action:@selector(createConfEnter) forControlEvents:UIControlEventTouchUpInside];
     //        createBtn.espace_acceptEventInterval = 1.5;
     UIBarButtonItem *creatBtnItem = [[UIBarButtonItem alloc] initWithCustomView:createBtn];
@@ -709,7 +716,7 @@
     [cell addSubview:attendeeLabel];
     [cell addSubview:_attendeeCountLabel];
     [cell addSubview:self.attendeeView];
-    [cell addSubview:self.inputNumTextField];
+    //[cell addSubview:self.inputNumTextField];
     [cell addSubview:button];
     
 
@@ -718,20 +725,62 @@
 
 - (void)addAttendeeNumber
 {
-    NSString *attendeeNum = self.inputNumTextField.text;
-    if (attendeeNum.length != 0) {
-        self.inputNumTextField.text = nil;
-        [self.inputNumTextField reloadInputViews];
+    UIAlertController *allertCtrl = [UIAlertController alertControllerWithTitle:@"attendee" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    [allertCtrl addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Number";
+        textField.secureTextEntry = NO;
+    }];
+    [allertCtrl addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Name";
+        textField.secureTextEntry = NO;
+    }];
+    [allertCtrl addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Account";
+        textField.secureTextEntry = NO;
+    }];
+    
+    UIAlertAction *AlertAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UITextField *numberFiled = allertCtrl.textFields.firstObject;
+        UITextField *nameFiled = allertCtrl.textFields[1];
+        UITextField *accountField = allertCtrl.textFields[2];
+        
+        NSString *number = numberFiled.text;
+        NSString *name = nameFiled.text;
+        NSString *account = accountField.text;
+        
         ConfAttendee *attendee = [[ConfAttendee alloc]init];
-        attendee.number = attendeeNum;
-        attendee.name = attendeeNum;
+        attendee.number = number;
+        attendee.name = name ? name : number;
+        attendee.account = account;
         attendee.type = ATTENDEE_TYPE_NORMAL;
         attendee.role = CONF_ROLE_ATTENDEE;
-        [_selectedAttendeArray addObject:attendee];
-        _attendeeCountLabel.text = [NSString stringWithFormat:@"%lu person(s)", (unsigned long)self.selectedAttendeArray.count];
-        [_attendeeView reloadData];
-        [self hideKeyboard];
-    }
+        if (attendee.number != nil && attendee.number.length > 0) {
+            [_selectedAttendeArray addObject:attendee];
+            _attendeeCountLabel.text = [NSString stringWithFormat:@"%lu person(s)", (unsigned long)self.selectedAttendeArray.count];
+            [_attendeeView reloadData];
+        }
+    }];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    
+    [allertCtrl addAction:AlertAction];
+    [allertCtrl addAction:cancelAction];
+    [self presentViewController:allertCtrl animated:YES completion:nil];
+    
+//    NSString *attendeeNum = self.inputNumTextField.text;
+//    if (attendeeNum.length != 0) {
+//        self.inputNumTextField.text = nil;
+//        [self.inputNumTextField reloadInputViews];
+//        ConfAttendee *attendee = [[ConfAttendee alloc]init];
+//        attendee.number = attendeeNum;
+//        attendee.name = attendeeNum;
+//        attendee.type = ATTENDEE_TYPE_NORMAL;
+//        attendee.role = CONF_ROLE_ATTENDEE;
+//        [_selectedAttendeArray addObject:attendee];
+//        _attendeeCountLabel.text = [NSString stringWithFormat:@"%lu person(s)", (unsigned long)self.selectedAttendeArray.count];
+//        [_attendeeView reloadData];
+//        [self hideKeyboard];
+//    }
 }
     
 
@@ -818,7 +867,12 @@
         [self configureItemCell:cell atIndexPath:indexPath];
     }else{
         cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-        cell.textLabel.text = ((ConfAttendee *)_selectedAttendeArray[indexPath.row]).number;
+        ConfAttendee * attendee = _selectedAttendeArray[indexPath.row];
+        NSString *cellString = [NSString stringWithFormat:@"Name:%@ Number:%@ Account:%@",attendee.name, attendee.number, attendee.account];
+        cell.textLabel.text = cellString;
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.font = [UIFont systemFontOfSize:12.0];
+//        cell.textLabel.text = ((ConfAttendee *)_selectedAttendeArray[indexPath.row]).number;
     }
     return cell;
 }
@@ -833,7 +887,7 @@
         }
         return 44;
     }else{
-        return 25;
+        return 30;
     }
     
 }

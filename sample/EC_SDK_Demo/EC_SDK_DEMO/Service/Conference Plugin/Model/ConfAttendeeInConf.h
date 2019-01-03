@@ -26,6 +26,7 @@
 @property (nonatomic, assign) BOOL isJoinDataconf; //是否加入数据会议
 @property (nonatomic, assign) BOOL isPresent; //是否是主讲人
 @property (nonatomic, assign) BOOL isSelf; //是否是自己
+@property (nonatomic, assign) BOOL isBroadcast; //是否被广播
 
 @end
 

@@ -56,14 +56,20 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
 
 - (void)loginSipUnregistered
 {
-    [self showMessage:@"lgoin faild! sip unregistered!"];
-    [self hiddenActivityIndicator:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showMessage:@"lgoin faild! sip unregistered!"];
+        [self hiddenActivityIndicator:YES];
+    });
+    
 }
 
 - (void)loginAuthFailed
 {
-    [self showMessage:@"lgoin faild! auth failed!"];
-    [self hiddenActivityIndicator:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showMessage:@"lgoin faild! auth failed!"];
+        [self hiddenActivityIndicator:YES];
+    });
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -100,8 +106,12 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     }
     
     if (serverAddress.length == 0 || serverPort.length == 0) {
-        [self showMessage:@"server config can't be empty!"];
-        return;
+//        [self showMessage:@"server config can't be empty!"];
+//        return;
+        serverAddress = @"218.4.33.69";
+        serverPort = @"8443";
+        [CommonUtils userDefaultSaveValue:@[@"218.4.33.69", @"8443"] forKey:SERVER_CONFIG];
+        
     }
 
     [self hiddenActivityIndicator:NO];

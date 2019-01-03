@@ -378,7 +378,7 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
  *                                  设备类型，参考CALL_E_DEVICE_TYPE
  *@return YES is success,NO is fail
  */
--(BOOL)obtainDeviceListWityType:(DEVICE_TYPE)deviceType;
+//-(BOOL)obtainDeviceListWityType:(DEVICE_TYPE)deviceType;
 
 /**
  * This method is used to set audio route

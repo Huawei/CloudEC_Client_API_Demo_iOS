@@ -1163,28 +1163,28 @@ NSString* const TSDK_COMING_CALL_NOTIFY = @"TSDK_COMING_CALL_NOTIFY";
  *                                  设备类型，参考CALL_E_DEVICE_TYPE
  *@return YES is success,NO is fail
  */
--(BOOL)obtainDeviceListWityType:(DEVICE_TYPE)deviceType
-{
-    DDLogInfo(@"current device type: %ld",deviceType);
-    TSDK_UINT32 deviceNum = 0;
-    TSDK_S_DEVICE_INFO *deviceInfo = nullptr;
-    memset(deviceInfo, 0, sizeof(TSDK_S_DEVICE_INFO));
-    TSDK_RESULT ret = tsdk_get_devices((TSDK_E_DEVICE_TYPE)deviceType, &deviceNum, deviceInfo);
-    DDLogInfo(@"Call_Log: tsdk_get_devices = %#x,count:%d",ret,deviceNum);
-    if (deviceNum>0)
-    {
-        DDLogInfo(@"again");
-        deviceInfo = new TSDK_S_DEVICE_INFO[deviceNum];
-        TSDK_RESULT rets = tsdk_get_devices((TSDK_E_DEVICE_TYPE)deviceType, &deviceNum, deviceInfo);
-        DDLogInfo(@"Call_Log: tsdk_get_devices = %#x,count:%d",rets,deviceNum);
-        for (int i = 0; i<deviceNum; i++)
-        {
-            DDLogInfo(@"Call_Log: ulIndex:%d,strName:%s,string:%@",deviceInfo[i].index,deviceInfo[i].device_name,[NSString stringWithUTF8String:deviceInfo[i].device_name]);
-        }
-    }
-    delete [] deviceInfo;
-    return ret == TSDK_SUCCESS ? YES : NO;
-}
+//-(BOOL)obtainDeviceListWityType:(DEVICE_TYPE)deviceType
+//{
+//    DDLogInfo(@"current device type: %ld",deviceType);
+//    TSDK_UINT32 deviceNum = 0;
+//    TSDK_S_DEVICE_INFO *deviceInfo = nullptr;
+//    memset(deviceInfo, 0, sizeof(TSDK_S_DEVICE_INFO));
+//    TSDK_RESULT ret = tsdk_get_devices((TSDK_E_DEVICE_TYPE)deviceType, &deviceNum, deviceInfo);
+//    DDLogInfo(@"Call_Log: tsdk_get_devices = %#x,count:%d",ret,deviceNum);
+//    if (deviceNum>0)
+//    {
+//        DDLogInfo(@"again");
+//        deviceInfo = new TSDK_S_DEVICE_INFO[deviceNum];
+//        TSDK_RESULT rets = tsdk_get_devices((TSDK_E_DEVICE_TYPE)deviceType, &deviceNum, deviceInfo);
+//        DDLogInfo(@"Call_Log: tsdk_get_devices = %#x,count:%d",rets,deviceNum);
+//        for (int i = 0; i<deviceNum; i++)
+//        {
+//            DDLogInfo(@"Call_Log: ulIndex:%d,strName:%s,string:%@",deviceInfo[i].index,deviceInfo[i].device_name,[NSString stringWithUTF8String:deviceInfo[i].device_name]);
+//        }
+//    }
+//    delete [] deviceInfo;
+//    return ret == TSDK_SUCCESS ? YES : NO;
+//}
 
 /**
  * This method is used to switch camera open or close

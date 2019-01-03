@@ -27,6 +27,8 @@
 - (void)goToConfListViewController;
 - (void)showMessage:(NSString *)msg;
 
+- (void)changeBtnContent:(UIButton *)btn;
+
 - (UIButton *)createButtonByImage:(UIImage *)btnImage
                    highlightImage:(UIImage *)highlightImage
                             title:(NSString *)title

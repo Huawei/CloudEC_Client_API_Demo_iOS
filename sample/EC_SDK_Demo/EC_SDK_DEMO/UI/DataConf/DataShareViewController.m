@@ -14,6 +14,7 @@
 #import "ConfChatViewController.h"
 #include "ConfBaseInfo.h"
 #import "ConfListViewController.h"
+#import "CommonUtils.h"
 
 #define MAXSCALE 4.0
 #define MINSCALE 1.0
@@ -88,11 +89,16 @@
 
 @implementation DataShareViewController
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskLandscape;
+}
+
 - (instancetype)init
 {
     self = [super init];
     if (self) {
-        
+        [((id)[ManagerService confService]) addObserver:self forKeyPath:@"lastConfSharedData" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -160,6 +166,8 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [ManagerService confService].delegate = self;
+    [self updateShareImageData:[ManagerService confService].lastConfSharedData];
+    [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -374,6 +382,35 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [((id)[ManagerService confService]) removeObserver:self forKeyPath:@"lastConfSharedData"];
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+//    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    __weak typeof(self) weakSelf = self;
+    if (object == [ManagerService confService]) {
+        if ([keyPath isEqualToString:@"lastConfSharedData"]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSData *imgData = [ManagerService confService].lastConfSharedData;
+                [weakSelf updateShareImageData:imgData];
+            });
+            
+        }
+    }
+}
+
+- (void)updateShareImageData:(NSData *)imgData
+{
+    if (imgData == nil) {
+        self.zoomViewImageShare.defaultView.hidden = NO;
+        self.shareImageView.image = nil;
+    }else{
+        UIImage *image = [[UIImage alloc] initWithData:imgData];
+        self.zoomViewImageShare.defaultView.hidden = YES;
+        self.shareImageView.image = image;
+    }
 }
 
 /*

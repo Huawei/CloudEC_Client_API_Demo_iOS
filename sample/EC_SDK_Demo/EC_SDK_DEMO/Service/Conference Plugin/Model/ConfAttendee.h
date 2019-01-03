@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, CONFCTRL_ATTENDEE_TYPE) {
 };
 
 @interface ConfAttendee : NSObject
+@property (nonatomic, copy)NSString *account;
 @property (nonatomic, copy) NSString *number;
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *email;

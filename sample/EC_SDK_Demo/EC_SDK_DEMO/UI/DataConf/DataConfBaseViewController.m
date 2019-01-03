@@ -121,7 +121,7 @@
     [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:YES animated:animated];
     self.navigationController.interactivePopGestureRecognizer.enabled = NO;
-    [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
+//    [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
 }
 
 -(void)viewWillDisappear:(BOOL)animated{
@@ -396,6 +396,12 @@
     return button;
 }
 
+- (void)changeBtnContent:(UIButton *)btn
+{
+    btn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    [btn setTitleEdgeInsets:UIEdgeInsetsMake(btn.imageView.frame.size.height, -btn.imageView.frame.size.width, 0.0, 0.0)];
+    [btn setImageEdgeInsets:UIEdgeInsetsMake(-btn.titleLabel.bounds.size.height, 0.0, 0.0, -btn.titleLabel.bounds.size.width)];
+}
 //返回当前的view的宽度，由于为横屏，所以返回的高宽中更大值的为宽度（由于转屏的影响，需要实时获取宽度）
 - (CGFloat)selfViewWidth
 {

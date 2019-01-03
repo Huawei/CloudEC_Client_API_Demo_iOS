@@ -219,6 +219,11 @@
     }
 }
 
+-(UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
 -(void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -528,16 +533,34 @@
 {
     UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:nil message:@"Please enter participant number" preferredStyle:UIAlertControllerStyleAlert];
     [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        textField.placeholder = @"Please enter participant number...";
+        textField.placeholder = @"Number";
+        textField.secureTextEntry = NO;
+    }];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Name";
+        textField.secureTextEntry = NO;
+    }];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Account";
         textField.secureTextEntry = NO;
     }];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        UITextField *accountTxf = alertCon.textFields.firstObject;
-        ConfAttendee *cAttendee = [[ConfAttendee alloc] init];
-        cAttendee.name = accountTxf.text;
-        cAttendee.number = accountTxf.text;
+        UITextField *numberFiled = alertCon.textFields.firstObject;
+        UITextField *nameFiled = alertCon.textFields[1];
+        UITextField *accountField = alertCon.textFields[2];
+        
+        NSString *number = numberFiled.text;
+        NSString *name = nameFiled.text;
+        NSString *account = accountField.text;
+        
+        ConfAttendee *cAttendee = [[ConfAttendee alloc]init];
+        cAttendee.number = number;
+        cAttendee.name = name ? name : number;
+        cAttendee.account = account;
         NSArray *addAttendeeArray = @[cAttendee];
-        [[ManagerService confService] confCtrlAddAttendeeToConfercene:addAttendeeArray];
+        if (cAttendee.number !=  nil && cAttendee.number.length > 0) {
+            [[ManagerService confService] confCtrlAddAttendeeToConfercene:addAttendeeArray];
+        }
     }];
     [alertCon addAction:okAction];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
@@ -737,6 +760,19 @@
                     [[ManagerService confService] confCtrlMuteAttendee:attendee.number isMute:!attendee.is_mute];
                 }];
                 [alertController addAction:action];
+            }
+            
+            if ([ManagerService confService].isVideoConfInvited) {
+                NSString *broastcast = @"Broatcast attendee";
+                BOOL BroatcastAttendee = YES;
+                if (attendee.isBroadcast) {
+                    broastcast = @"UnBroatcast attendee";
+                    BroatcastAttendee = NO;
+                }
+                UIAlertAction * borastAction = [UIAlertAction actionWithTitle:broastcast style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    [[ManagerService confService] broadcastAttendee:attendee.number isBoardcast:BroatcastAttendee];
+                }];
+                [alertController addAction:borastAction];
             }
             
 //            UIAlertAction* action = [UIAlertAction actionWithTitle:@"HangUp Participant" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {

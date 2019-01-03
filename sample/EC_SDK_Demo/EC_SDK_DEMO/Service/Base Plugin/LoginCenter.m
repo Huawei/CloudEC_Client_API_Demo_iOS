@@ -163,7 +163,11 @@ static LoginCenter *g_loginCenter = nil;
         default:
             break;
     }
-    CONFIG_PRIORITY_TYPE priorityType = [array[2] intValue];
+    NSString *priorityTypeString = array[2];
+    if (priorityTypeString == nil) {
+        priorityTypeString = @"1";
+    }
+    CONFIG_PRIORITY_TYPE priorityType = [priorityTypeString intValue];
     TSDK_S_SERVICE_SECURITY_PARAM securityParam;
     memset(&securityParam, 0, sizeof(TSDK_S_SERVICE_SECURITY_PARAM));
     securityParam.is_apply_config_priority = (priorityType == CONFIG_PRIORITY_TYPE_APP);
@@ -176,8 +180,9 @@ static LoginCenter *g_loginCenter = nil;
     //config network info
     TSDK_S_NETWORK_INFO_PARAM networkInfo;
     memset(&networkInfo, 0, sizeof(TSDK_S_NETWORK_INFO_PARAM));
-    BOOL is_apply_config_priority = [array[5] boolValue];
-    if (is_apply_config_priority)
+    NSString * isApplyConfigPriorityString = array[5];
+    BOOL is_apply_config_priority = [isApplyConfigPriorityString boolValue];
+    if (is_apply_config_priority || isApplyConfigPriorityString == nil)
     {
         networkInfo.sip_server_udp_port = [array[3] intValue];
         networkInfo.sip_server_tls_port = [array[4] intValue];
@@ -198,7 +203,7 @@ static LoginCenter *g_loginCenter = nil;
 //      //苹果推送服务器类型（1：生产环境 ; 2：测试环境）
 //    pushParam.apns_env_type = TSDK_E_APNS_TEST_ENV;
 //    //推送服务证书编号（1 espace appstore ；2 espace 企业；3 espace hd 企业；4 espace hd appstore）; 5 cloudLink appstore ; 6 cloudLink 企业  ，默认值0
-//    pushParam.apns_cret_type = TSDK_E_APNS_CRET_XXX1;
+//    pushParam.apns_cret_type = TSDK_E_APNS_CRET_1;
 //    strcpy(pushParam.device_token, [[ECSAppConfig sharedInstance].deviceToken UTF8String]);
 //    strcpy(pushParam.voip_token, [[ECSAppConfig sharedInstance].voipToken UTF8String]);
 //    configResult = tsdk_set_config_param(TSDK_E_CONFIG_IOS_PUSH_PARAM, &pushParam);

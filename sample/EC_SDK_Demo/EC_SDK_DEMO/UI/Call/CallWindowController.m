@@ -368,14 +368,14 @@ static CallWindowController *g_windowCtrl = nil;
             [_callInfoArray addObject:callInfo];
         }
         
-        if (!callInfo.isFocus) {
+//        if (!callInfo.isFocus) {
             [self.callWindow makeKeyAndVisible];
             [self addCallView];
-        }
-        else {
-            [self removeCallView:_currentTupCallInfo.stateInfo.callId];
-            [self.callWindow setHidden:YES];
-        }
+//        }
+//        else {
+//            [self removeCallView:_currentTupCallInfo.stateInfo.callId];
+//            [self.callWindow setHidden:YES];
+//        }
         
         
         if (callInfo.stateInfo.callId == [CallTipView shareInstance].callId) {
@@ -482,7 +482,11 @@ static CallWindowController *g_windowCtrl = nil;
             _currentTupCallInfo = nil;
             DDLogInfo(@"_callInfoArray removeAllObjects");
             _talkingCtrl.orientation = UIInterfaceOrientationPortrait;
-            [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
+            if (UIDeviceOrientationPortrait != [[UIDevice currentDevice] orientation])
+            {
+                [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationPortrait] forKey:@"orientation"];
+            }
+//            [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
             [self.callWindow setHidden:YES];
         }
         

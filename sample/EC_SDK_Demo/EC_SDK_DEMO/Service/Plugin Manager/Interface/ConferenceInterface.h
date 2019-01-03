@@ -62,6 +62,8 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  */
 @property (nonatomic, assign) BOOL isJoinDataConf;
 
+@property (nonatomic,strong) NSData *lastConfSharedData; //数据会议共享数据
+
 /**
  *Indicates whether have video in conference
  *判断是否会议中带视频能力
@@ -280,7 +282,7 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  * This method is used to boardcast attendee
  * 广播与会者
  */
-- (void)boardcastAttendee:(NSString *)attendeeNumber isBoardcast:(BOOL)isBoardcast;
+- (void)broadcastAttendee:(NSString *)attendeeNumber isBoardcast:(BOOL)isBoardcast;
 
 /**
  * This method is used to boardcast attendee

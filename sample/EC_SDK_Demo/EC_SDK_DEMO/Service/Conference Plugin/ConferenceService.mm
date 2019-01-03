@@ -26,6 +26,9 @@
 #import "ConfBaseInfo.h"
 #import "CommonUtils.h"
 
+//数据共享线程
+dispatch_queue_t espace_dataconf_datashare_queue = 0;
+
 #define JOIN_NUMBER_LEN 256
 @interface ConferenceService()<TupConfNotifacation>
 
@@ -38,6 +41,10 @@
 @property (nonatomic, assign) BOOL hasReportMediaxSpeak;          // has reportMediaxSpeak or not in Mediax
 @property (nonatomic, retain) NSTimer *heartBeatTimer;            // NSTime record heart beat
 @property (nonatomic, assign) int currentCallId;                  // current call id
+
+@property (nonatomic, assign) BOOL isStartScreenSharing;
+@property (nonatomic, assign) int currentDataShareTypeId;
+//@property (nonatomic, assign) BOOL
 
 @end
 
@@ -63,6 +70,8 @@
 @synthesize chatDelegate;
 
 @synthesize currentConfBaseInfo;
+
+@synthesize lastConfSharedData;
 
 
 
@@ -99,6 +108,10 @@
 {
     if (self = [super init])
     {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            espace_dataconf_datashare_queue = dispatch_queue_create("com.huawei.espace.dataconf.datashare", 0);
+        });
         [Initializer registerConfCallBack:self]; //注册回调，将回调消息分发代理设置为自己
         self.isJoinDataConf = NO;
         _confHandle = 0;
@@ -111,6 +124,8 @@
         _currentCallId = 0;
         self.isVideoConfInvited = NO;
         self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
+        _isStartScreenSharing = NO;
+        _currentDataShareTypeId = -1;
     }
     return self;
 }
@@ -197,7 +212,8 @@
             DDLogInfo(@"TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT");
             BOOL result = notify.param1 == TSDK_SUCCESS;
             if (!result) {
-                DDLogError(@"TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
+                
+                (@"TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
                 return;
             }
             
@@ -343,9 +359,44 @@
         {
             DDLogInfo(@"TSDK_E_CONF_EVT_AS_STATE_CHANGE");
             TSDK_S_CONF_AS_STATE_INFO *shareState = (TSDK_S_CONF_AS_STATE_INFO *)notify.data;
+            
+            BOOL isStopSharing = NO;
+            
+            //收到开始程序共享的通知，结束之前的共享
+            if (1 == notify.param2) {
+                isStopSharing = YES;
+            }
+            
             TSDK_E_CONF_SHARE_STATE state =  shareState->state;
-            if (state == TSDK_E_CONF_AS_STATE_NULL) {
-                [self respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
+            
+            switch (state) {
+                case TSDK_E_CONF_AS_STATE_NULL:
+                {
+                    if (0 == notify.param2) {
+                        _isStartScreenSharing = NO;
+                        isStopSharing = YES;
+                    }
+                }
+                    break;
+                case TSDK_E_CONF_AS_STATE_START:
+                case TSDK_E_CONF_AS_STATE_VIEW:
+                {
+                    if (0 == notify.param2) {
+                        _isStartScreenSharing = YES;
+                    }
+                    [self handleScreenShareDataConfhandle:notify.param1];
+                }
+                    break;
+                default:
+                    break;
+            }
+
+            if (isStopSharing) {
+                __weak typeof(self) weakSelf = self;
+                dispatch_async(espace_dataconf_datashare_queue, ^{
+                    [weakSelf stopSharedData];
+                    _isStartScreenSharing = NO;
+                });
             }
         }
             break;
@@ -355,6 +406,78 @@
             [self handleScreenShareDataConfhandle:notify.param1];
         }
             break;
+        case TSDK_E_CONF_EVT_DS_DOC_NEW:
+        {
+            DDLogInfo(@"TSDK_E_CONF_EVT_DS_DOC_NEW");
+        }
+            break;
+        
+        case TSDK_E_CONF_EVT_DS_DOC_CURRENT_PAGE_IND:
+        {
+            TSDK_S_DOC_PAGE_BASE_INFO *pageInfo = (TSDK_S_DOC_PAGE_BASE_INFO *)notify.data;
+            [self handleDsDocCurrentPageInfoWithConfHandle:notify.param1 andPageInfo:pageInfo];
+            
+        }
+            break;
+            
+        case TSDK_E_CONF_EVT_DS_DOC_CURRENT_PAGE:
+        {
+            
+        }
+            break;
+        case TSDK_E_CONF_EVT_DS_DOC_DRAW_DATA_NOTIFY:
+        {
+            [self handleDsDocShareDataConfHandle:notify.param1];
+        }
+            break;
+        
+        case TSDK_E_CONF_EVT_DS_DOC_DEL:
+        {
+            __weak typeof(self) weakSelf = self;
+            dispatch_async(espace_dataconf_datashare_queue, ^{ //在espace_dataconf_datashare_queue线程中调用结束，确保无时序问题
+//                //                    dispatch_async(espace_dataconf_queue, ^{
+//                [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
+//                //                    });
+            
+            [weakSelf stopSharedData];
+            
+            });
+        }
+            break;
+            
+        case TSDK_E_CONF_EVT_WB_DOC_NEW:
+        {
+            DDLogInfo(@"TSDK_E_CONF_EVT_WB_DOC_NEW");
+        }
+            break;
+        
+        case TSDK_E_CONF_EVT_WB_DOC_CURRENT_PAGE_IND:
+        {
+            TSDK_S_DOC_PAGE_BASE_INFO *pageInfo = (TSDK_S_DOC_PAGE_BASE_INFO *)notify.data;
+            [self handleDsDocCurrentPageInfoWithConfHandle:notify.param1 andPageInfo:pageInfo];
+        }
+            break;
+        
+        case TSDK_E_CONF_EVT_WB_DOC_DRAW_DATA_NOTIFY:
+        {
+            [self handleWbDocShareDataConfHandle:notify.param1];
+        }
+            break;
+        
+        case TSDK_E_CONF_EVT_WB_DOC_DEL:
+        {
+            __weak typeof(self) weakSelf = self;
+            dispatch_async(espace_dataconf_datashare_queue, ^{ //在espace_dataconf_datashare_queue线程中调用结束，确保无时序问题
+                //                //                    dispatch_async(espace_dataconf_queue, ^{
+                //                [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
+                //                //                    });
+                
+                [weakSelf stopSharedData];
+                
+            });
+        }
+            break;
+            
         case TSDK_E_CONF_EVT_RECV_CHAT_MSG:
         {
             TSDK_S_CONF_CHAT_MSG_INFO *chat_msg_info = (TSDK_S_CONF_CHAT_MSG_INFO*)notify.data;
@@ -362,8 +485,43 @@
             DDLogInfo(@"TSDK_E_CONF_EVT_RECV_CHAT_MSG");
             break;
         }
+            
+        case TSDK_E_CONF_EVT_SPEAKER_IND:
+        {
+            DDLogInfo(@"TSDK_E_CONF_EVT_SPEAKER_IND");
+            TSDK_S_CONF_SPEAKER_INFO *speaker_info = (TSDK_S_CONF_SPEAKER_INFO *)notify.data;
+            TSDK_S_CONF_SPEAKER *speakers = speaker_info->speakers;
+            NSMutableArray *tempArray = [[NSMutableArray alloc] init];
+            for (int i = 0; i < speaker_info->speaker_num; i++) {
+                TSDK_S_CONF_SPEAKER speaker = speakers[i];
+//                DDLogInfo(@"speakers[i].number :%s,speakers[i].is_speaking :%d",speakers[i].number,speakers[i].is_speaking);
+                ConfCtrlSpeaker *confSpeaker = [[ConfCtrlSpeaker alloc] init];
         
-//        case CONFCTRL_E_EVT_FLOOR_ATTENDEE_IND:
+                NSString *number = [NSString stringWithUTF8String:speaker.base_info.number];
+                if (number.length > 0) {
+                    confSpeaker.number = [NSString stringWithUTF8String:speaker.base_info.number];
+                }
+                
+                confSpeaker.is_speaking = speaker.is_speaking;
+                confSpeaker.speaking_volume = speaker.speaking_volume;
+                [tempArray addObject:confSpeaker];
+            }
+            
+            NSDictionary *resultInfo = @{
+                                         ECCONF_SPEAKERLIST_KEY : [NSArray arrayWithArray:tempArray]
+                                         };
+            [self respondsECConferenceDelegateWithType:CONF_E_SPEAKER_LIST result:resultInfo];
+        }
+            break;
+        
+        case TSDK_E_CONF_EVT_SHARE_STATUS_UPDATE_IND:
+        {
+            TSDK_S_SHARE_STATUS_INFO *statusInfo = (TSDK_S_SHARE_STATUS_INFO *)notify.data;
+            [self onShareStatusUpateInd:statusInfo];
+        }
+            break;
+            
+            //        case CONFCTRL_E_EVT_FLOOR_ATTENDEE_IND:
 //        {
 //            //Speaker report in this place
 //            DDLogInfo(@"CONFCTRL_E_EVT_FLOOR_ATTENDEE_IND handle is : %d",notify.param1);
@@ -391,8 +549,76 @@
     }
 }
 
+- (void)onShareStatusUpateInd:(TSDK_S_SHARE_STATUS_INFO *)statusInfo
+{
+    TSDK_E_SHARE_STATUS status = statusInfo->share_status;
+    TSDK_E_COMPONENT_ID componetId = (TSDK_E_COMPONENT_ID)statusInfo->component_id;
+    
+    switch (status) {
+        case TSDK_E_SHARE_STATUS_STOP: {
+            _currentDataShareTypeId = 0;
+            //            prevDataShareTypeId_ = 0;
+            [self stopSharedData];
+            return;
+        }
+        case TSDK_E_SHARE_STATUS_SHARING: {
+            if (TSDK_E_COMPONENT_BASE == componetId || TSDK_E_COMPONENT_VIDEO == componetId || TSDK_E_COMPONENT_RECORD == componetId || TSDK_E_COMPONENT_POLLING == componetId || TSDK_E_COMPONENT_FT == componetId){
+                _currentDataShareTypeId = 0;
+                //                prevDataShareTypeId_ = 0;
+                [self stopSharedData];
+                return;
+            }
+            //            // 当前的模块纪录为上一次的模块
+            //            prevDataShareTypeId_ = currentDataShareTypeId_;
+            // 当前的模块变为新来的模块
+            _currentDataShareTypeId = componetId;
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const char *pEndNode, unsigned int &value) {
+    char tempValue[32];
+    memset_s(tempValue, 32, 0, 32);
+    
+    size_t  iKeyLength = strlen(pBeginNode);
+    const char *pBegin = strstr(xml, pBeginNode);
+    
+    if (NULL == pBegin) {
+        return false;
+    }
+    
+    const char *pEnd = strstr(xml, pEndNode);
+    if (NULL == pEnd) {
+        return false;
+    }
+    
+    memcpy(tempValue, pBegin+iKeyLength,  pEnd-pBegin-iKeyLength);
+    
+    NSString *tempValueString = [NSString stringWithFormat:@"%s",tempValue];
+    NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+    [f setNumberStyle:NSNumberFormatterDecimalStyle];
+    //value = atoi(tempValue);
+    NSNumber *tempValueNumber = [f numberFromString:tempValueString];
+    value = [tempValueNumber unsignedIntValue];
+    //value = strtoul(tempValue, NULL, 10);
+    
+    return true;
+}
+
 -(void)handleScreenShareDataConfhandle:(TSDK_UINT32 )confHandle
 {
+    if (!_isStartScreenSharing) {
+        DDLogInfo(@"[Meeting] COMPT_MSG_AS_ON_SCREEN_DATA:current share type is not screen share!");
+        return;
+    }
+    
+    if (_currentDataShareTypeId != 0x0002) {
+        return;
+    }
+    
     TSDK_S_CONF_AS_SCREEN_DATA screenData;
     memset((void *)(&screenData), 0, sizeof(screenData));
     // 获取数据
@@ -412,10 +638,97 @@
         DDLogInfo(@"share imageData from data fail!");
         return;
     }
-    NSDictionary *shareDataInfo = @{
-                                    DATACONF_SHARE_DATA_KEY:imageData
-                                    };
-    [self respondsECConferenceDelegateWithType:DATA_CONF_AS_ON_SCREEN_DATA result:shareDataInfo];
+//    NSDictionary *shareDataInfo = @{
+//                                    DATACONF_SHARE_DATA_KEY:imageData
+//                                    };
+//    [self respondsECConferenceDelegateWithType:DATA_CONF_AS_ON_SCREEN_DATA result:shareDataInfo];
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(espace_dataconf_datashare_queue, ^{
+        [weakSelf receiveSharedData:imageData];
+    });
+}
+
+- (void)handleDsDocShareDataConfHandle:(TSDK_UINT32)confHandle
+{
+    if (_currentDataShareTypeId != 0x0001) {
+        return;
+    }
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(espace_dataconf_datashare_queue, ^{
+        @autoreleasepool {
+            TSDK_UINT32 iWidth = 0;
+            TSDK_UINT32 iHeight = 0;
+            TSDK_VOID *pData = tsdk_doc_share_get_surface_bmp(confHandle, TSDK_E_COMPONENT_DS, &iWidth, &iHeight);
+            if (NULL == pData) {
+                DDLogInfo(@"[Meeting] Data is null.");
+                return;
+            }
+            char *pBmpData = (char *)pData;
+            TSDK_UINT32 wSize = *(TSDK_UINT32 *)((char *)pBmpData + sizeof(TSDK_UINT16));
+            NSData *imgData = [NSData dataWithBytes:(void*)pBmpData length:wSize];
+            if (nil == imgData) {
+                DDLogInfo(@"[Meeting] Make image from data failed.");
+                return;
+            }
+            [weakSelf receiveSharedData:imgData];
+        }
+    });
+}
+
+- (void)handleDsDocCurrentPageInfoWithConfHandle:(TSDK_INT32)confHandle andPageInfo:(TSDK_S_DOC_PAGE_BASE_INFO *)pageInfo
+{
+    tsdk_doc_share_set_current_page(confHandle, pageInfo, NO);
+    TSDK_S_DOC_PAGE_DETAIL_INFO detailInfo;
+    memset(&detailInfo, 0, sizeof(TSDK_S_DOC_PAGE_DETAIL_INFO));
+    
+    TSDK_RESULT result = tsdk_doc_share_get_syn_document_info(confHandle, pageInfo->component_id, &detailInfo);
+    
+    if (result == TSDK_SUCCESS && (detailInfo.height > 0 && detailInfo.width > 0)) {
+        TSDK_S_SIZE size;
+        memset(&size, 0, sizeof(TSDK_S_DOC_PAGE_BASE_INFO));
+        size.width = detailInfo.width;
+        size.high = detailInfo.height;
+        tsdk_doc_share_set_canvas_size(confHandle, pageInfo->component_id, &size, YES);
+    }
+}
+
+- (void)handleWbDocShareDataConfHandle:(TSDK_UINT32)confHandle
+{
+    
+    if (_currentDataShareTypeId != 0x0200) {
+        return;
+    }
+    
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(espace_dataconf_datashare_queue, ^{
+        @autoreleasepool {
+            TSDK_UINT32 iWidth = 0;
+            TSDK_UINT32 iHeight = 0;
+            TSDK_VOID *pData = tsdk_doc_share_get_surface_bmp(confHandle, TSDK_E_COMPONENT_WB, &iWidth, &iHeight);
+            if (NULL == pData) {
+                DDLogInfo(@"[Meeting] Data is null.");
+                return;
+            }
+            
+            char *pBmpData = (char *)pData;
+            TSDK_UINT32 wSize = *(TSDK_UINT32 *)((char *)pBmpData + sizeof(TSDK_UINT16));
+            NSData *imgData = [NSData dataWithBytes:(void*)pBmpData length:wSize];
+            if (nil == imgData) {
+                DDLogInfo(@"[Meeting] Make image from data failed.");
+                return;
+            }
+            
+//            NSDictionary *shareDataInfo = @{
+//                                            DATACONF_SHARE_DATA_KEY:imgData
+//                                            };
+//            [weakSelf respondsECConferenceDelegateWithType:DATA_CONF_AS_ON_SCREEN_DATA result:shareDataInfo];
+            [weakSelf receiveSharedData:imgData];
+            
+        }
+        
+        
+    });
 }
 
 /**
@@ -700,6 +1013,7 @@
         addAttendee.isJoinDataconf = participant.status_info.is_join_dataconf;
         addAttendee.isPresent = participant.status_info.is_present;
         addAttendee.isSelf = participant.status_info.is_self;
+        addAttendee.isBroadcast = participant.status_info.is_broadcast;
         
         [self.haveJoinAttendeeArray addObject:addAttendee];
         if (!self.selfJoinNumber) {
@@ -821,7 +1135,9 @@
         }
         if (tempAttendee.number.length > 0 && tempAttendee.number != nil) {
             strcpy(attendee[i].number, [tempAttendee.number UTF8String]);
-            strcpy(attendee[i].account_id, [tempAttendee.number UTF8String]);
+        }
+        if (tempAttendee.account.length > 0 && tempAttendee.account != nil) {
+            strcpy(attendee[i].account_id, [tempAttendee.account UTF8String]);
         }
         
         attendee[i].role = (TSDK_E_CONF_ROLE)tempAttendee.role;
@@ -1000,10 +1316,16 @@
     }
     
     TSDK_CHAR join_number[JOIN_NUMBER_LEN];
-    if (!self.selfJoinNumber) {
-        self.selfJoinNumber = self.sipAccount;
+    
+    NSString *realNumber = joinNumber;
+    if (!realNumber || realNumber.length == 0) {
+        if (!self.selfJoinNumber) {
+            self.selfJoinNumber = self.sipAccount;
+        }
+        realNumber = self.selfJoinNumber;
     }
-    strcpy(join_number, [self.selfJoinNumber UTF8String]);
+    
+    strcpy(join_number, [realNumber UTF8String]);
     
     TSDK_UINT32 call_id;
     DDLogInfo(@"joinConferenceWithConfId,confid:%s,conf_password:%s,access_number:%s",confJoinParam.conf_id,confJoinParam.conf_password,confJoinParam.access_number);
@@ -1131,6 +1453,9 @@
         if (cAttendee.sms.length != 0)
         {
             strcpy(attendee[i].sms, [cAttendee.sms UTF8String]);
+        }
+        if (cAttendee.account.length != 0) {
+            strcpy(attendee[i].account_id, [cAttendee.account UTF8String]);
         }
         attendee[i].role = (TSDK_E_CONF_ROLE)cAttendee.role;
         strcat(attendee[i].account_id, [@"ios173" UTF8String]);
@@ -1283,6 +1608,12 @@
  */
 -(void)watchAttendeeNumber:(NSString *)attendeeNumber
 {
+//    if (attendeeNumber.length == 0 && attendeeNumber == nil) {
+//        TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, nil);
+//        DDLogInfo(@"ret_watch_attendee: %d", ret_watch_attendee);
+//        return;
+//    }
+    
     TSDK_S_WATCH_ATTENDEES_INFO *attendeeInfo = (TSDK_S_WATCH_ATTENDEES_INFO *)malloc(sizeof(TSDK_S_WATCH_ATTENDEES_INFO));
     memset_s(attendeeInfo, sizeof(TSDK_S_WATCH_ATTENDEES_INFO), 0, sizeof(TSDK_S_WATCH_ATTENDEES_INFO));
     attendeeInfo->watch_attendee_num = 1;
@@ -1300,7 +1631,7 @@
  * This method is used to boardcast attendee
  * 广播与会者
  */
-- (void)boardcastAttendee:(NSString *)attendeeNumber isBoardcast:(BOOL)isBoardcast {
+- (void)broadcastAttendee:(NSString *)attendeeNumber isBoardcast:(BOOL)isBoardcast {
     TSDK_RESULT ret_boardcast_attendee = tsdk_broadcast_attendee(_confHandle, (TSDK_CHAR *)[attendeeNumber UTF8String], (isBoardcast ? TSDK_TRUE : TSDK_FALSE));
     DDLogInfo(@"tsdk_broadcast_attendee number: %@, is boardcast: %d ret: %d", attendeeNumber, isBoardcast, ret_boardcast_attendee);
 }
@@ -1318,6 +1649,20 @@
                                                          userInfo:nil
                                                           repeats:YES];
     });
+}
+
+-(void)receiveSharedData:(NSData*)data{
+    if ([data length] > 0 ) {
+        [self willChangeValueForKey:@"lastConfSharedData"];
+        self.lastConfSharedData = data;
+        [self didChangeValueForKey:@"lastConfSharedData"];
+    }
+    
+}
+-(void)stopSharedData{
+    [self willChangeValueForKey:@"lastConfSharedData"];
+    self.lastConfSharedData = nil;
+    [self didChangeValueForKey:@"lastConfSharedData"];
 }
 
 /**
