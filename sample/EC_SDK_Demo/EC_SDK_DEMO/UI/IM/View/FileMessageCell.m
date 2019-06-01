@@ -7,12 +7,11 @@
 //
 
 #import "FileMessageCell.h"
-#import <TUPIMSDK/TUPIMSDK.h>
 
 @interface FileMessageCell ()
 
 @property (weak, nonatomic) IBOutlet UILabel *fileNameLabel;    // show file name
-@property (nonatomic, strong)ESpaceUMResource *umResource;      // umResource
+//@property (nonatomic, strong)ESpaceUMResource *umResource;      // umResource
 
 @end
 
@@ -26,24 +25,24 @@
 }
 
 - (void)onTap:(UITapGestureRecognizer *)tap {
-    DDLogInfo(@"Select file name: %@", self.umResource.name);
-    if (ESpaceUMStatusDownloaded != self.umResource.umStatus ) {
-        self.activity.hidden = NO;
-        [self.activity startAnimating];
-        [self.umResource download:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (!error) {
-                    [self goToPreviewViewController];
-                }else {
-                    [[[UIAlertView alloc] initWithTitle:nil message:@"Download error!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                }
-                self.activity.hidden = YES;
-                [self.activity stopAnimating];
-            });
-        }];
-    }else {
+//    DDLogInfo(@"Select file name: %@", self.umResource.name);
+//    if (ESpaceUMStatusDownloaded != self.umResource.umStatus ) {
+//        self.activity.hidden = NO;
+//        [self.activity startAnimating];
+//        [self.umResource download:^(NSError *error) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                if (!error) {
+//                    [self goToPreviewViewController];
+//                }else {
+//                    [[[UIAlertView alloc] initWithTitle:nil message:@"Download error!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+//                }
+//                self.activity.hidden = YES;
+//                [self.activity stopAnimating];
+//            });
+//        }];
+//    }else {
         [self goToPreviewViewController];
-    }
+//    }
     
 }
 
@@ -51,23 +50,23 @@
  This method is used to jump to preview view
  */
 - (void)goToPreviewViewController {
-    NSString *fileType = [[self.umResource.name componentsSeparatedByString:@"."] lastObject];
-    if ([fileType isEqualToString:@"xlsx"]
-        || [fileType isEqualToString:@"png"]
-        || [fileType isEqualToString:@"jpg"]
-        || [fileType isEqualToString:@"jpeg"]
-        || [fileType isEqualToString:@"doc"]
-        || [fileType isEqualToString:@"docx"]
-        || [fileType isEqualToString:@"ppt"]
-        || [fileType isEqualToString:@"pptx"]
-        || [fileType isEqualToString:@"xls"])
-    {
-        if (self.delegate && [self.delegate respondsToSelector:@selector(clickToPreviewFileWithPath:)]) {
-            [self.delegate clickToPreviewFileWithPath:self.umResource.localFilePath];
-        }
-    }else {
-        [[[UIAlertView alloc] initWithTitle:nil message:@"Sorry, you can open the file on your PC." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-    }
+//    NSString *fileType = [[self.umResource.name componentsSeparatedByString:@"."] lastObject];
+//    if ([fileType isEqualToString:@"xlsx"]
+//        || [fileType isEqualToString:@"png"]
+//        || [fileType isEqualToString:@"jpg"]
+//        || [fileType isEqualToString:@"jpeg"]
+//        || [fileType isEqualToString:@"doc"]
+//        || [fileType isEqualToString:@"docx"]
+//        || [fileType isEqualToString:@"ppt"]
+//        || [fileType isEqualToString:@"pptx"]
+//        || [fileType isEqualToString:@"xls"])
+//    {
+//        if (self.delegate && [self.delegate respondsToSelector:@selector(clickToPreviewFileWithPath:)]) {
+//            [self.delegate clickToPreviewFileWithPath:self.umResource.localFilePath];
+//        }
+//    }else {
+//        [[[UIAlertView alloc] initWithTitle:nil message:@"Sorry, you can open the file on your PC." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+//    }
     
 }
 
@@ -91,8 +90,8 @@
 - (void)setMessage:(ChatMessageEntity *)message {
     [super setMessage:message];
     
-    self.umResource = [message.umResources lastObject];
-    self.fileNameLabel.text = self.umResource.name;
+//    self.umResource = [message.umResources lastObject];
+//    self.fileNameLabel.text = self.umResource.name;
     CGSize size = [self.fileNameLabel sizeThatFits:CGSizeMake(169, 46)];
     self.textWidthConstraint.constant = size.width + 60;
     self.textHeighConstraint.constant = 66;

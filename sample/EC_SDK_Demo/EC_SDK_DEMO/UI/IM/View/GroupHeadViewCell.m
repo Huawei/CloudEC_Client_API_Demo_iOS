@@ -8,8 +8,9 @@
 
 #import "GroupHeadViewCell.h"
 #import "HeadImageView.h"
-#import <TUPIOSSDK/GroupEntity.h>
 #import "ChatViewController.h"
+#import "GroupEntity.h"
+
 @interface GroupHeadViewCell()
 @property (weak, nonatomic) IBOutlet HeadImageView *groupHeadImageView;   // group head image view
 @property (weak, nonatomic) IBOutlet UILabel *groupNameLabel;             // show group name

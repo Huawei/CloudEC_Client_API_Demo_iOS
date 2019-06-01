@@ -32,7 +32,7 @@
 
 @property (nonatomic, strong, readonly) NSDictionary *itemsDicIndexs;
 @property (nonatomic, strong, readonly) NSDictionary *itemModelsDic;
-@property (nonatomic, strong) NSString *currentCallbackNumber;
+@property (nonatomic, copy) NSString *currentCallbackNumber;
 
 @property (nonatomic, strong) NSMutableArray *selectedAttendeArray;
 

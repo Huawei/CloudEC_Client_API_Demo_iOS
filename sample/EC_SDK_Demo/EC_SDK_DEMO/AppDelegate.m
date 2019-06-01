@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 #import "NetworkUtils.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
 #import "ServiceManager.h"
 #import "CallWindowController.h"
 #import "ConfRunningViewController.h"
@@ -21,7 +20,6 @@
 #import "LoginService.h"
 #import "LoginInfo.h"
 #import "CommonUtils.h"
-#import <TUPNetworkSDK/ECSSocketController.h>
 #import "LoginServerInfo.h"
 #import "Defines.h"
 #import "SettingViewController.h"
@@ -30,6 +28,10 @@
 #import "VideoShareViewController.h"
 //#import "AudioConfViewController.h"
 
+#import "ECSAppConfig.h"
+
+#import "eSpaceDBService.h"
+#import "NSManagedObjectContext+Persistent.h"
 
 
 @interface AppDelegate ()<PKPushRegistryDelegate>
@@ -63,22 +65,23 @@
     // Override point for customization after application launch.
     
     // DDLog init (write log to file)
-    [[ECSLogger shareInstance] addFileLogger];
+//    [[ECSLogger shareInstance] addFileLogger];
     [NetworkUtils shareInstance];
     
     // Config TUPIOSSDK log path
-    NSString *logPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingString:@"/TUPC60log"];
-    [ECSSandboxHelper shareInstance].logFileSuperPath = logPath;
-    
+//    NSString *logPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingString:@"/TUPC60log"];
+//    [ECSSandboxHelper shareInstance].logFileSuperPath = logPath;
+//
     // init TUPIOSSDK (module: Contact/IM/Group/MAALogin)
-    [ECSAppConfig sharedInstance].appLogLevel = kECSLogDebug;
-    [ECSAppConfig sharedInstance].isLogEnabled = YES;
-    [ECSAppConfig sharedInstance].version = @"V3.0.4.5";
-    if ([ECSAppConfig sharedInstance].isFirstUsed)
+//    [ECSAppConfig sharedInstance].appLogLevel = kECSLogDebug;
+//    [ECSAppConfig sharedInstance].isLogEnabled = YES;
+//    [ECSAppConfig sharedInstance].version = @"V3.0.4.5";
+    //固定key值替换为安全随机字符,仅初次安装程序时进行设置
+    if (ESPACE_APP_CFG.isFirstUsed)
     {
-        [[ECSAppConfig sharedInstance] initializeSecurityRandomKey];
+        [ESPACE_APP_CFG initializeSecurityRandomKey];
     }
-    [TUPIOSSDKService start];
+//    [TUPIOSSDKService start];
 
     // start up tup module.(module: Call/Conference/SipLogin)
     [ServiceManager startup];
@@ -90,22 +93,21 @@
 
     [self gotoNormalFlow];
     
-    [[LoginCenter sharedInstance] configSipRelevantParam];
+//    [[LoginCenter sharedInstance] configSipRelevantParam];
     
     return YES;
 }
 
 - (void)gotoNormalFlow {
     
-//    [self prepareForAutoLogin];
+    //[self prepareForAutoLogin];
     
     if ([ECSAppConfig sharedInstance].isFirstUsed) {
         [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-        [self gotoLogin];
         [ECSAppConfig sharedInstance].isFirstUsed = NO;
         [[ECSAppConfig sharedInstance] save];
     } else {
-        // check is auto login
+//        // check is auto login
         BOOL bNeedAutoLogin = [self shouldStartAutoLogin];
 //        BOOL bNeedAutoLogin = YES;
         if (bNeedAutoLogin) {
@@ -115,11 +117,6 @@
     }
 }
 
-- (void)gotoLogin
-{
-    
-    
-}
 
 - (void)startAutoLogin
 {

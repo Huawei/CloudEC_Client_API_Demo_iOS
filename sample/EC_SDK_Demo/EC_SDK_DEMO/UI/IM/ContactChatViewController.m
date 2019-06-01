@@ -6,29 +6,35 @@
 //  Copyright(C), 2017, Huawei Tech. Co., Ltd. ALL RIGHTS RESERVED.
 //
 
-#import <TUPContactSDK/TupContactService.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPIOSSDK/PersonEntity.h>
-#import <TUPIOSSDK/EmployeeEntity.h>
-
 #import "GroupCell.h"
 #import "ContactListCell.h"
 #import "ChatSessionCell.h"
 #import "PersonDetailViewController.h"
 #import "ContactChatViewController.h"
-#import "ContactSearchResultController.h"
+#import "AddressSearchResultController.h"
 #import "ChatGroupListViewController.h"
 #import "ContactGroupListViewController.h"
 #import "ChatViewController.h"
 #import "AssistantViewController.h"
 #import "Defines.h"
+#import "PersonEntity.h"
+#import "EmployeeEntity.h"
 
-@interface ContactChatViewController ()<UISearchBarDelegate, UISearchControllerDelegate, ContactSearchDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate, SelectedContactGroupDelegate>
+#import "ECSAppConfig.h"
+#import "eSpaceDBService.h"
+#import "SearchParam.h"
+#import "ManagerService.h"
+#import "ESpaceContactService.h"
+#import "ContactInfo.h"
+#import "EmployeeCategoryEntity+ServiceObject.h"
+
+
+@interface ContactChatViewController ()<UISearchBarDelegate, UISearchControllerDelegate, UITableViewDelegate, UITableViewDataSource, NSFetchedResultsControllerDelegate, SelectedContactGroupDelegate, TUPContactServiceDelegate, ContactListShowDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;                    // current tableView
 @property (nonatomic, strong) UISearchController *searchController;             // current searchController
-@property (nonatomic, strong) ContactSearchResultController *resultController;  // current searchResultController
-@property (nonatomic, assign)NSInteger searchPageIndex;                         // current search page index
+@property (nonatomic, strong) AddressSearchResultController *resultController;  // current searchResultController
+@property (nonatomic, assign)int searchPageIndex;                         // current search page index
 @property (nonatomic, copy) NSString *currentSearchText;                        // current search text
 @property (nonatomic, assign) NSUInteger currentMaxWeight;                      // current max weight
 @property (nonatomic, strong) NSManagedObjectContext *searchMemoryContext;      // current search memory context
@@ -37,6 +43,7 @@
 @property (nonatomic, strong) NSFetchedResultsController *chatRecentFetchCtrl;  // current chat recent fetchreult controller
 @property (nonatomic, strong) NSFetchedResultsController *contactFetchCtrl;     // current contact fetchresult controller
 @property (nonatomic, strong) EmployeeCategoryEntity* categoryFilter;           // categroy entity
+@property (nonatomic, strong) NSManagedObjectContext* memoryContext;
 
 @property (nonatomic, strong) UIActivityIndicatorView *chatViewLoginingActivityIndicator;
 
@@ -53,7 +60,7 @@
                         @GROUP_KIND_CONTACT,      // contact groups
                         @E_ASSISTANT];            // e assistant
     
-    self.resultController = [[ContactSearchResultController alloc] init];
+    self.resultController = [[AddressSearchResultController alloc] init];
     self.resultController.delegate = self;
     self.searchController = [[UISearchController alloc] initWithSearchResultsController:self.resultController];
     
@@ -71,20 +78,35 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"ChatSessionCell" bundle:nil] forCellReuseIdentifier:@"ChatSessionCell"];
     
     if ([ECSAppConfig sharedInstance].currentUser.isAutoLogin) {
-        [self autoLoginAction];
+//        [self autoLoginAction];
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(maaLoginSuccessedAction)
-                                                 name:MAA_LOGIN_SUCCESSED
-                                               object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self
+//                                             selector:@selector(maaLoginSuccessedAction)
+//                                                 name:IM_LOGIN_SUCCESSED
+//                                               object:nil];
     
-//    [self loadDataSource];
-//    [self.tableView reloadData];
+    [self loadDataSource];
+    [self.tableView reloadData];
+}
+
+- (NSManagedObjectContext*)memoryContext {
+    if (nil == _memoryContext) {
+        _memoryContext = [LOCAL_DATA_MANAGER backgroundObjectContext];
+    }
+    
+    return _memoryContext;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [ManagerService contactService].delegate = self;
+}
+
+-(void)dealloc
+{
+    [ManagerService contactService].delegate = nil;
+    [[NSNotificationCenter defaultCenter]  removeObserver:self];
 }
 
 -(UIActivityIndicatorView *)chatViewLoginingActivityIndicator
@@ -125,7 +147,7 @@
 - (void)loadDataSource
 {
     self.searchMemoryContext = [[eSpaceDBService sharedInstance].localDataManager memoryObjectContext];
-    
+
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSPredicate* contentPredicate = [NSPredicate predicateWithFormat:@"parent=%@ AND priority >= 0", [eSpaceDBService sharedInstance].localDataManager.rootChatSessionGroup];
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"ChatSessionEntity" inManagedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext]];
@@ -146,7 +168,7 @@
     } else {
         contentPredicate = [NSPredicate predicateWithFormat:@"isFriend=%@ AND contactId!=%@", [NSNumber numberWithBool:YES], [eSpaceDBService sharedInstance].localDataManager.userAccount];
     }
-    
+
     entity = [NSEntityDescription entityForName:@"PersonEntity" inManagedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext]];
     NSSortDescriptor *accountDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"nameIndex" ascending:YES];
     NSSortDescriptor *nameDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
@@ -154,7 +176,7 @@
     [fetchRequest setEntity:entity];
     [fetchRequest setPredicate:contentPredicate];
     [fetchRequest setSortDescriptors:@[accountDescriptor,nameDescriptor,IdDesriptor]];
-    
+
     _contactFetchCtrl = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext] sectionNameKeyPath:nil cacheName:nil];
     _contactFetchCtrl.delegate = self;
     [_contactFetchCtrl performFetch:nil];
@@ -171,6 +193,43 @@
     UISegmentedControl * ctrl = (UISegmentedControl *)sender;
     _currentShowType = ctrl.selectedSegmentIndex;
     [_tableView reloadData];
+}
+
+#pragma mark
+#pragma mark --- ContactListShowDelegate ---
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)showGroupListWithPerson:(PersonEntity *)person {
+    BOOL firstResp = [self becomeFirstResponder];
+    if (firstResp) {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Move Friend to New Group"
+                                                                                 message:nil
+                                                                          preferredStyle:UIAlertControllerStyleActionSheet];
+        NSArray * groups = [EmployeeCategoryEntity allCategoryEntities];
+        for (EmployeeCategoryEntity *group in groups) {
+            if (![group.id isEqualToString:[ESpaceContactService sharedInstance].currentContactGroupId]) {
+                UIAlertAction *action = [UIAlertAction actionWithTitle:group.name
+                                                                 style:UIAlertActionStyleDefault
+                                                               handler:^(UIAlertAction * _Nonnull action)
+                                         {
+                                             [[ESpaceContactService sharedInstance] moveFriendToNewGroupWithNewGroupId:group.id  andContactId:person.contactId andAccount:((EmployeeEntity *)person).account];
+                                             
+                                         }];
+                [alertController addAction:action];
+            }
+            
+        }
+        UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:nil];
+        [alertController addAction:cancel];
+        [self.navigationController presentViewController:alertController
+                                                animated:YES
+                                              completion:nil];
+    }
 }
 
 #pragma mark
@@ -233,6 +292,7 @@
             ContactListCell *contactCell = [tableView dequeueReusableCellWithIdentifier:@"ContactListCell"];
             contactCell.person = self.contactFetchCtrl.fetchedObjects[indexPath.row];
             cell = contactCell;
+            contactCell.delegate = self;
         }
     }
     
@@ -303,44 +363,53 @@
 #pragma mark
 #pragma mark --- ContactSearchDelegate ---
 - (void)searchContacts {
-    __block NSArray *fetchedList = nil;
-    [[TupContactService sharedInstance] queryCorpAdressBook:self.currentSearchText
-                                                  pageIndex:self.searchPageIndex
-                                                   pageSize:50
-                                                      field:nil
-                                                 showStatus:NO
-                                                 searchFlag:0
-                                                  inContext:self.searchMemoryContext
-                                                 completion:^(NSError *error, NSInteger count)
-     {
-         dispatch_sync(dispatch_get_main_queue(), ^{
-             if (error) {
-                 NSLog(@"query Corp Adress Book failed: %@",error.description);
-                 return ;
-             }
-             if (count < 50) {
-                 [self.resultController hideTableFooterView];
-             }
-             if (count == 0) {
-                 [self showMessage:@"Sorry! No more data!"];
-                 return;
-             }
-             NSSortDescriptor *weightOrder = [[NSSortDescriptor alloc] initWithKey:@"weight" ascending:YES];
-             NSEntityDescription *entity = [NSEntityDescription entityForName:@"EmployeeEntity"
-                                                       inManagedObjectContext:self.searchMemoryContext];
-             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"weight > %@",
-                                       [NSNumber numberWithUnsignedInteger:self.currentMaxWeight]];
-             NSFetchRequest *request = [[NSFetchRequest alloc] init];
-             request.entity = entity;
-             request.predicate = predicate;
-             request.sortDescriptors = [NSArray arrayWithObject:weightOrder];
-             fetchedList = [self.searchMemoryContext executeFetchRequest:request error:nil];
-             self.searchPageIndex++;
-             self.currentMaxWeight += [fetchedList count];
-             [self.resultController.searchArray addObjectsFromArray:fetchedList];
-             [self.resultController.tableView reloadData];
-         });
-     }];
+    SearchParam *searchParam = [[SearchParam alloc] init];
+    searchParam.acSearchItem = self.currentSearchText;
+    searchParam.ulPageIndex = self.searchPageIndex;
+    searchParam.ulExactSearch = 0;
+    searchParam.ulSeqNo = rand() + 101;
+    searchParam.acDepId = @"-1";
+    [[ManagerService contactService] searchContactWithParam:searchParam];
+    
+    
+//    __block NSArray *fetchedList = nil;
+//    [[TupContactService sharedInstance] queryCorpAdressBook:self.currentSearchText
+//                                                  pageIndex:self.searchPageIndex
+//                                                   pageSize:50
+//                                                      field:nil
+//                                                 showStatus:NO
+//                                                 searchFlag:0
+//                                                  inContext:self.searchMemoryContext
+//                                                 completion:^(NSError *error, NSInteger count)
+//     {
+//         dispatch_sync(dispatch_get_main_queue(), ^{
+//             if (error) {
+//                 NSLog(@"query Corp Adress Book failed: %@",error.description);
+//                 return ;
+//             }
+//             if (count < 50) {
+//                 [self.resultController hideTableFooterView];
+//             }
+//             if (count == 0) {
+//                 [self showMessage:@"Sorry! No more data!"];
+//                 return;
+//             }
+//             NSSortDescriptor *weightOrder = [[NSSortDescriptor alloc] initWithKey:@"weight" ascending:YES];
+//             NSEntityDescription *entity = [NSEntityDescription entityForName:@"EmployeeEntity"
+//                                                       inManagedObjectContext:self.searchMemoryContext];
+//             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"weight > %@",
+//                                       [NSNumber numberWithUnsignedInteger:self.currentMaxWeight]];
+//             NSFetchRequest *request = [[NSFetchRequest alloc] init];
+//             request.entity = entity;
+//             request.predicate = predicate;
+//             request.sortDescriptors = [NSArray arrayWithObject:weightOrder];
+//             fetchedList = [self.searchMemoryContext executeFetchRequest:request error:nil];
+//             self.searchPageIndex++;
+//             self.currentMaxWeight += [fetchedList count];
+//             [self.resultController.searchArray addObjectsFromArray:fetchedList];
+//             [self.resultController.tableView reloadData];
+//         });
+//     }];
 }
 
 - (void)showPersonDetailInfo:(EmployeeEntity *)employee {
@@ -348,6 +417,19 @@
     detailVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detailVC animated:YES];
     [self.searchController setActive:NO];
+}
+
+- (void)showContactDetailInfo:(ContactInfo *)contactInfo
+{
+    [[ESpaceContactService sharedInstance] getUserInfoWithAccount:contactInfo.staffAccount andContext:self.memoryContext completionBlock:^(NSManagedObjectID *objectid, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error == nil) {
+                EmployeeEntity *employee = [self.memoryContext objectWithID:objectid];
+                [self showPersonDetailInfo:employee];
+            }
+        });
+        
+    }];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -377,6 +459,34 @@
     [self.resultController showTableFooterView];
     [self.resultController.tableView reloadData];
 }
+
+- (void)contactEventCallback:(TUP_CONTACT_EVENT_TYPE)contactEvent result:(NSDictionary *)resultDictionary {
+    switch (contactEvent) {
+        case CONTACT_E_SEARCH_CONTACT_RESULT: {
+            BOOL result = [resultDictionary[TUP_CONTACT_EVENT_RESULT_KEY] boolValue];
+            if (!result) {
+                [self showMessage:@"Search contact failed!"];
+                return;
+            }
+            NSArray *contactList = resultDictionary[TUP_CONTACT_KEY];
+            DDLogInfo(@"contactList count: %lu", (unsigned long)contactList.count);
+            if (0 == contactList.count) {
+                [self showMessage:@"Empty!"];
+            }
+            if (PAGE_ITEM_SIZE > contactList.count) {
+                [self.resultController hideTableFooterView];
+            }
+            _searchPageIndex++;
+            [self.resultController.searchArray addObjectsFromArray:contactList];
+            [self.resultController.tableView reloadData];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
 
 - (void)setNavTabbarHidden:(BOOL)show {
     

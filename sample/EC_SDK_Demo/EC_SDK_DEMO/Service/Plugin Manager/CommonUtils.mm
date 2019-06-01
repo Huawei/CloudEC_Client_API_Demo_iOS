@@ -13,7 +13,6 @@
 #include <arpa/inet.h>
 #include <dlfcn.h>
 #include <sys/sysctl.h>
-#import <TUPIOSSDK/TUPIOSSDK.h>
 
 #define IOS_CELLULAR    @"pdp_ip0"
 #define IOS_WIFI        @"en0"
@@ -318,17 +317,17 @@
  *@return image
  */
 + (UIImage *) attachImageFile:(NSString*) imageFile {
-    UIImage* image = [[ESpaceImageCache sharedInstance] imageWithKey:imageFile];
-    if (image) {
-        return image;
-    } else {
-        NSData* imageData = [[NSFileManager defaultManager] contentsAtPath:imageFile];
-        UIImage* image = nil;
-        if (imageData) {
-            image = [UIImage imageWithData:imageData];
-            return image;
-        }
-    }
+//    UIImage* image = [[ESpaceImageCache sharedInstance] imageWithKey:imageFile];
+//    if (image) {
+//        return image;
+//    } else {
+//        NSData* imageData = [[NSFileManager defaultManager] contentsAtPath:imageFile];
+//        UIImage* image = nil;
+//        if (imageData) {
+//            image = [UIImage imageWithData:imageData];
+//            return image;
+//        }
+//    }
     return nil;
 }
 

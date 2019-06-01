@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "HeadImageView.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
+#import "ChatMessageEntity.h"
 
 @protocol ChatMessageUMDelegate <NSObject>
 

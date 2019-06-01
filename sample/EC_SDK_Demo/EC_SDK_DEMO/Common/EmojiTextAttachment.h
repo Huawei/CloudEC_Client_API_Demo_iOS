@@ -7,8 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <TUPIOSSDK/TUPIOSSDK.h>
-#import <TUPIMSDK/MessageEntity+ServiceObject.h>
+#import "MessageEntity.h"
 
 @interface EmojiTextAttachment : NSTextAttachment
 

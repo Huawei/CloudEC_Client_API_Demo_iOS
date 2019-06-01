@@ -9,9 +9,12 @@
 #import "ViewController.h"
 #import "AppDelegate.h"
 #import "LoginViewController.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
 #import "ManagerService.h"
 #import "DataConfBaseViewController.h"
+
+#import "ECSAppConfig.h"
+#import "NSManagedObjectContext+Persistent.h"
+#import "eSpaceDBService.h"
 
 @interface ViewController ()<LoginServiceDelegate>
 @property (nonatomic,assign)BOOL isBeKickOut;
@@ -37,7 +40,6 @@
 {
     [super viewWillAppear:animated];
     [ManagerService loginService].delegate = self;
-    [TUPMAALoginService sharedInstance].authType = 4;
 }
 
 
@@ -47,7 +49,7 @@
     // Do any additional setup after loading the view, typically from a nib.
     _isBeKickOut = NO;
     self.title = @"Main";
-    [[TUPMAALoginService sharedInstance].loginService addObserver:self forKeyPath:@"serviceStatus" options:NSKeyValueObservingOptionNew context:NULL];
+    [((id)[ManagerService loginService]) addObserver:self forKeyPath:@"serviceStatus" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
@@ -56,25 +58,16 @@
                        context:(void *)context {
     
     if ([keyPath isEqualToString:@"serviceStatus"]) {
-        __weak typeof(self) weakSelf = self;
+//        __weak typeof(self) weakSelf = self;
         ECSLoginServiceStatus sStatus = [[change objectForKey:NSKeyValueChangeNewKey] unsignedIntegerValue];
         dispatch_async(dispatch_get_main_queue(), ^{
             switch (sStatus) {
                 case ECServiceOffline:
                 case ECServiceKickOff:
                 {
-                    [[TUPMAALoginService sharedInstance] logout:^(NSError *error) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            if (error) {
-                                [weakSelf showMessage:@"Logout failed!"];
-                                return ;
-                            }else {
-                                [[ECSAppConfig sharedInstance] save];
-                                [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
-                                [[ManagerService loginService] logout];
-                            }
-                        });
-                    }];
+                    [[ECSAppConfig sharedInstance] save];
+                    [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
+                    [[ManagerService loginService] logout];
                 }
                     break;
                 case ECServiceReconnecting:
@@ -105,23 +98,9 @@
     {
         case LOGINOUT_EVENT:
         {
-            if (ECServiceLogin == [TUPMAALoginService sharedInstance].loginService.serviceStatus) {
-                [[TUPMAALoginService sharedInstance] logout:^(NSError *error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (error) {
-                            [self showMessage:@"Logout failed!"];
-                        }else {
-                            [[ECSAppConfig sharedInstance] save];
-                            [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
-                            [self goToLoginViewController];
-                        }
-                    });
-                }];
-            }else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self goToLoginViewController];
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self goToLoginViewController];
+            });
             break;
         }
         default:
@@ -138,7 +117,7 @@
 -(void)dealloc
 {
     [ManagerService loginService].delegate = nil;
-    [[TUPMAALoginService sharedInstance].loginService removeObserver:self forKeyPath:@"serviceStatus" context:NULL];
+    [((id)[ManagerService loginService]) removeObserver:self forKeyPath:@"serviceStatus" context:NULL];
 }
 
 -(void)showMessage:(NSString *)msg

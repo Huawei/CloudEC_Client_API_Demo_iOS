@@ -7,9 +7,8 @@
 //
 
 #import "PreviewPersonHeadHDImageController.h"
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPContactSDK/EmployeeEntity+ServiceObject.h>
 #import "HeadImageView.h"
+#import "EmployeeEntity.h"
 
 @interface PreviewPersonHeadHDImageController ()
 @property (weak, nonatomic) IBOutlet HeadImageView *hdHeadImgV;             // HD head image view
@@ -38,16 +37,16 @@
     [self.hdHeadImgV setContactEntity:self.employee];
     
     [self.activity startAnimating];
-    [self.employee loadHDHeadImage:^(UIImage *imageData, NSError *error) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (!error) {
-                self.hdHeadImgV.image = imageData;
-            }
-            [self.activity stopAnimating];
-            self.activity.hidden = YES;
-        });
-    }];
+//    [self.employee loadHDHeadImage:^(UIImage *imageData, NSError *error) {
+//
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            if (!error) {
+//                self.hdHeadImgV.image = imageData;
+//            }
+//            [self.activity stopAnimating];
+//            self.activity.hidden = YES;
+//        });
+//    }];
     
 }
 

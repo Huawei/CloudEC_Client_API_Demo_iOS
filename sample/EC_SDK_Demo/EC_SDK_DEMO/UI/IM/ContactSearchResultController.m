@@ -7,10 +7,9 @@
 //
 
 #import "ContactSearchResultController.h"
-
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPContactSDK/TupContactService.h>
+#import "EmployeeEntity.h"
+#import "eSpaceDBService.h"
+#import "ESpaceContactService.h"
 
 @interface ContactSearchResultController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -43,13 +42,13 @@
     EmployeeEntity *tempEm;
     EmployeeEntity *employee = self.searchArray[indexPath.row];
     NSManagedObjectContext *context = [LOCAL_DATA_MANAGER managedObjectContext];
-    EmployeeEntity *localEmployee = [[TupContactService sharedInstance] userWithAccount:employee.account
+    EmployeeEntity *localEmployee = [[ESpaceContactService sharedInstance] userWithAccount:employee.account
                                                                               inContext:context
                                                                              autoCreate:NO];
     if (localEmployee) {
         tempEm = localEmployee;
     }else {
-        tempEm = [[TupContactService sharedInstance] employeeFromCopyMemoryUser:(EmployeeEntity *)employee];
+        tempEm = [[ESpaceContactService sharedInstance] employeeFromCopyMemoryUser:(EmployeeEntity *)employee];
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(showPersonDetailInfo:)]) {
         [self.delegate showPersonDetailInfo:tempEm];

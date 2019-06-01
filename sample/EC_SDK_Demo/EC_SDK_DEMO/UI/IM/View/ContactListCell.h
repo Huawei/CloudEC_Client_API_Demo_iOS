@@ -7,9 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+
 @class PersonEntity;
+@protocol ContactListShowDelegate <NSObject>
+
+@optional
+
+- (void)showGroupListWithPerson:(PersonEntity *)person;
+
+@end
+
 @interface ContactListCell : UITableViewCell
 
 @property (nonatomic, strong) PersonEntity *person;   // current personEntity
+@property (nonatomic, weak)id<ContactListShowDelegate> delegate;
 
 @end

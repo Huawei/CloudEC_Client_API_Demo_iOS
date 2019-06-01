@@ -14,4 +14,7 @@
 
 #import "ECSLogger.h"
 
+#define ESPACE_APP_CFG ([ECSAppConfig sharedInstance])
+#define ESPACE_APP_DELEGATE     ((AppDelegate *)[UIApplication sharedApplication].delegate)
+
 #endif /* PrefixHeader_pch */

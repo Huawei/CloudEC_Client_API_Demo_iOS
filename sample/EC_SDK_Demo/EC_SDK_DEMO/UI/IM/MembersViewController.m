@@ -8,12 +8,12 @@
 
 #import "MembersViewController.h"
 #import "ContactListCell.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
-#import <TUPIOSSDK/GroupEntity.h>
-#import <TUPContactSDK/GroupEntity+ServiceObject.h>
 #import "PersonDetailViewController.h"
 #import "CreateGroupController.h"
-#import <TUPIOSSDK/ECSAppConfig.h>
+#import "GroupEntity.h"
+#import "EmployeeEntity.h"
+
+#import "GroupEntity+ServiceObject.h"
 
 @interface MembersViewController ()
 
@@ -55,10 +55,48 @@
  */
 -(void)onAddGroupMemberBtnAction
 {
-    CreateGroupController *createCtrl = [[CreateGroupController alloc]init];
-    createCtrl.currentGroup = self.group;
-    createCtrl.createGroupType = ADD_USER;
-    [self.navigationController pushViewController:createCtrl animated:YES];
+//    CreateGroupController *createCtrl = [[CreateGroupController alloc]init];
+//    createCtrl.currentGroup = self.group;
+//    createCtrl.createGroupType = ADD_USER;
+//    [self.navigationController pushViewController:createCtrl animated:YES];
+    
+    UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:nil message:@"Please enter participant number" preferredStyle:UIAlertControllerStyleAlert];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Account";
+        textField.secureTextEntry = NO;
+    }];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+
+        UITextField *accountField = alertCon.textFields[0];
+
+        NSString *account = accountField.text;
+        
+        
+        
+        if (account != nil && account.length > 0) {
+            [self.group inviteUser:account desc:nil completion:^(NSString *faildList, NSError *error)
+             {
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     if (error && error.code != 39)
+                     {
+                         NSLog(@"error--- :%@ faildList:%@",[error description],faildList);
+                         [self showMessage:@"Invite failed"];
+                     }
+                     else
+                     {
+                         NSLog(@"invite success");
+                         [self.navigationController popViewControllerAnimated:YES];
+                     }
+                 });
+             }];
+        }
+    }];
+    [alertCon addAction:okAction];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    [alertCon addAction:cancelAction];
+    [self presentViewController:alertCon animated:YES completion:nil];
+    
+    
 }
 
 /**
@@ -81,7 +119,7 @@
             [self showMessage:@"Cannot delete the owner!"];
             return;
         }
-        [_group kickUsers:@[groupMember.contactId] completion:^(NSError *error)
+        [_group kickUsers:@[groupMember.account] completion:^(NSError *error)
          {
              dispatch_async(dispatch_get_main_queue(), ^{
                  if (error)
@@ -104,7 +142,8 @@
  */
 -(BOOL)isGroupManager
 {
-    return [[ECSAppConfig sharedInstance].latestAccount isEqualToString:self.group.ownerId];
+//    return [[ECSAppConfig sharedInstance].latestAccount isEqualToString:self.group.ownerId];
+    return YES;
 }
 
 #pragma mark - Table view data source
@@ -122,6 +161,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     ContactListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ContactListCell" forIndexPath:indexPath];
+//    PersonEntity *person = ([self.group.members allObjects])[indexPath.row];
     cell.person = ([self.group.members allObjects])[indexPath.row];
     
     return cell;

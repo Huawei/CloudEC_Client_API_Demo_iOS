@@ -16,6 +16,7 @@ static id<TupLoginNotification> g_loginDelegate = nil;        // login delegate
 static id<TupCallNotifacation> g_callDelegate = nil;          // call delegate
 static id<TupConfNotifacation> g_confDelegate = nil;          // conference delegate
 static id<ContactNotification> g_contactDelegate = nil;    // contact delegate
+static id<ImContactNotification> g_imContactDelegate = nil;    // IM contact delegate
 
 /**
  * tup_login_register_process_notifiy的接口参数回调LOGIN_FN_CALLBACK_PTR
@@ -39,6 +40,10 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     if(msgid > 5000 && msgid < 6000){
         [g_contactDelegate contactModule:CONTACT_MODULE notification:notification];
     }
+    if (msgid > 6000 && msgid < 7000) {
+        [g_imContactDelegate imContactModule:IM_CONTACT_MODULE notification:notification];
+    }
+    
 }
 
 
@@ -85,6 +90,16 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
 }
 
 /**
+ * This method is used to register IM contact call back.
+ * 设置IM联系人模块的代理
+ *@param imContactDelegate ImContactNotification
+ */
++ (void)registerImContactCallBack:(id<ImContactNotification>)imContactDelegate
+{
+    g_imContactDelegate = imContactDelegate;
+}
+
+/**
  *This method is used to init all tsdk service
  *初始化各个tsdk模块业务
  *@param logPath log path
@@ -94,7 +109,7 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     TSDK_S_LOG_PARAM logParam;
     memset(&logParam, 0, sizeof(TSDK_S_LOG_PARAM));
     NSString *path = [logPath stringByAppendingString:@"/tsdk"];
-    logParam.level = TSDK_E_LOG_DEBUG;
+    logParam.level = TSDK_E_LOG_INFO;
     logParam.file_count = 1;
     logParam.max_size_kb = 4*1024;
     strcpy(logParam.path, [path UTF8String]);
@@ -135,9 +150,9 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     app_info.support_ctd = TSDK_TRUE;
     app_info.support_audio_and_video_conf = TSDK_TRUE;
     app_info.support_enterprise_address_book = TSDK_TRUE;
-//    app_info.support_im = TSDK_TRUE;
+    app_info.support_im = TSDK_TRUE;
 //    app_info.support_data_conf = TSDK_TRUE;
-//    app_info.support_rich_media_message = TSDK_TRUE;
+    app_info.support_rich_media_message = TSDK_TRUE;
     TSDK_RESULT result = tsdk_init(&app_info ,&onTSDKNotifications);
     return result;
 }

@@ -7,9 +7,6 @@
 //
 
 #import "NoDisturbViewController.h"
-#import <TUPNetworkSDK/ECSUserSettingService.h>
-#import <TUPIOSSDK/ECSAppConfig.h>
-#import <TUPIOSSDK/TUPUserSettingService.h>
 #import "LoginCenter.h"
 #import "CommonUtils.h"
 

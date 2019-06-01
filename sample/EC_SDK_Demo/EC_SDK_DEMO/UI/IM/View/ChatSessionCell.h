@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <TUPIOSSDK/ChatSessionEntity.h>
+#import "ChatSessionEntity.h"
 
 @interface ChatSessionCell : UITableViewCell
 

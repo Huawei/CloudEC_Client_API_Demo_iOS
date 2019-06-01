@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <TUPIOSSDK/TUPIOSSDK.h>
+#import "ChatSessionEntity.h"
 
 @interface ChatViewController : UIViewController
 @property (nonatomic, strong)ChatSessionEntity *session;     // current chatSessionEntity

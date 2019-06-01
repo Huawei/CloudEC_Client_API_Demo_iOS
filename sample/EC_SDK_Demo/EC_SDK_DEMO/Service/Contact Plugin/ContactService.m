@@ -13,22 +13,22 @@
 #import "SearchResultInfo.h"
 #import "DeptInfo.h"
 #import "ContactInfo.h"
+#import "EmployeeEntity.h"
 
 #import <UIKit/UIKit.h>
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPIOSSDK/ESpaceImageCache.h>
 #import "ManagerService.h"
 #import "LoginInfo.h"
 #import "tsdk_eaddr_def.h"
 #import "tsdk_eaddr_interface.h"
 #import "tsdk_error_def.h"
 
+#import "eSpaceDBService.h"
+
 #define SIZE52 CGSizeMake(52, 52)
 #define SIZE120 CGSizeMake(120, 120)
 #define SIZE320 CGSizeMake(320, 320)
 
-#define ICON_PATH [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingString:@"/TUPC60log/contact/icon"]
+#define ICON_PATH [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingString:@"/TUPC60log/tsdk/icon"]
 
 NSString *const TUP_CONTACT_EVENT_RESULT_KEY        = @"TUP_CONTACT_EVENT_RESULT_KEY";
 NSString *const TUP_CONTACT_KEY                     = @"TUP_CONTACT_KEY";
@@ -96,7 +96,10 @@ NSString *const TUP_ICON_FILE_KEY                   = @"TUP_ICON_FILE_KEY";
                         }
                         [[ManagerService callService] configBussinessAccount:accountNumber terminal:contactInfo.terminal2 token:nil];
                         
-                        [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:contactInfo.staffAccount];
+//                        if (nil == [eSpaceDBService sharedInstance].localDataManager) {
+//                            [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:contactInfo.staffAccount];
+//                        }
+                        
                     }
                     return;
                 }

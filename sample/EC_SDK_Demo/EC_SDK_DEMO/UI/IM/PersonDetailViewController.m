@@ -10,17 +10,18 @@
 #import "PersonDetailViewCell.h"
 #import "PersonDetailViewController.h"
 #import "UserSignatureSettingController.h"
+#import "EmployeeEntity.h"
 
 #import "ManagerService.h"
 #import <AVFoundation/AVFoundation.h>
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPIOSSDK/EmployeeCategoryEntity.h>
-#import <TUPContactSDK/TupContactService.h>
-#import <TUPIOSSDK/TUPUserSettingService.h>
-#import <TUPContactSDK/EmployeeCategoryEntity+ServiceObject.h>
 
-@interface PersonDetailViewController ()<UITableViewDelegate, UITableViewDataSource>
+#import "eSpaceDBService.h"
+#import "NSManagedObjectContext+Persistent.h"
+#import "ContactService.h"
+#import "ESpaceContactService.h"
+#import "EmployeeCategoryEntity+ServiceObject.h"
+
+@interface PersonDetailViewController ()<UITableViewDelegate, UITableViewDataSource, TUPContactServiceDelegate>
 
 @property (nonatomic, strong) EmployeeEntity *employee;        // current employee entity
 @property (weak, nonatomic) IBOutlet UITableView *tableView;   // current tableView
@@ -61,6 +62,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [ManagerService contactService].delegate = self;
     if (_isSelf) {
         [self.tableView reloadData];
     }
@@ -71,6 +73,10 @@
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    NSMutableArray *accountArray = [[NSMutableArray alloc] init];
+    [accountArray addObject:self.employee.account];
+    [[ESpaceContactService sharedInstance] detectUserStatusWithAccountArray:accountArray];
     
     _deleteItem = [[UIBarButtonItem alloc] initWithTitle:@"Delete" style:UIBarButtonItemStylePlain target:self action:@selector(deleteFriend)];
     _addItem = [[UIBarButtonItem alloc] initWithTitle:@"Add" style:UIBarButtonItemStylePlain target:self action:@selector(addFriend)];
@@ -280,6 +286,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[ManagerService contactService] setSystemHead:sysIconID withCmpletion:^(BOOL result) {
             if (!result) {
+//                [[ManagerService contactService] loadPersonHeadIconWithAccount:self.employee.account];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self showMessage:@"Set Default Head Failed!"];
                 });
@@ -343,8 +350,8 @@
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * _Nonnull action)
         {
-            EmployeeEntity *emp = [[TupContactService sharedInstance] employeeFromCopyMemoryUser:(EmployeeEntity *)self.employee];
-            [[TupContactService sharedInstance] addFriend:emp
+            EmployeeEntity *emp = [[ESpaceContactService sharedInstance] employeeFromCopyMemoryUser:(EmployeeEntity *)self.employee];
+            [[ESpaceContactService sharedInstance] addFriend:emp
                                             toExistedTeam:group
                                                    notify:YES
                                                completion:^(NSError *error)
@@ -352,6 +359,12 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (!error) {
                         [self showMessage:@"Add Success."];
+                        ESpaceLocalDataManager * localManager = LOCAL_DATA_MANAGER;
+                        NSManagedObjectContext* bgCtx = [localManager backgroundObjectContext];
+                        NSManagedObjectID* oldPersonId = self.employee.objectID;
+                        
+                        self.employee = (EmployeeEntity*)[bgCtx objectWithID:oldPersonId];
+                        
                         [self reloadRightBarButtonItem];
                     }else {
                         [self showMessage:@"Add Failed."];
@@ -379,7 +392,9 @@
     }
     self.navigationItem.rightBarButtonItem = nil;
     if ([self.employee.isFriend boolValue]) {
-        self.navigationItem.rightBarButtonItem = _deleteItem;
+        if ([ESpaceContactService sharedInstance].currentContactGroupId != nil) {
+            self.navigationItem.rightBarButtonItem = _deleteItem;
+        }
     }else {
         self.navigationItem.rightBarButtonItem = _addItem;
     }
@@ -396,7 +411,7 @@
     UIAlertAction *sureAction = [UIAlertAction actionWithTitle:@"Sure"
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * _Nonnull action) {
-                                                           [[TupContactService sharedInstance] deleteFriend:weakSelf.employee completion:^(NSError *error) {
+                                                           [[ESpaceContactService sharedInstance] deleteFriend:weakSelf.employee completion:^(NSError *error) {
                                                                dispatch_async(dispatch_get_main_queue(), ^{
                                                                    if (!error) {
                                                                        [weakSelf showMessage:@"Delete Success."];
@@ -405,7 +420,7 @@
                                                                        [weakSelf showMessage:@"Delete Failed."];
                                                                    }
                                                                });
-                                                               
+
                                                            }];
                                                        }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
@@ -414,6 +429,31 @@
     [alertCOntroller addAction:sureAction];
     [alertCOntroller addAction:cancelAction];
     [self.navigationController presentViewController:alertCOntroller animated:YES completion:nil];
+}
+
+
+- (void)contactEventCallback:(TUP_CONTACT_EVENT_TYPE)contactEvent result:(NSDictionary *)resultDictionary {
+    switch (contactEvent) {
+        case CONTACT_E_SEARCH_GET_ICON_RESULT: {
+            // todo sysIconId == nil
+//            NSString *sysIconId = resultDictionary[TUP_SYS_ICON_ID_KEY];
+//            NSString *filePath = resultDictionary[TUP_ICON_FILE_KEY];
+//            UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+//            if (nil != image) {
+////                _headImg = image;
+//            }else {
+//                if (sysIconId.integerValue >= 0 && sysIconId.integerValue <= 9) {
+//                    NSString *imageName = [NSString stringWithFormat:@"default_head_image_%d", sysIconId.intValue];
+////                    _headImg = [UIImage imageNamed:imageName];
+//                }
+//            }
+//            [self.tableView reloadData];
+        }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 #pragma mark

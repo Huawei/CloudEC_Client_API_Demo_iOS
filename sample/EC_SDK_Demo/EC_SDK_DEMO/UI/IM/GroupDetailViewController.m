@@ -7,13 +7,15 @@
 //
 
 #import "GroupDetailViewController.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
-#import <TUPIOSSDK/PersonEntity.h>
-#import <TUPContactSDK/GroupEntity+ServiceObject.h>
 #import "HeadImageView.h"
 #import "GroupHeadViewCell.h"
 #import "MembersViewController.h"
 #import "GroupInfoModifyController.h"
+#import "GroupEntity.h"
+
+#import "GroupEntity+ServiceObject.h"
+#import "ECSAppConfig.h"
+#import "PersonEntity.h"
 
 @interface GroupDetailViewController ()<UITableViewDelegate,UITableViewDataSource>
 
@@ -72,6 +74,7 @@
     {
         [self.groupModel removeObserver:self forKeyPath:tempStr context:NULL];
     }
+    self.groupModel = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -285,7 +288,7 @@
 -(BOOL)isGroupManager
 {
     NSLog(@"self.groupModel.ownerId--- :%@",self.groupModel.ownerId);
-    NSLog(@"[ECSAppConfig sharedInstance].latestAccount:%@",[ECSAppConfig sharedInstance].latestAccount);
+//    NSLog(@"[ECSAppConfig sharedInstance].latestAccount:%@",[ECSAppConfig sharedInstance].latestAccount);
     return [[ECSAppConfig sharedInstance].latestAccount isEqualToString:self.groupModel.ownerId];
 }
 
@@ -426,9 +429,13 @@
         ctrl.modifyType = (GroupInfoModifyType)indexPath.row;
         [self.navigationController pushViewController:ctrl animated:YES];
     }else if (indexPath.section == 3){
-        NSArray *array = [self.groupModel.members allObjects];
+//        NSArray *array = [self.groupModel.members allObjects];
+//        for (PersonEntity *person in array) {
+//            NSString *name = person.name;
+//            NSString *personId = person.contactId;
+//        }
         MembersViewController *ctrl = [[MembersViewController alloc]init];
-        ctrl.members = array;
+//        ctrl.members = array;
         ctrl.group = self.groupModel;
         [self.navigationController pushViewController:ctrl animated:YES];
     }

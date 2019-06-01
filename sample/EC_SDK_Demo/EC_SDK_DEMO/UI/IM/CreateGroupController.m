@@ -8,16 +8,17 @@
 
 #import "CreateGroupController.h"
 #import "ContactSearchResultController.h"
-#import <TUPIOSSDK/eSpaceDBService.h>
 #import "MemberCollectionViewCell.h"
-#import <TUPIOSSDK/EmployeeCategoryEntity.h>
 #import "ContactListCell.h"
-#import <TUPIOSSDK/PersonEntity.h>
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/GroupEntity.h>
-#import <TUPContactSDK/GroupEntity+ServiceObject.h>
-#import <TUPIOSSDK/ECSAppConfig.h>
-#import <TUPContactSDK/TupContactService.h>
+#import <CoreData/CoreData.h>
+#import "EmployeeCategoryEntity.h"
+#import "EmployeeEntity.h"
+#import "GroupEntity.h"
+
+#import "eSpaceDBService.h"
+#import "NSManagedObjectContext+Persistent.h"
+#import "ESpaceContactService.h"
+#import "ECSAppConfig.h"
 
 @interface CreateGroupController ()<ContactSearchDelegate, UISearchBarDelegate, UISearchControllerDelegate, NSFetchedResultsControllerDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource>
 @property (nonatomic, strong)  UICollectionView *selectedMemberCollect;        // show the selected members
@@ -67,59 +68,121 @@
     self.navigationItem.rightBarButtonItem = btnItem;
 }
 
+- (void)createChatGroupWithGroupType:(ECSGroupType)groupType
+{
+    NSMutableArray *accountArray = [[NSMutableArray alloc]init];
+    for (EmployeeEntity *employee in _selectMembersArray) {
+        if ([employee isKindOfClass:[EmployeeEntity class]]) {
+            [accountArray addObject:employee.account];
+        }else{
+            if (employee.name) {
+                [accountArray addObject:employee.name];
+            }
+        }
+    }
+    if (accountArray.count > 0) {
+        
+        if (accountArray.count <= 1) {
+            return;
+        }
+        NSString *groupName = [ECSAppConfig sharedInstance].latestAccount;
+        for (NSString *memName in accountArray)
+        {
+            groupName = [groupName stringByAppendingFormat:@",%@",memName];
+        }
+        [[ESpaceContactService sharedInstance] createGroupWithName:groupName enName:groupName groupType:groupType userAccountList:accountArray ownerAccount:[ECSAppConfig sharedInstance].latestAccount announce:@"" intro:@"" completion:^(NSString *groupId, NSString *failedList, NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error)
+                {
+                    NSLog(@"error:%@",[error description]);
+                    [self showMessage:@"Create failed"];
+                }
+                else
+                {
+                    NSLog(@"groupId--- :%@",groupId);
+                    [self.navigationController popViewControllerAnimated:YES];
+                }
+            });
+        }];
+    }
+}
+
 /**
  This method is used to deal finish bitton action
  */
 - (void)onFinishBtnAction
 {
-    NSMutableArray *accountArray = [[NSMutableArray alloc]init];
-    for (EmployeeEntity *employee in _selectMembersArray) {
-        [accountArray addObject:employee.account];
-    }
-    if (accountArray.count > 0) {
-        if (self.createGroupType == ADD_USER) {
-            [self.currentGroup inviteUsers:accountArray desc:nil completion:^(NSString *faildList, NSError *error)
-             {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     if (error && error.code != 39)
-                     {
-                         NSLog(@"error--- :%@ faildList:%@",[error description],faildList);
-                         [self showMessage:@"Invite failed"];
-                     }
-                     else
-                     {
-                         NSLog(@"invite success");
-                         [self.navigationController popViewControllerAnimated:YES];
-                     }
-                 });
-             }];
-        }else{
-            if (accountArray.count <= 1) {
-                return;
-            }
-            NSString *groupName = [ECSAppConfig sharedInstance].latestAccount;
-            for (NSString *memName in accountArray)
-            {
-                groupName = [groupName stringByAppendingFormat:@",%@",memName];
-            }
-            [[TupContactService sharedInstance] createGroupWithName:groupName enName:groupName userAccountList:accountArray announce:@"" intro:@"" completion:^(NSString *groupId, NSString *failedList, NSError *error)
-             {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     if (error)
-                     {
-                         NSLog(@"error:%@",[error description]);
-                         [self showMessage:@"Create failed"];
-                     }
-                     else
-                     {
-                         NSLog(@"groupId--- :%@",groupId);
-                         [self.navigationController popViewControllerAnimated:YES];
-                     }
-                 });
-             }];
-        }
-        
-    }
+    UIAlertController *alertCtrl = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *fixGroupAction = [UIAlertAction actionWithTitle:@"Fix Group" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self createChatGroupWithGroupType:ECSFixGroup];
+    }];
+    UIAlertAction *chatGroupAction = [UIAlertAction actionWithTitle:@"Chat Group" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self createChatGroupWithGroupType:ECSChatGroup];
+    }];
+    
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alertCtrl addAction:fixGroupAction];
+    [alertCtrl addAction:chatGroupAction];
+    [alertCtrl addAction:cancel];
+    [self presentViewController:alertCtrl animated:YES completion:nil];
+    
+//        [[ESpaceContactService sharedInstance] createGroupWithName:groupName enName:groupName userAccountList:accountArray announce:@"" intro:@"" completion:^(NSString *groupId, NSString *failedList, NSError *error)
+//                      {
+//                          dispatch_async(dispatch_get_main_queue(), ^{
+//                              if (error)
+//                              {
+//                                  NSLog(@"error:%@",[error description]);
+//                                  [self showMessage:@"Create failed"];
+//                              }
+//                              else
+//                              {
+//                                  NSLog(@"groupId--- :%@",groupId);
+//                                  [self.navigationController popViewControllerAnimated:YES];
+//                              }
+//                          });
+//                      }];
+//
+//
+//        if (self.createGroupType == ADD_USER) {
+//            [self.currentGroup inviteUsers:accountArray desc:nil completion:^(NSString *faildList, NSError *error)
+//             {
+//                 dispatch_async(dispatch_get_main_queue(), ^{
+//                     if (error && error.code != 39)
+//                     {
+//                         NSLog(@"error--- :%@ faildList:%@",[error description],faildList);
+//                         [self showMessage:@"Invite failed"];
+//                     }
+//                     else
+//                     {
+//                         NSLog(@"invite success");
+//                         [self.navigationController popViewControllerAnimated:YES];
+//                     }
+//                 });
+//             }];
+//        }else{
+//            if (accountArray.count <= 1) {
+//                return;
+//            }
+//            NSString *groupName = [ECSAppConfig sharedInstance].latestAccount;
+//            for (NSString *memName in accountArray)
+//            {
+//                groupName = [groupName stringByAppendingFormat:@",%@",memName];
+//            }
+//            [[TupContactService sharedInstance] createGroupWithName:groupName enName:groupName userAccountList:accountArray announce:@"" intro:@"" completion:^(NSString *groupId, NSString *failedList, NSError *error)
+//             {
+//                 dispatch_async(dispatch_get_main_queue(), ^{
+//                     if (error)
+//                     {
+//                         NSLog(@"error:%@",[error description]);
+//                         [self showMessage:@"Create failed"];
+//                     }
+//                     else
+//                     {
+//                         NSLog(@"groupId--- :%@",groupId);
+//                         [self.navigationController popViewControllerAnimated:YES];
+//                     }
+//                 });
+//             }];
 }
 
 /**
@@ -239,7 +302,7 @@
     if (_categoryFilter) {
         contentPredicate = [NSPredicate predicateWithFormat:@"isFriend=%@ AND category CONTAINS %@", [NSNumber numberWithBool:YES], _categoryFilter];
     }
-    
+
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"PersonEntity" inManagedObjectContext:self.searchMemoryContext];
     NSSortDescriptor *accountDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"nameIndex" ascending:YES];
     NSSortDescriptor *nameDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"name" ascending:YES];
@@ -247,7 +310,7 @@
     [fetchRequest setEntity:entity];
     [fetchRequest setPredicate:contentPredicate];
     [fetchRequest setSortDescriptors:@[accountDescriptor,nameDescriptor,IdDesriptor]];
-    
+
     _contactFetchCtrl = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext] sectionNameKeyPath:nil cacheName:nil];
     _contactFetchCtrl.delegate = self;
     [_contactFetchCtrl performFetch:nil];
@@ -429,9 +492,9 @@
 {
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     EmployeeEntity *employee = _contactFetchCtrl.fetchedObjects[indexPath.row];
-    if ([employee.account isEqualToString:[ECSAppConfig sharedInstance].latestAccount]) {
-        return;
-    }
+//    if ([employee.account isEqualToString:[ECSAppConfig sharedInstance].latestAccount]) {
+//        return;
+//    }
     for (EmployeeEntity *groupPerson in [self.currentGroup.members allObjects]) {
         if ([groupPerson.account isEqualToString:employee.account]) {
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -470,50 +533,50 @@
 #pragma mark - ContactSearchDelegate
 - (void)searchContacts {
     __block NSArray *fetchedList = nil;
-    [[TupContactService sharedInstance] queryCorpAdressBook:self.currentSearchText
-                                                  pageIndex:self.searchPageIndex
-                                                   pageSize:50
-                                                      field:nil
-                                                 showStatus:NO
-                                                 searchFlag:0
-                                                  inContext:self.searchMemoryContext
-                                                 completion:^(NSError *error, NSInteger count)
-     {
-         dispatch_sync(dispatch_get_main_queue(), ^{
-             if (error) {
-                 NSLog(@"query Corp Adress Book failed: %@",error.description);
-                 return ;
-             }
-             if (count < 50) {
-                 [self.resultController hideTableFooterView];
-             }
-             if (count == 0) {
-                 [self showMessage:@"Sorry! No more data!"];
-                 return;
-             }
-             NSSortDescriptor *weightOrder = [[NSSortDescriptor alloc] initWithKey:@"weight" ascending:YES];
-             NSEntityDescription *entity = [NSEntityDescription entityForName:@"EmployeeEntity"
-                                                       inManagedObjectContext:self.searchMemoryContext];
-             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"weight > %@",
-                                       [NSNumber numberWithUnsignedInteger:self.currentMaxWeight]];
-             NSFetchRequest *request = [[NSFetchRequest alloc] init];
-             request.entity = entity;
-             request.predicate = predicate;
-             request.sortDescriptors = [NSArray arrayWithObject:weightOrder];
-             fetchedList = [self.searchMemoryContext executeFetchRequest:request error:nil];
-             self.searchPageIndex++;
-             self.currentMaxWeight += [fetchedList count];
-             [self.resultController.searchArray addObjectsFromArray:fetchedList];
-             [self.resultController.tableView reloadData];
-         });
-     }];
+//    [[TupContactService sharedInstance] queryCorpAdressBook:self.currentSearchText
+//                                                  pageIndex:self.searchPageIndex
+//                                                   pageSize:50
+//                                                      field:nil
+//                                                 showStatus:NO
+//                                                 searchFlag:0
+//                                                  inContext:self.searchMemoryContext
+//                                                 completion:^(NSError *error, NSInteger count)
+//     {
+//         dispatch_sync(dispatch_get_main_queue(), ^{
+//             if (error) {
+//                 NSLog(@"query Corp Adress Book failed: %@",error.description);
+//                 return ;
+//             }
+//             if (count < 50) {
+//                 [self.resultController hideTableFooterView];
+//             }
+//             if (count == 0) {
+//                 [self showMessage:@"Sorry! No more data!"];
+//                 return;
+//             }
+//             NSSortDescriptor *weightOrder = [[NSSortDescriptor alloc] initWithKey:@"weight" ascending:YES];
+//             NSEntityDescription *entity = [NSEntityDescription entityForName:@"EmployeeEntity"
+//                                                       inManagedObjectContext:self.searchMemoryContext];
+//             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"weight > %@",
+//                                       [NSNumber numberWithUnsignedInteger:self.currentMaxWeight]];
+//             NSFetchRequest *request = [[NSFetchRequest alloc] init];
+//             request.entity = entity;
+//             request.predicate = predicate;
+//             request.sortDescriptors = [NSArray arrayWithObject:weightOrder];
+//             fetchedList = [self.searchMemoryContext executeFetchRequest:request error:nil];
+//             self.searchPageIndex++;
+//             self.currentMaxWeight += [fetchedList count];
+//             [self.resultController.searchArray addObjectsFromArray:fetchedList];
+//             [self.resultController.tableView reloadData];
+//         });
+//     }];
 }
 
 - (void)showPersonDetailInfo:(EmployeeEntity *)employee {
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([employee.account isEqualToString:[ECSAppConfig sharedInstance].latestAccount]) {
-            return;
-        }
+//        if ([employee.account isEqualToString:[ECSAppConfig sharedInstance].latestAccount]) {
+//            return;
+//        }
         for (EmployeeEntity *groupPerson in [self.currentGroup.members allObjects]) {
             if ([groupPerson.account isEqualToString:employee.account]) {
                 return;

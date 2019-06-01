@@ -55,7 +55,7 @@ extern NSString *const TUP_CONF_INCOMING_KEY;
 extern NSString *const LOGIN_UNREGISTERED_RESULT;
 extern NSString *const SRTP_TRANSPORT_MODE;
 
-extern NSString *const MAA_LOGIN_SUCCESSED;
+//extern NSString *const IM_LOGIN_SUCCESSED;
 
 extern NSString *const USE_IDO_CONFCTRL;
 
@@ -66,6 +66,13 @@ extern NSString *const LOGIN_GET_TEMP_USER_INFO_FAILD;
 extern NSString *const LOGIN_AUTH_FAILED;
 
 extern NSString *const CONF_QUITE_TO_CONFLISTVIEW;
+
+/* [en]xxxx. [cn]点对点聊天消息通知 */
+extern NSString* const TUP_RECEIVE_SINGLE_MESSAGE_NOTIFY;
+/* [en]xxxx. [cn]群组聊天消息通知 */
+extern NSString* const TUP_RECEIVE_GROUP_MESSAGE_NOTIFY;
+
+extern NSString *const NTF_AUDIOROUTE_CHANGED; // audio route changed notification
 
 /**
  * [en]This enumeration is used to describe the call type.
@@ -316,6 +323,7 @@ extern NSString *const LOGIN_STG_TUNNEL_CREATE_RESULT_KEY; // value: BOOL
 typedef NS_ENUM(NSUInteger, TUP_LOGIN_EVENT_TYPE)
 {
     LOGINOUT_EVENT,
+    LOGININ_EVENT,
 };
 
 /**
@@ -735,6 +743,117 @@ typedef NS_ENUM(NSUInteger, EmptyDataOption) {
     ESPaceEDONoVoiceMail,
     ESPaceEDONoAddedContact,
     ESpaceEDONoDeptData
+};
+
+/**
+ * [en]This enum is about user status.
+ * [cn]用户状态
+ */
+typedef NS_ENUM(NSInteger, ESpaceUserStatus) {
+    ESpaceUserStatusUnknown = -1,       /**< [en]Indicates unknown.
+                                             <br>[cn] 未知*/
+    ESpaceUserStatusOffline = 0,        /**< [en]Indicates offlilne.
+                                             <br>[cn] 离线 */
+    ESpaceUserStatusAvailable,          /**< [en]Indicates available.
+                                             <br>[cn] 在线 */
+    ESpaceUserStatusHiddeen,            /**< [en]Indicates hidden (no supported)
+                                             <br>[cn]隐身 (暂不支持) */
+    ESpaceUserStatusBusy,               /**< [en]Indicates status busy.
+                                             <br>[cn] 繁忙 */
+    ESpaceUserStatusAway,               /**< [en]Indicates status away.
+                                             <br>[cn] 离开 */
+    ESpaceUserStatusUninteruptable,     /**< [en]Indicates uninteruptable.
+                                             <br>[cn] 请勿打扰 */
+    ESpaceUserStatusButt
+};
+
+///**
+// * [en]This enum is about im message status.
+// * [cn]IM消息状态
+// */
+//typedef NS_ENUM(NSUInteger, ESpaceMessageStatus) {
+//    ESpaceMsgStatusReceived = 0,                                        /**< [en]Indicates received.
+//                                                                         <br>[cn] 接收成功 */
+//    ESpaceMsgStatusSended = ESpaceMsgStatusReceived,                    /**< [en]Indicates sended.
+//                                                                         <br>[cn] 发送成功 */
+//    ESpaceMsgStatusDraft = 0x10000,                                     /**< [en]Indicates drafy.
+//                                                                         <br>[cn] 草稿 */
+//    ESpaceMsgStatusSending = 0x20000,                                   /**< [en]Indicates sending.
+//                                                                         <br>[cn] 发送中 */
+//    ESpaceMsgStatusReceiving = ESpaceMsgStatusSending,                  /**< [en]Indicates receiving.
+//                                                                         <br>[cn] 接收中 */
+//
+//    ESpaceMsgStatusSendFailed = 0x40000,                                /**< [en]Indicates send failed.
+//                                                                         <br>[cn] 发送失败 */
+//    ESpaceMsgStatusReceiveFaied = ESpaceMsgStatusSendFailed,            /**< [en]Indicates receive faied.
+//                                                                         <br>[cn] 接收失败 */
+//
+//    ESpaceMsgStatusSendCancelled = 0x80000,                             /**< [en]Indicates send cancelled.
+//                                                                         <br>[cn] 取消发送 */
+//    ESpaceMsgStatusReceiveCancelled = ESpaceMsgStatusSendCancelled      /**< [en]Indicates receive cancelled.
+//                                                                         <br>[cn] 取消接收 */
+//};
+//
+///**
+// * [en]This enum is about message type.
+// * [cn]消息类型
+// */
+//typedef NS_ENUM(NSInteger, ESpaceContentType) {
+//    ESpaceUnknowContentType = -1,       /**< [en]Indicates unknow type.
+//                                         <br>[cn]类型未知 */
+//    ESpaceTextContentType = 0,          /**< [en]Indicates text.
+//                                         <br>[cn]文本 */
+//    ESpaceAudioContentType = 1,         /**< [en]Indicates audio .
+//                                         <br>[cn]语音 */
+//    ESpaceVideoContentType = 2,         /**< [en]Indicates video.
+//                                         <br>[cn]视频 */
+//    ESpaceImageContentType = 3,         /**< [en]Indicates picture.
+//                                         <br>[cn]图片 */
+//    ESpaceFileContentType = 4,          /**< [en]Indicates file.
+//                                         <br>[cn]文件 */
+//    ESpacePublicAccountContentType = 5, /**< [en]Indicates public account forward message.
+//                                         <br>[cn]公众号转发消息 */
+//    ESpaceShareLinkContentType = 7,     /**< [en]Indicates picture link.
+//                                         <br>[cn]图文链接 */
+//    ESpaceMixContentType = 8,           /**< [en]Indicates picture mix.
+//                                         <br>[cn]图文混排 */
+//    ESpaceEmailContentType = 9,         /**< [en]Indicates email.
+//                                         <br>[cn]email */
+//    ESpaceCardMsgSharedType = 10,       /**< [en]Indicates shared type.
+//                                         <br>[cn]分享类 */
+//    ESpaceCardMsgRecordType = 12,       /**< [en]Indicates record type.
+//                                         <br>[cn]记录类 */
+//    ESpacePaImageTextContentType = -2,  /**< [en]Indicates image text content.
+//                                         <br>[cn]公众号多图文消息 */
+//    ESpaceLightAppPaContentType = -3,   /**< [en]Indicates light app content.
+//                                         <br>[cn]轻应用公众号消息 */
+//    ESpaceCardMsgOrderType = 11
+//};
+
+/**
+ * [en]This enum is about server login status.
+ * [cn]服务器登录状态
+ */
+typedef NS_ENUM(NSUInteger, ECSLoginServiceStatus) {
+    ECServiceOffline = 0,                   /**< [en]Indicates offline.
+                                             <br>[cn]网络问题断线 */
+    ECServiceSigning = 1,                   /**< [en]Indicates signing.
+                                             <br>[cn]正在登录 */
+    ECServiceLogin = 2,                     /**< [en]Indicates login success.
+                                             <br>[cn]登录成功 */
+    ECServiceKickOff = 3,                   /**< [en]Indicates kick off.
+                                             <br>[cn]被踢 */
+    ECServiceLogout = 4,                    /**< [en]Indicates logout active.
+                                             <br>[cn]主动登出 */
+    ECServiceInvalidAccountOrPassword = 5,  /**< [en]Indicates invalid account or password.
+                                             <br>[cn]账号被锁或者无效、密码错误等错误 */
+    ECServiceReconnecting = 6               /**< [en]Indicates reconnecting.
+                                             <br>[cn]正在重新链接 */
+};
+
+typedef NS_ENUM(NSInteger, ECSGroupType) {
+    ECSFixGroup = 0,
+    ECSChatGroup = 1
 };
 
 @interface Defines : NSObject

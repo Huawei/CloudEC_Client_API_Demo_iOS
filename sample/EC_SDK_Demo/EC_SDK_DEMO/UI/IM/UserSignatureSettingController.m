@@ -7,10 +7,9 @@
 //
 
 #import "UserSignatureSettingController.h"
-
 #import "CommonUtils.h"
-#import <TUPIOSSDK/TUPUserSettingService.h>
-#import <TUPIOSSDK/TUPIOSSDK.h>
+#import "ESpaceContactService.h"
+
 
 @interface UserSignatureSettingController ()
 
@@ -26,11 +25,13 @@
     self.title = @"Signature";
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(saveSignature)];
-    self.textView.text = LOCAL_DATA_MANAGER.currentUser.signature;
+//    self.textView.text = LOCAL_DATA_MANAGER.currentUser.signature;
 }
 
 - (void)saveSignature {
-    [[TUPUserSettingService sharedInstance] setSelfSignature:_textView.text completion:^(NSError *error) {
+    
+    [[ESpaceContactService sharedInstance] setSelfSignature:_textView.text completion:^(NSError *error)
+    {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!error) {
                 [self showMessage:@"Save success."];
@@ -40,6 +41,16 @@
             }
         });
     }];
+//    [[TUPUserSettingService sharedInstance] setSelfSignature:_textView.text completion:^(NSError *error) {
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            if (!error) {
+//                [self showMessage:@"Save success."];
+//                [self performSelector:@selector(back) withObject:nil afterDelay:1];
+//            }else {
+//                [self showMessage:@"Save failed."];
+//            }
+//        });
+//    }];
 }
 
 - (void)back {

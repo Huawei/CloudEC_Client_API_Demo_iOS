@@ -7,9 +7,9 @@
 //
 
 #import "GroupListCell.h"
-#import <TUPIOSSDK/GroupEntity.h>
-#import <TUPNetworkSDK/ECSGroupManageService.h>
 #import "HeadImageView.h"
+#import "GroupEntity.h"
+#import "Defines.h"
 
 @interface GroupListCell ()
 @property (weak, nonatomic) IBOutlet HeadImageView *headImageView;   // head image view

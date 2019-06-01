@@ -7,12 +7,10 @@
 //
 
 #import "ContactListCell.h"
-#import <TUPIOSSDK/PersonEntity.h>
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPContactSDK/EmployeeEntity+ServiceObject.h>
 #import "HeadImageView.h"
+#import "PersonEntity.h"
 
-@interface ContactListCell ()
+@interface ContactListCell ()<UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet HeadImageView *headImg;      // head image view
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;          // show person's name
@@ -25,6 +23,18 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    UILongPressGestureRecognizer *longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressAction:)];
+    longPressGesture.delegate = self;
+    [self addGestureRecognizer:longPressGesture];
+}
+
+- (void)longPressAction:(UILongPressGestureRecognizer *)sender
+{
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        if ([_delegate respondsToSelector:@selector(showGroupListWithPerson:)]) {
+            [_delegate showGroupListWithPerson:self.person];
+        }
+    }
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

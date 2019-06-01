@@ -7,11 +7,13 @@
 //
 
 #import "HeadImageView.h"
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/GroupEntity.h>
-#import <TUPIOSSDK/ESpaceImageCache.h>
-#import <TUPContactSDK/TUPContactSDK.h>
-#import <TUPContactSDK/TupContactService.h>
+#import "GroupEntity.h"
+#import "EmployeeEntity.h"
+#import "EmployeeEntity+ServiceObject.h"
+#import "ESpaceImageCache.h"
+
+#import "ESpaceContactService.h"
+#import "ManagerService.h"
 
 @interface HeadImageView ()
 @property (nonatomic, strong)ContactEntity *contact;   // current contact
@@ -77,58 +79,51 @@
 {
     EmployeeEntity* employee = (EmployeeEntity*)self.contact;
     // if employee need update , reload detail while trigger KVO of 'headId'
-    //if ([employee needReload]) {
-        //[employee reloadDetail];
-    //} else {
+//    if ([employee needReload]) {
+//        [employee reloadDetail];
+//    } else {
         UIImage* headImage = [self systemHeadImage:employee.headId];
         if (headImage) {
             self.image = headImage;
             return;
         }
-        
-        NSString* key = [employee headImageKey];
-        UIImage* image = [[ESpaceImageCache sharedInstance] imageWithKey:key];
-        if (image) {
-            self.image = image;
-        } else {
-            [self setDefualtImage];
-            __weak typeof(self) weakSelf = self;
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[employee headImageLocalPath]]) {
-                NSString *imagePath = [_contact headImageLocalPath];
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    NSData* data = [[NSFileManager defaultManager] contentsAtPath:imagePath];
-                    UIImage *image = [UIImage imageWithData:data];
-                    [[ESpaceImageCache sharedInstance] setImage:image forKey:key cost:data.length];
-                    if (image) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            weakSelf.image = image;
-                        });
-                    }
-                });
-                
-            } else {
-                // todo jl
-                
-                [employee loadHeadImage:^(UIImage *imageData, NSError *error) {
-                    if (imageData) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            weakSelf.image = imageData;
-                        });
-                    }
-                }];
-//                NSString *path = NSTemporaryDirectory();
-//                NSString *iconPathMaxImg = [path stringByAppendingPathComponent:@"maxImg"];
-//                NSData *imageData = [NSData dataWithContentsOfFile:iconPathMaxImg];
-//                UIImage *image = [UIImage imageWithData:imageData];
-//                if (image) {
-//                    dispatch_async(dispatch_get_main_queue(), ^{
-//                        weakSelf.image = image;
-//                    });
-//                }
-                
-            }
-        }
-    //}
+    
+//        NSString* key = [employee headImageKey];
+//        UIImage* image = [[ESpaceImageCache sharedInstance] imageWithKey:key];
+//        if (image) {
+//            self.image = image;
+//        } else {
+//            [self setDefualtImage];
+//            __weak typeof(self) weakSelf = self;
+//            if ([[NSFileManager defaultManager] fileExistsAtPath:[employee headImageLocalPath]]) {
+//                NSString *imagePath = [_contact headImageLocalPath];
+//                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//                    NSData* data = [[NSFileManager defaultManager] contentsAtPath:imagePath];
+//                    UIImage *image = [UIImage imageWithData:data];
+//                    [[ESpaceImageCache sharedInstance] setImage:image forKey:key cost:data.length];
+//                    if (image) {
+//                        dispatch_async(dispatch_get_main_queue(), ^{
+//                            weakSelf.image = image;
+//                        });
+//                    }
+//                });
+//
+//            } else {
+////                [[ManagerService contactService] loadPersonHeadIconWithAccount:employee.account];
+//
+////                // todo jl
+////
+////                [employee loadHeadImage:^(UIImage *imageData, NSError *error) {
+////                    if (imageData) {
+////                        dispatch_async(dispatch_get_main_queue(), ^{
+////                            weakSelf.image = imageData;
+////                        });
+////                    }
+////                }];
+//
+//            }
+////        }
+//    }
 }
 
 
@@ -154,7 +149,7 @@
         self.image = image;
     } else {
         NSString* imagePath = [group headImageLocalPath];
-        
+
         if ([[NSFileManager defaultManager] fileExistsAtPath:imagePath]) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 UIImage* image = [[ESpaceImageCache sharedInstance] imageWithKey:key];
@@ -171,11 +166,11 @@
             });
         }
     }
-    
-    if (![[TupContactService sharedInstance].validGroupHeadImages containsObject:key]) {
-        [group loadHeadImage:YES completion:^(UIImage *imageData, NSError *error) {
-            weakSelf.image = imageData;
-        }];
+
+    if (![[ESpaceContactService sharedInstance].validGroupHeadImages containsObject:key]) {
+//        [group loadHeadImage:YES completion:^(UIImage *imageData, NSError *error) {
+//            weakSelf.image = imageData;
+//        }];
     }
 }
 
@@ -184,7 +179,8 @@
     __weak typeof(self) weakSelf = self;
     if ([keyPath isEqualToString:@"headId"] && object == _contact) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [weakSelf reloadHeadImage];
+            //JL todo
+//            [weakSelf reloadHeadImage];
         });
     }
 }
@@ -193,5 +189,7 @@
 {
     [_contact removeObserver:self forKeyPath:@"headId"];
 }
+
+
 
 @end

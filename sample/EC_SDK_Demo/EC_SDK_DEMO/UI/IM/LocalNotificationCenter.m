@@ -7,9 +7,10 @@
 //
 
 #import "LocalNotificationCenter.h"
-#import <TUPIMSDK/TUPIMSDK.h>
-#import <TUPIOSSDK/TUPIOSSDK.h>
 #import "CallService.h"
+#import "ChatMessageEntity.h"
+#import "EmployeeEntity.h"
+#import <UIKit/UIKit.h>
 
 static LocalNotificationCenter * g_notificationCenter = nil;
 
@@ -42,25 +43,25 @@ static LocalNotificationCenter * g_notificationCenter = nil;
 
 - (void)onReceiveNewMessage:(NSNotification *)notification
 {
-    NSManagedObjectID* moId = [notification.userInfo objectForKey:TUP_RECEIVE_MESSAGE_NOTIFY_KEY];
-    if (nil == moId) {
-        return;
-    }
-    ChatMessageEntity* messageEntity = (ChatMessageEntity*)[[LOCAL_DATA_MANAGER managedObjectContext] objectWithID:moId];
-    if (nil == messageEntity) {
-        return;
-    }
-    [self receiveNewMessage:messageEntity];
-}
-
-- (void)receiveNewMessage:(ChatMessageEntity* )message {
-    if (message.readed.integerValue == 1) {
-        return;
-    }
-    
-    [self sendLocalNotification:message];
-    
-    [UIApplication sharedApplication].applicationIconBadgeNumber += 1;
+//    NSManagedObjectID* moId = [notification.userInfo objectForKey:TUP_RECEIVE_MESSAGE_NOTIFY_KEY];
+//    if (nil == moId) {
+//        return;
+//    }
+//    ChatMessageEntity* messageEntity = (ChatMessageEntity*)[[LOCAL_DATA_MANAGER managedObjectContext] objectWithID:moId];
+//    if (nil == messageEntity) {
+//        return;
+//    }
+//    [self receiveNewMessage:messageEntity];
+//}
+//
+//- (void)receiveNewMessage:(ChatMessageEntity* )message {
+//    if (message.readed.integerValue == 1) {
+//        return;
+//    }
+//
+//    [self sendLocalNotification:message];
+//
+//    [UIApplication sharedApplication].applicationIconBadgeNumber += 1;
 
 }
 
@@ -90,11 +91,11 @@ static LocalNotificationCenter * g_notificationCenter = nil;
     }
     
     
-    UILocalNotification *localNTF = [[UILocalNotification alloc] init];
-    localNTF.alertBody = tipMsg;
-    localNTF.fireDate = [[NSDate date] dateByAddingTimeInterval:0.2];
-    
-    [[UIApplication sharedApplication] scheduleLocalNotification:localNTF];
+//    UILocalNotification *localNTF = [[UILocalNotification alloc] init];
+//    localNTF.alertBody = tipMsg;
+//    localNTF.fireDate = [[NSDate date] dateByAddingTimeInterval:0.2];
+//
+//    [[UIApplication sharedApplication] scheduleLocalNotification:localNTF];
 }
 
 /**
@@ -129,11 +130,11 @@ static LocalNotificationCenter * g_notificationCenter = nil;
     
     EmployeeEntity* from = (EmployeeEntity*)message.from;
     tipMsg = [NSString stringWithFormat:tipFormat,from.uiDisplayName];
-    
+
     UILocalNotification *localNTF = [[UILocalNotification alloc] init];
     localNTF.alertBody = tipMsg;
     localNTF.fireDate = [[NSDate date] dateByAddingTimeInterval:0.2];
-    
+
     [[UIApplication sharedApplication] scheduleLocalNotification:localNTF];
 }
 

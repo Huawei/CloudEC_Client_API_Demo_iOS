@@ -7,7 +7,7 @@
 //
 
 #import "GroupCell.h"
-#import <TUPIOSSDK/EmployeeCategoryEntity.h>
+#import "EmployeeCategoryEntity.h"
 
 @interface GroupCell ()
 

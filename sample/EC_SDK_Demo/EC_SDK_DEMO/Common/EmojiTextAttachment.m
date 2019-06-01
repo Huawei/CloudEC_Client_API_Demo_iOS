@@ -6,6 +6,7 @@
 //  Copyright(C), 2017, Huawei Tech. Co., Ltd. ALL RIGHTS RESERVED.
 //
 #import "EmojiTextAttachment.h"
+#import "ESpaceEmotions.h"
 
 @implementation EmojiTextAttachment
 //- (CGRect)attachmentBoundsForTextContainer:(NSTextContainer *)textContainer proposedLineFragment:(CGRect)lineFrag glyphPosition:(CGPoint)position characterIndex:(NSUInteger)charIndex

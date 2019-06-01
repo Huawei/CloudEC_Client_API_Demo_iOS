@@ -12,8 +12,6 @@
 #import "Defines.h"
 #import "CallInfo.h"
 
-extern NSString *const NTF_AUDIOROUTE_CHANGED; // audio route changed notification
-
 @protocol CallServiceDelegate <NSObject>
 @optional
 

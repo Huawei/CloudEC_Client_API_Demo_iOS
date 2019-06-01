@@ -7,13 +7,14 @@
 //
 
 #import "ChatGroupListViewController.h"
-#import <TUPContactSDK/TupContactService.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPIOSSDK/GroupEntity.h>
 #import "GroupListCell.h"
 #import "GroupDetailViewController.h"
-#import <TUPContactSDK/GroupEntity+ServiceObject.h>
 #import "CreateGroupController.h"
+#import <CoreData/CoreData.h>
+
+#import "eSpaceDBService.h"
+#import "GroupEntity.h"
+#import "GroupEntity+ServiceObject.h"
 
 @interface ChatGroupListViewController ()<NSFetchedResultsControllerDelegate>
 @property (nonatomic, strong) NSFetchedResultsController *groupFetchResultCtl;   // current group fetchResultController
@@ -52,7 +53,7 @@
     NSSortDescriptor *contactIdDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"contactId" ascending:YES selector:@selector(localizedStandardCompare:)];
     fetchRequest.predicate = predicate;
     fetchRequest.sortDescriptors = @[typeDescriptor,contactIdDescriptor];
-    
+
     _groupFetchResultCtl = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext] sectionNameKeyPath:nil cacheName:nil];
     _groupFetchResultCtl.delegate = self;
     [_groupFetchResultCtl performFetch:nil];

@@ -14,14 +14,19 @@
 #import "ImageMessageCell.h"
 #import "VideoMessageCell.h"
 #import "FileMessageCell.h"
-#import <TUPIMSDK/TUPIMSDK.h>
 #import <AVFoundation/AVFoundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "PreviewUMViewController.h"
 #import "PreviewFileViewController.h"
-#import <TUPIOSSDK/GroupEntity.h>
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPContactSDK/GroupEntity+ServiceObject.h>
+#import "ESpaceEmotions.h"
+#import "GroupEntity.h"
+#import "Defines.h"
+
+#import "NSManagedObjectContext+Persistent.h"
+#import "eSpaceDBService.h"
+#import "ChatSessionEntity+ServiceObject.h"
+#import "ESpaceContactService.h"
+#import "ESpaceIMessageService.h"
 
 @interface EmotionButton : UIButton
 
@@ -93,8 +98,19 @@
 {
     [super viewWillAppear:animated];
     ChatMessageEntity *latestMsg = (ChatMessageEntity *)self.session.latestMessage;
+    TsdkQueryHistoryMsgParam *historyMsg = [[TsdkQueryHistoryMsgParam alloc]init];
+    historyMsg.queryType = TSDK_E_HISTORY_CHAT_MSG_QUERY_BEFORE;
+    if ([self.session.target isKindOfClass:[EmployeeEntity class]]) {
+        historyMsg.historyMsgType = TSDK_E_HISTORY_CHAT_MSG_TYPE_SINGLE_CHAT;
+        historyMsg.account = ((EmployeeEntity *)self.session.target).account;
+    }else if ([self.session.target isKindOfClass:[GroupEntity class]]){
+        historyMsg.historyMsgType = TSDK_E_HISTORY_CHAT_MSG_TYPE_GROUP_CHAT;
+        historyMsg.account = ((GroupEntity *)self.session.target).contactId;
+    }
+    historyMsg.count = 5;
+    [[ESpaceContactService sharedInstance] queryHistoryMessagesWithParam:historyMsg andObjectId:self.session.objectID];
     if (latestMsg) {
-        [[TupIMessageService sharedInstance] MarkReadMessageRequest:self.session message:latestMsg];
+        [[ESpaceIMessageService sharedInstance] MarkReadMessageRequest:self.session message:latestMsg];
     }
     
     if (self.session.unreadCount.integerValue > 0) {
@@ -115,21 +131,21 @@
 {
     if ([_session.target isKindOfClass:[GroupEntity class]]) {
         __weak typeof(self) weakSelf = self;
-        [((GroupEntity *)_session.target) queryGroupMember:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                BOOL selfInGroup = NO;
-                for (EmployeeEntity *entity in [((GroupEntity *)(weakSelf.session.target)).members allObjects]) {
-                    if ([entity.account isEqualToString:[ECSAppConfig sharedInstance].latestAccount]) {
-                        selfInGroup = YES;
-                    }
-                }
-                if (!selfInGroup) {
-                    weakSelf.bottomView.userInteractionEnabled = NO;
-                    weakSelf.inputField.backgroundColor = [UIColor lightGrayColor];
-                    weakSelf.bottomView.backgroundColor = [UIColor lightGrayColor];
-                }
-            });
-        }];
+//        [((GroupEntity *)_session.target) queryGroupMember:^(NSError *error) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                BOOL selfInGroup = NO;
+//                for (EmployeeEntity *entity in [((GroupEntity *)(weakSelf.session.target)).members allObjects]) {
+//                    if ([entity.account isEqualToString:[ECSAppConfig sharedInstance].latestAccount]) {
+//                        selfInGroup = YES;
+//                    }
+//                }
+//                if (!selfInGroup) {
+//                    weakSelf.bottomView.userInteractionEnabled = NO;
+//                    weakSelf.inputField.backgroundColor = [UIColor lightGrayColor];
+//                    weakSelf.bottomView.backgroundColor = [UIColor lightGrayColor];
+//                }
+//            });
+//        }];
     }
 }
 
@@ -142,15 +158,30 @@
     if (_fetchResultCtrl.fetchedObjects.count != 0) {
         topMessage = _fetchResultCtrl.fetchedObjects[0];
     }
-    [self.session queryRoamingMessageBasedId:topMessage.messageId readed:YES count:20 completion:^(NSError *error, NSInteger count, NSArray *msgLogIdList) {
-        if (error) {
-            DDLogInfo(@"query roaming message failed.");
-        }
-        else if (count == 0){
-            DDLogInfo(@"query roaming message no more.");
-        }
-        [_refreshCtrl endRefreshing];
-    }];
+    TsdkQueryHistoryMsgParam *historyMsg = [[TsdkQueryHistoryMsgParam alloc]init];
+    historyMsg.msgid = [topMessage.messageId longLongValue];
+    historyMsg.queryType = TSDK_E_HISTORY_CHAT_MSG_QUERY_BEFORE;
+    if ([self.session.target isKindOfClass:[EmployeeEntity class]]) {
+        historyMsg.historyMsgType = TSDK_E_HISTORY_CHAT_MSG_TYPE_SINGLE_CHAT;
+        historyMsg.account = ((EmployeeEntity *)self.session.target).account;
+    }else if ([self.session.target isKindOfClass:[GroupEntity class]]){
+        historyMsg.historyMsgType = TSDK_E_HISTORY_CHAT_MSG_TYPE_GROUP_CHAT;
+        historyMsg.account = ((GroupEntity *)self.session.target).contactId;
+    }
+    historyMsg.count = 5;
+    
+    [[ESpaceContactService sharedInstance] queryHistoryMessagesWithParam:historyMsg andObjectId:self.session.objectID];
+    [_refreshCtrl endRefreshing];
+    
+//    [self.session queryRoamingMessageBasedId:topMessage.messageId readed:YES count:20 completion:^(NSError *error, NSInteger count, NSArray *msgLogIdList) {
+//        if (error) {
+//            DDLogInfo(@"query roaming message failed.");
+//        }
+//        else if (count == 0){
+//            DDLogInfo(@"query roaming message no more.");
+//        }
+//        [_refreshCtrl endRefreshing];
+//    }];
 }
 
 /**
@@ -184,9 +215,9 @@
     switch (sender.state) {
         case UIGestureRecognizerStateBegan:
         {
-            s_recordUrl = [NSURL exportURLInCacheDirecotry:@"wav" error:nil];
-            [[ESpaceMediaService sharedInstance] prepareRecordNewAudio];
-            [[ESpaceMediaService sharedInstance] startRecord:s_recordUrl.path];
+//            s_recordUrl = [NSURL exportURLInCacheDirecotry:@"wav" error:nil];
+//            [[ESpaceMediaService sharedInstance] prepareRecordNewAudio];
+//            [[ESpaceMediaService sharedInstance] startRecord:s_recordUrl.path];
             _voiceBtn.selected = YES;
             break;
         }
@@ -195,9 +226,9 @@
         {
             _voiceBtn.selected = NO;
             NSTimeInterval duration;
-            [[ESpaceMediaService sharedInstance] stopRecord:&duration];
-            ESpaceUMAudioResource *audioResource = [s_recordUrl audioResource:duration];
-            [self.session sendUMMessage:audioResource completionBlock:nil];
+//            [[ESpaceMediaService sharedInstance] stopRecord:&duration];
+//            ESpaceUMAudioResource *audioResource = [s_recordUrl audioResource:duration];
+//            [self.session sendUMMessage:audioResource completionBlock:nil];
             break;
         }
         default:
@@ -357,74 +388,74 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+//    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
     
     [picker dismissViewControllerAnimated:YES completion:NULL];
     
-    ESpaceUMResource *umResource = nil;
-    NSURL *umResourceURL = nil;
-    NSError *error = nil;
-    NSData *data = nil;
-    if ([mediaType isEqualToString:@"public.image"]) {
-        UIImage *sourceImage = [info objectForKey:UIImagePickerControllerEditedImage];
-        DDLogInfo(@"image");
-        data = UIImagePNGRepresentation(sourceImage);
-        umResource = [[ESpaceUMImgResource alloc] init];
-        umResourceURL = [NSURL exportURLInCacheDirecotry:@"png" error:&error];
-        umResource.umType = ESpaceUMTypeImage;
-        umResource.width = sourceImage.size.width;
-        umResource.height = sourceImage.size.height;
-        
-        BOOL isSuccess = NO;
-        if (umResourceURL)
-        {
-            isSuccess = [data writeToURL:umResourceURL options:NSDataWritingAtomic error:&error];
-        }
-        if (isSuccess)
-        {
-            umResource.name = umResourceURL.lastPathComponent;
-            umResource.resourcePath = umResourceURL.absoluteString;
-            umResource.localDirectory = [umResourceURL URLByDeletingLastPathComponent].path;
-            umResource.size = data.length;
-        }else {
-            DDLogInfo(@"Write failed!");
-        }
-        
-        [self.session sendUMMessage:umResource completionBlock:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (!error) {
-                    DDLogInfo(@"Success!");
-                }else {
-                    [self showMessage:@"Error!"];
-                }
-            });
-        }];
-    }
-    
-    if ([mediaType isEqualToString:@"public.movie"]) {
-        NSURL *sourceURL = [info valueForKey:UIImagePickerControllerMediaURL];
-        
-        [sourceURL export2TmpDir:^(NSError *error ,ESpaceUMResource *umResource) {
-            umResource.name = umResource.name;
-            umResource.resourcePath = umResource.resourcePath;
-            umResource.localDirectory = umResource.localDirectory;
-            umResource.umType = umResource.umType;
-            umResource.size = umResource.size;
-            umResource.duration = umResource.duration;
-            umResource.width = umResource.width;
-            umResource.height = umResource.height;
-            
-            [self.session sendUMMessage:umResource completionBlock:^(NSError *error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (!error) {
-                        DDLogInfo(@"Success!");
-                    }else {
-                        [self showMessage:@"Error!"];
-                    }
-                });
-            }];
-        }];
-    }
+//    ESpaceUMResource *umResource = nil;
+//    NSURL *umResourceURL = nil;
+//    NSError *error = nil;
+//    NSData *data = nil;
+//    if ([mediaType isEqualToString:@"public.image"]) {
+//        UIImage *sourceImage = [info objectForKey:UIImagePickerControllerEditedImage];
+//        DDLogInfo(@"image");
+//        data = UIImagePNGRepresentation(sourceImage);
+//        umResource = [[ESpaceUMImgResource alloc] init];
+//        umResourceURL = [NSURL exportURLInCacheDirecotry:@"png" error:&error];
+//        umResource.umType = ESpaceUMTypeImage;
+//        umResource.width = sourceImage.size.width;
+//        umResource.height = sourceImage.size.height;
+//
+//        BOOL isSuccess = NO;
+//        if (umResourceURL)
+//        {
+//            isSuccess = [data writeToURL:umResourceURL options:NSDataWritingAtomic error:&error];
+//        }
+//        if (isSuccess)
+//        {
+//            umResource.name = umResourceURL.lastPathComponent;
+//            umResource.resourcePath = umResourceURL.absoluteString;
+//            umResource.localDirectory = [umResourceURL URLByDeletingLastPathComponent].path;
+//            umResource.size = data.length;
+//        }else {
+//            DDLogInfo(@"Write failed!");
+//        }
+//
+//        [self.session sendUMMessage:umResource completionBlock:^(NSError *error) {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                if (!error) {
+//                    DDLogInfo(@"Success!");
+//                }else {
+//                    [self showMessage:@"Error!"];
+//                }
+//            });
+//        }];
+//    }
+//
+//    if ([mediaType isEqualToString:@"public.movie"]) {
+//        NSURL *sourceURL = [info valueForKey:UIImagePickerControllerMediaURL];
+//
+//        [sourceURL export2TmpDir:^(NSError *error ,ESpaceUMResource *umResource) {
+//            umResource.name = umResource.name;
+//            umResource.resourcePath = umResource.resourcePath;
+//            umResource.localDirectory = umResource.localDirectory;
+//            umResource.umType = umResource.umType;
+//            umResource.size = umResource.size;
+//            umResource.duration = umResource.duration;
+//            umResource.width = umResource.width;
+//            umResource.height = umResource.height;
+//
+//            [self.session sendUMMessage:umResource completionBlock:^(NSError *error) {
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    if (!error) {
+//                        DDLogInfo(@"Success!");
+//                    }else {
+//                        [self showMessage:@"Error!"];
+//                    }
+//                });
+//            }];
+//        }];
+//    }
     
     if ([[UIApplication sharedApplication] isStatusBarHidden]) {
         [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
@@ -478,36 +509,36 @@
 {
     UITableViewCell *cell = nil;
     ChatMessageEntity *message = _fetchResultCtrl.fetchedObjects[indexPath.row];
-    if (message.contentType.integerValue == ESpaceTextContentType) {
+//    if (message.contentType.integerValue == ESpaceTextContentType) {
         TextMessageCell *textCell = [tableView dequeueReusableCellWithIdentifier:@"TextMessageCell"];
         textCell.message = message;
         cell = textCell;
-    }
-    else if (message.contentType.integerValue == ESpaceAudioContentType) {
-        AudioMessageCell *audioCell = [tableView dequeueReusableCellWithIdentifier:@"AudioMessageCell"];
-        audioCell.message = message;
-        cell = audioCell;
-    }
-    else if (message.contentType.integerValue == ESpaceImageContentType) {
-        ImageMessageCell *imageCell = [tableView dequeueReusableCellWithIdentifier:@"ImageMessageCell"];
-        imageCell.message = message;
-        imageCell.delegate = self;
-        cell = imageCell;
-    }
-    else if (message.contentType.integerValue == ESpaceVideoContentType) {
-        VideoMessageCell *videoCell = [tableView dequeueReusableCellWithIdentifier:@"VideoMessageCell"];
-        videoCell.message = message;
-        videoCell.delegate = self;
-        cell = videoCell;
-    }else if (message.contentType.integerValue == ESpaceFileContentType) {
-        FileMessageCell *fileCell = [tableView dequeueReusableCellWithIdentifier:@"FileMessageCell"];
-        fileCell.message = message;
-        fileCell.delegate = self;
-        cell = fileCell;
-    }
-    else {
-        cell = [[UITableViewCell alloc] init];
-    }
+//    }
+//    else if (message.contentType.integerValue == ESpaceAudioContentType) {
+//        AudioMessageCell *audioCell = [tableView dequeueReusableCellWithIdentifier:@"AudioMessageCell"];
+//        audioCell.message = message;
+//        cell = audioCell;
+//    }
+//    else if (message.contentType.integerValue == ESpaceImageContentType) {
+//        ImageMessageCell *imageCell = [tableView dequeueReusableCellWithIdentifier:@"ImageMessageCell"];
+//        imageCell.message = message;
+//        imageCell.delegate = self;
+//        cell = imageCell;
+//    }
+//    else if (message.contentType.integerValue == ESpaceVideoContentType) {
+//        VideoMessageCell *videoCell = [tableView dequeueReusableCellWithIdentifier:@"VideoMessageCell"];
+//        videoCell.message = message;
+//        videoCell.delegate = self;
+//        cell = videoCell;
+//    }else if (message.contentType.integerValue == ESpaceFileContentType) {
+//        FileMessageCell *fileCell = [tableView dequeueReusableCellWithIdentifier:@"FileMessageCell"];
+//        fileCell.message = message;
+//        fileCell.delegate = self;
+//        cell = fileCell;
+//    }
+//    else {
+//        cell = [[UITableViewCell alloc] init];
+//    }
     
     return cell;
 }
@@ -544,7 +575,7 @@
         
         ChatMessageEntity *latestMsg = (ChatMessageEntity *)self.session.latestMessage;
         if (latestMsg) {
-            [[TupIMessageService sharedInstance] MarkReadMessageRequest:self.session message:latestMsg];
+//            [[TupIMessageService sharedInstance] MarkReadMessageRequest:self.session message:latestMsg];
         }
         
         if (self.session.unreadCount.integerValue > 0) {

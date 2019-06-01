@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, CallLogType) {
 
 
 @interface CallLogMessage : NSObject
-@property (nonatomic, strong) NSString *startTime;            // call start time
+@property (nonatomic, copy) NSString *startTime;            // call start time
 @property (nonatomic, assign) NSInteger durationTime;         // call duration time
 @property (nonatomic, assign) CallLogType callLogType;        // call log type
 @property (nonatomic, retain) NSString  * callerPhoneNumber;  // caller phone number

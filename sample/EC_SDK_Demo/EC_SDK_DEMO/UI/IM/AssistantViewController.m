@@ -7,13 +7,8 @@
 //
 
 #import "AssistantViewController.h"
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPIOSSDK/AssistantSessionEntity.h>
-#import <TUPIOSSDK/SessionEntity.h>
-#import <TUPIOSSDK/MessageEntity.h>
-#import <TUPIOSSDK/ChatSessionEntity.h>
-#import <TUPIOSSDK/AssistantMessageEntity.h>
 #import "AssistantCell.h"
+#import <CoreData/CoreData.h>
 
 @interface AssistantViewController ()<NSFetchedResultsControllerDelegate>
 @property (nonatomic, strong) NSFetchedResultsController *chatRecentFetchCtrl;   // chat recent fetchResultController
@@ -37,13 +32,13 @@
  */
 - (void)loadDataSource
 {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"AssistantMessageEntity" inManagedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext]];
-    NSSortDescriptor *timestampDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"receiveTimestamp" ascending:NO];
-    [fetchRequest setEntity:entity];
-    [fetchRequest setSortDescriptors:[NSArray arrayWithObjects: timestampDescriptor, nil]];
-    
-    _chatRecentFetchCtrl = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext] sectionNameKeyPath:nil cacheName:nil];
+//    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+//    NSEntityDescription *entity = [NSEntityDescription entityForName:@"AssistantMessageEntity" inManagedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext]];
+//    NSSortDescriptor *timestampDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"receiveTimestamp" ascending:NO];
+//    [fetchRequest setEntity:entity];
+//    [fetchRequest setSortDescriptors:[NSArray arrayWithObjects: timestampDescriptor, nil]];
+//
+//    _chatRecentFetchCtrl = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:[[eSpaceDBService sharedInstance].localDataManager managedObjectContext] sectionNameKeyPath:nil cacheName:nil];
     _chatRecentFetchCtrl.delegate = self;
     [_chatRecentFetchCtrl performFetch:nil];
 }

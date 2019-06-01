@@ -7,13 +7,14 @@
 //
 
 #import "PersonHeaderViewCell.h"
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPContactSDK/TupContactService.h>
-#import <TUPContactSDK/EmployeeEntity+ServiceObject.h>
 #import "ChatViewController.h"
 #import "HeadImageView.h"
 #import "PreviewPersonHeadHDImageController.h"
+#import "EmployeeEntity.h"
+
+#import "ESpaceContactService.h"
+#import "eSpaceDBService.h"
+#import "NSManagedObjectContext+Persistent.h"
 
 @interface PersonHeaderViewCell ()
 
@@ -30,7 +31,7 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
-    self.onlineStatus = [[TupContactService sharedInstance] onlineStatusForUser:self.employee.account
+    self.onlineStatus = [[ESpaceContactService sharedInstance] onlineStatusForUser:self.employee.account
                                                                  forceSubscribe:YES];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(userStatusChanged:)
@@ -79,9 +80,11 @@
  */
 - (void)reloadStateDescribe {
     NSString *stateStr;
-    self.onlineStatus = [[TupContactService sharedInstance] onlineStatusForUser:self.employee.account
-                                                                 forceSubscribe:YES];
-    switch (self.onlineStatus.userStatus) {
+    ESpaceLocalDataManager * localManager = LOCAL_DATA_MANAGER;
+    NSManagedObjectContext* bgCtx = [localManager backgroundObjectContext];
+    EmployeeEntity* userEntity = [[ESpaceContactService sharedInstance] userWithAccount:self.employee.account inContext:bgCtx autoCreate:YES];
+    
+    switch ([userEntity.userStatus integerValue]) {
         case ESpaceUserStatusAvailable:
             stateStr = @"Online";
             self.statusLabel.textColor = [UIColor greenColor];

@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <TUPIOSSDK/ContactEntity.h>
+#import "ContactEntity.h"
 
 @interface HeadImageView : UIImageView
 

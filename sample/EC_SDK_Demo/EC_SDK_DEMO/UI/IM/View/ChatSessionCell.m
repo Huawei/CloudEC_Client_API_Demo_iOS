@@ -7,11 +7,14 @@
 //
 
 #import "ChatSessionCell.h"
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPContactSDK/EmployeeEntity+ServiceObject.h>
 #import "HeadImageView.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
-#import <TUPIMSDK/TUPIMSDK.h>
+#import "EmployeeEntity.h"
+#import "MessageEntity.h"
+#import "Defines.h"
+
+#import "EmployeeEntity+ServiceObject.h"
+#import "MessageEntity+ServiceObject.h"
+#import "ESpaceDetailMessagParser.h"
 
 @interface ChatSessionCell ()
 @property (nonatomic, weak)IBOutlet HeadImageView *headImage;      // head image view
@@ -135,7 +138,7 @@
         }
         NSString* emotion = @"[Emoticon]";
         NSArray* emotionMatches = [[ESpaceDetailMessagParser sharedInstance] emotionMatches:string];
-        
+
         [emotionMatches enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             NSTextCheckingResult* result = obj;
             string = [string stringByReplacingCharactersInRange:result.range withString:emotion];

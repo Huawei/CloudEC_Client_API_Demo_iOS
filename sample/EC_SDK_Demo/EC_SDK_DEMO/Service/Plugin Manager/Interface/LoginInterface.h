@@ -42,6 +42,12 @@
 @property (nonatomic,strong) LoginInfo *currentLoginInfo;
 
 /**
+ *Indicates xxx
+ *服务器登录状态
+ */
+@property (nonatomic, assign) ECSLoginServiceStatus serviceStatus;
+
+/**
  * This method is used to uportal login
  * 鉴权登陆
  *@param LoginInfo                   Indicates login params

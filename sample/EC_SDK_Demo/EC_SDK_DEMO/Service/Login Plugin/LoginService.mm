@@ -19,14 +19,12 @@
 #import "LoginCenter.h"
 #import "CommonUtils.h"
 #import "ManagerService.h"
-#import <TUPIOSSDK/TUPMAALoginService.h>
-#import <TUPIOSSDK/ECSAppConfig.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPNetworkSDK/ECSSocketController.h>
 #import "tsdk_manager_interface.h"
 #import "tsdk_error_def.h"
 
-#define NEEDMAALOGIN 1 // 是否需要MAA登陆
+#import "ECSAppConfig.h"
+#import "eSpaceDBService.h"
+
 @interface LoginService()
 
 /**
@@ -50,6 +48,8 @@
  *当前登陆信息以及部分鉴权结果
  */
 @synthesize currentLoginInfo;
+
+@synthesize serviceStatus;
 
 /**
  *This method is used to init this class, in this method add observer for notification
@@ -107,14 +107,20 @@
  */
 -(void)authorizeLoginWithLoginInfo:(LoginInfo *)LoginInfo completionBlock:(void (^)(BOOL isSuccess, NSError *error))completionBlock
 {
-    NSString *currentAccount = [ECSAppConfig sharedInstance].currentUser.account;
     NSString *userAccount = LoginInfo.account;
+    [ECSAppConfig sharedInstance].latestAccount = userAccount;
+    
+    NSString *currentAccount = [ECSAppConfig sharedInstance].currentUser.account;
+    
     if ((currentAccount.length == 0 || currentAccount == nil) && userAccount.length > 0 && userAccount != nil) {
         // 使用登陆maa时的account 作为当前ECSAppConfig的帐号
         [ECSAppConfig sharedInstance].currentUser.account = userAccount;
+        [[ECSAppConfig sharedInstance] save];
     }
     
-    [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userAccount];
+    if (nil == [eSpaceDBService sharedInstance].localDataManager) {
+        [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userAccount];
+    }
     
     self.loginInfo = LoginInfo;
     // 登陆uportal鉴权
@@ -126,89 +132,37 @@
                                                     getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]]
                                         completion:^(BOOL isSuccess, NSError *error)
      {
-         LoginServerInfo *info = [self obtainAccessServerInfo];
-         // 配置sipAccount 和 token
-//         [[ManagerService callService] configBussinessAccount:nil token:info.token];
-         
-         if (isSuccess) {
-             if (completionBlock) {
-                 completionBlock(YES, nil);
-             }
-             
-#if NEEDMAALOGIN
-             NSString *token = [CommonUtils textFromBase64String:info.token];
-             // 第三方鉴权返回账号通过userNameForThirdParth字段返回。 tiket鉴权场景下通过userName字段返回。
-             NSString* maaAccount = info.userName.length > 0 ? info.userName : info.userNameForThirdParty;
-             
-             // 非第三方或tiket鉴权场景下, 返回userName可能为空, MAA登录接口不支持空账号, 使用用户输入账号
-             if (maaAccount.length == 0) {
-                 maaAccount = LoginInfo.account;
-             }
-             
-             //搜索自己软终端号码
-             [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
-             
-             NSString *currentAccount = [ECSAppConfig sharedInstance].currentUser.account;
-             if (currentAccount.length == 0 || currentAccount == nil || ![currentAccount isEqualToString:maaAccount]) {
-                 // 使用登陆maa时的account 作为当前ECSAppConfig的帐号
-                 [ECSAppConfig sharedInstance].currentUser.account = maaAccount;
-                 [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:maaAccount];
-             }
-             
-             ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
-             if (!userConfig.isAutoLogin) {
-                 userConfig.isAutoLogin = YES;
-                [[ECSAppConfig sharedInstance] save];
-             }
-             
-//             BOOL isSTGTunnel = [LoginCenter sharedInstance].isSTGTunnel;
-             BOOL isSTGTunnel = NO;
-             ECSSocketParam* param = nil;
-             NSArray *serverInfos = nil;
-             // 如果是链接STG隧道的情况下，maa登陆信息取maaStgUri的信息
-             if (isSTGTunnel) {
-                 serverInfos = [info.maaStgUri componentsSeparatedByString:@":"];
-             } else {
-                 serverInfos = [info.maaUri componentsSeparatedByString:@":"];
-             }
-             // serverInfos 只能存在serverIP和port两个元素，否则登陆失败
-             if (serverInfos.count == 2)
-             {
-                 NSString *serverIP = serverInfos[0];
-                 NSInteger port = [serverInfos[1] integerValue];
-                 param = [[ECSSocketParam alloc] initWithHost:serverIP
-                                                         port:port];
-             }
-             
-             if (param == nil) {
-                 return ;
-             }
-             
-             // 应用目前都使用token鉴权
-             [TUPMAALoginService sharedInstance].authType = LOGINAUTHTYPE_token;
-//             [TUPMAALoginService sharedInstance].socketType = [LoginCenter sharedInstance].isSTGTunnel ? LOGINSOCKETTYPE_STG : LOGINSOCKETTYPE_NORMAL;
-             [TUPMAALoginService sharedInstance].socketType = LOGINSOCKETTYPE_NORMAL;
-             // 登陆MAA
-             [[TUPMAALoginService sharedInstance] loginWithAccount:maaAccount
-                                                                pw:token
-                                                        serverList:@[param]
-                                                          ssoToken:token
-                                                        retryCount:3
-                                                        completion:^(NSError *maaError)
-              {
-                  if (maaError) {
-                      DDLogError(@"MAA login faild!");
-                  }else{
-                      [[NSNotificationCenter defaultCenter] postNotificationName:MAA_LOGIN_SUCCESSED object:nil userInfo:nil];
-                  }
+         dispatch_async(dispatch_get_main_queue(), ^{
+             if (isSuccess) {
                  
-              }];
-#endif
-         }else {
-             if (completionBlock) {
-                 completionBlock(isSuccess, error);
+                 ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
+                 if (!userConfig.isAutoLogin) {
+                     userConfig.isAutoLogin = YES;
+                     
+                 }
+                 
+                 
+                 //             [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userConfig.account];
+                 //             ESPACE_APP_DELEGATE.localDataManager = [eSpaceDBService sharedInstance].localDataManager;
+                 
+                 
+                 [[ECSAppConfig sharedInstance] save];
+                 
+                 //搜索自己软终端号码
+                 [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
+                 
+                 if (completionBlock) {
+                     completionBlock(YES, nil);
+                 }
+                 
+             }else {
+                 if (completionBlock) {
+                     completionBlock(isSuccess, error);
+                     //                 [ManagerService loginService].serviceStatus = ECServiceKickOff;
+                 }
              }
-         }
+         });
+         
      }];
 }
 
@@ -219,6 +173,7 @@
 - (void)logout
 {
     [[LoginCenter sharedInstance] logout];
+    [ManagerService loginService].serviceStatus = ECServiceLogout;
 }
 
 #pragma Public method

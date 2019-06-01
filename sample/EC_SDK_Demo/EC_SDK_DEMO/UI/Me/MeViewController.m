@@ -10,18 +10,17 @@
 #import "ManagerService.h"
 #import "CommonUtils.h"
 #import "HeadImageView.h"
+#import "EmployeeEntity.h"
 
-#import <TUPIOSSDK/eSpaceDBService.h>
-#import <TUPContactSDK/TupContactService.h>
-#import <TUPIOSSDK/TUPUserSettingService.h>
-#import <TUPIOSSDK/TUPIOSSDK.h>
-
-#import <TUPIOSSDK/eSpaceDBService.h>
 #import "PersonDetailViewController.h"
 #import "NoDisturbViewController.h"
 #import "LoginCenter.h"
 
-#define NEEDREGISTERMAALOGOUT 1 // 是否需要MAA注销
+#import "eSpaceDBService.h"
+#import "ECSAppConfig.h"
+#import "NSManagedObjectContext+Persistent.h"
+#import "ESpaceContactService.h"
+
 @interface MeViewController ()
 @property(weak, nonatomic)IBOutlet UILabel *sipAccountLabel;
 @property(weak, nonatomic)IBOutlet UILabel *callBackNumber;
@@ -36,16 +35,19 @@
     [super viewDidLoad];
     _sipAccountLabel.text = [ManagerService callService].sipAccount;
     NSString *account = [[eSpaceDBService sharedInstance].localDataManager userAccount];
-    EspaceUserOnlineStatus* status = [[TupContactService sharedInstance] onlineStatusForUser:account];
+    EspaceUserOnlineStatus* status = [[ESpaceContactService sharedInstance] onlineStatusForUser:account];
     [self reloadUserStatus:status.userStatus];
     [self updateCallBackNumber];
-    [self.headImg setContactEntity:LOCAL_DATA_MANAGER.currentUser];
+    ContactEntity *entity = [eSpaceDBService sharedInstance].localDataManager.currentUser;
+    [self.headImg setContactEntity:entity];
     // Do any additional setup after loading the view.
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     self.headImg.layer.cornerRadius = 50.0f;
+    self.headImg.layer.masksToBounds = YES;
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -69,26 +71,25 @@
 
 - (IBAction)logout:(id)sender
 {
-#if NEEDREGISTERMAALOGOUT
-    [[TUPMAALoginService sharedInstance] logout:^(NSError *error) {
-         dispatch_async(dispatch_get_main_queue(), ^{
-             if (error) {
-                 [self showMessage:@"MAA Logout failed!"];
-             }
-         });
-     }];
     ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
     if (userConfig.isAutoLogin) {
         userConfig.isAutoLogin = NO;
     }
     [[ECSAppConfig sharedInstance] save];
     [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
-#endif
     [[ManagerService loginService] logout];
+    
+    [self goToLoginViewController];
+}
+
+- (void)goToLoginViewController {
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+    UINavigationController *loginNavigationViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"LoginNavigationController"];
+    [UIApplication sharedApplication].delegate.window.rootViewController = loginNavigationViewController;
 }
 
 - (IBAction)showSelfDetail:(id)sender {
-    EmployeeEntity *selfEntity = LOCAL_DATA_MANAGER.currentUser;
+    EmployeeEntity *selfEntity = [[eSpaceDBService sharedInstance].localDataManager currentUser];
     PersonDetailViewController *detailVC = [[PersonDetailViewController alloc] initWithPerson:selfEntity];
     detailVC.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:detailVC animated:YES];
@@ -132,8 +133,8 @@
 - (void)setSelfUserStatus:(ESpaceUserStatus)status
 {
     NSString *account = [[eSpaceDBService sharedInstance].localDataManager userAccount];
-    [[TupContactService sharedInstance] onlineStatusForUser:account forceSubscribe:YES];
-    [[TUPUserSettingService sharedInstance] setSelfStatus:status completion:^(NSError *error) {
+    [[ESpaceContactService sharedInstance] onlineStatusForUser:account forceSubscribe:YES];
+    [[ESpaceContactService sharedInstance] setSelfStatus:status completion:^(NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!error) {
                 [self reloadUserStatus:status];

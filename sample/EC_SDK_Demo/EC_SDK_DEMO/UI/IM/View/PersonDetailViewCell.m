@@ -7,8 +7,7 @@
 //
 
 #import "PersonDetailViewCell.h"
-#import <TUPIOSSDK/EmployeeEntity.h>
-#import <TUPIOSSDK/eSpaceDBService.h>
+#import "EmployeeEntity.h"
 
 #define PERSON_SEX_FEMALE   @"0"
 #define PERSON_SEX_MALE     @"1"
@@ -55,11 +54,11 @@
             detail = [self SexDescribe];
             break;
         case DETAIL_SIGNATURE:
-            if ([self.employee.account isEqualToString:LOCAL_DATA_MANAGER.currentUser.account]) {
-                self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            }else {
-                self.accessoryType = UITableViewCellAccessoryNone;
-            }
+//            if ([self.employee.account isEqualToString:LOCAL_DATA_MANAGER.currentUser.account]) {
+//                self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//            }else {
+//                self.accessoryType = UITableViewCellAccessoryNone;
+//            }
             title = @"Signature";
             detail = self.employee.signature;
             break;

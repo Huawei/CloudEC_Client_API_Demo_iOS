@@ -7,8 +7,8 @@
 //
 
 #import "MemberCollectionViewCell.h"
-#import <TUPIOSSDK/PersonEntity.h>
 #import "HeadImageView.h"
+#import "PersonEntity.h"
 
 @interface MemberCollectionViewCell()
 @property (weak, nonatomic) IBOutlet HeadImageView *headImageView;    // head image view
@@ -34,6 +34,7 @@
 {
     [super layoutSubviews];
     _headImageView.layer.cornerRadius = 25.0;
+    _headImageView.layer.masksToBounds = YES;
 }
 
 @end

@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14135" systemVersion="17E199" minimumToolsVersion="Automatic" sourceLanguage="Objective-C" userDefinedModelVersionIdentifier="">
+    <entity name="AssistantMessageEntity" representedClassName="AssistantMessageEntity" parentEntity="MessageEntity" syncable="YES">
+        <attribute name="action" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="desc" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="AssistantSessionEntity" representedClassName="AssistantSessionEntity" parentEntity="SessionEntity" syncable="YES"/>
+    <entity name="AttendeeEntity" representedClassName="AttendeeEntity" syncable="YES">
+        <attribute name="auth" optional="YES" transient="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="displayName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="ecspaceAccount" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mediaState" optional="YES" transient="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="mediaType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="number" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="role" optional="YES" attributeType="Integer 32" defaultValueString="2" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="Integer 16" defaultValueString="2" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="userID" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <relationship name="attendeeOf" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="MeetingSessionEntity" inverseName="attendees" inverseEntity="MeetingSessionEntity" syncable="YES"/>
+        <relationship name="convenerOf" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="MeetingSessionEntity" inverseName="convener" inverseEntity="MeetingSessionEntity" syncable="YES"/>
+        <relationship name="masterOf" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="MeetingSessionEntity" inverseName="master" inverseEntity="MeetingSessionEntity" syncable="YES"/>
+        <relationship name="matchedContact" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ContactEntity" inverseName="matchedAttendee" inverseEntity="ContactEntity" syncable="YES"/>
+    </entity>
+    <entity name="BulletinEntity" representedClassName="BulletinEntity" syncable="YES">
+        <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="desc" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="readed" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CallContactEntity" representedClassName="CallContactEntity" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="phoneNumber" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="CallLogEntity" representedClassName="CallLogEntity" parentEntity="MessageEntity" syncable="YES">
+        <attribute name="calleePhoneNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="callerPhoneNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="callMethod" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="callType" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="CallSessionEntity" representedClassName="CallSessionEntity" parentEntity="SessionEntity" syncable="YES">
+        <relationship name="callTarget" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ContactEntity" inverseName="callSession" inverseEntity="ContactEntity" syncable="YES"/>
+    </entity>
+    <entity name="ChatMessageEntity" representedClassName="ChatMessageEntity" parentEntity="MessageEntity" syncable="YES">
+        <attribute name="appID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="appName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="body_ref" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="flag" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="invalid" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="msgEx" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="readDetail" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="senderType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="subIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="total" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="version" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="at" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="atBy" inverseEntity="EmployeeEntity" syncable="YES"/>
+    </entity>
+    <entity name="ChatSessionEntity" representedClassName="ChatSessionEntity" parentEntity="SessionEntity" syncable="YES">
+        <attribute name="chatState" optional="YES" transient="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="draft" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isAtMe" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="realUnReceiveMsgNum" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="target" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ContactEntity" inverseName="chatSession" inverseEntity="ContactEntity" syncable="YES"/>
+    </entity>
+    <entity name="CircleComment" representedClassName="CircleComment" parentEntity="MessageEntity" syncable="YES">
+        <attribute name="commentType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="draft" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <attribute name="meInvolved" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="CircleSessionEntity" representedClassName="CircleSessionEntity" parentEntity="SessionEntity" syncable="YES">
+        <attribute name="content" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="contentExt" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="contentFolded" optional="YES" transient="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="contentType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="draft" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <attribute name="favorCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="initialTimestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="lastUpdate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="meInvolved" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="replyCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="transferStatus" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="umList" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="valid" optional="YES" attributeType="Integer 32" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="topicOwner" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="topics" inverseEntity="EmployeeEntity" syncable="YES"/>
+    </entity>
+    <entity name="ContactEntity" representedClassName="ContactEntity" isAbstract="YES" syncable="YES">
+        <attribute name="appID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="appName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="classType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="contactId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="headId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="infoUpdateTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nameIndex" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="searchIndex" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="translateLanguage" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="translateSwitchOpenedTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="translateSwitchState" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="weight" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="callSession" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="CallSessionEntity" inverseName="callTarget" inverseEntity="CallSessionEntity" syncable="YES"/>
+        <relationship name="chatSession" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ChatSessionEntity" inverseName="target" inverseEntity="ChatSessionEntity" syncable="YES"/>
+        <relationship name="matchedAttendee" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="AttendeeEntity" inverseName="matchedContact" inverseEntity="AttendeeEntity" syncable="YES"/>
+        <relationship name="msgLogSession" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="MsgLogSessionEntity" inverseName="target" inverseEntity="MsgLogSessionEntity" syncable="YES"/>
+        <relationship name="recivMessages" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="MessageEntity" inverseName="to" inverseEntity="MessageEntity" syncable="YES"/>
+        <relationship name="sentMessages" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="MessageEntity" inverseName="from" inverseEntity="MessageEntity" syncable="YES"/>
+    </entity>
+    <entity name="CustomContactEntity" representedClassName="CustomContactEntity" parentEntity="PersonEntity" syncable="YES"/>
+    <entity name="DeptMessageEntity" representedClassName="DeptMessageEntity" parentEntity="MessageEntity" syncable="YES"/>
+    <entity name="DeptSessionEntity" representedClassName="DeptSessionEntity" parentEntity="SessionEntity" syncable="YES">
+        <attribute name="deptLogTotalCount" optional="YES" attributeType="Integer 32" defaultValueString="-1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="EmployeeCategoryEntity" representedClassName="EmployeeCategoryEntity" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="lastUpdateTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="num" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="members" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="PersonEntity" inverseName="category" inverseEntity="PersonEntity" syncable="YES"/>
+    </entity>
+    <entity name="EmployeeEntity" representedClassName="EmployeeEntity" parentEntity="PersonEntity" syncable="YES">
+        <attribute name="account" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="circleWatch" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="circleWatched" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isBindnoShow" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="atBy" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="ChatMessageEntity" inverseName="at" inverseEntity="ChatMessageEntity" syncable="YES"/>
+        <relationship name="fileOwnerOf" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="GroupFileEntity" inverseName="fileOwner" inverseEntity="GroupFileEntity" syncable="YES"/>
+        <relationship name="macthedByLocal" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="LocalContactEntity" inverseName="matchedEmpl" inverseEntity="LocalContactEntity" syncable="YES"/>
+        <relationship name="matchPersonOf" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="VoiceMailMesageEntity" inverseName="matchPerson" inverseEntity="VoiceMailMesageEntity" syncable="YES"/>
+        <relationship name="memberOf" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="GroupEntity" inverseName="members" inverseEntity="GroupEntity" syncable="YES"/>
+        <relationship name="ownerOf" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="GroupEntity" inverseName="owner" inverseEntity="GroupEntity" syncable="YES"/>
+        <relationship name="topics" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="CircleSessionEntity" inverseName="topicOwner" inverseEntity="CircleSessionEntity" syncable="YES"/>
+    </entity>
+    <entity name="ESpaceMutipleTerminalRemindSessionEntity" representedClassName="ESpaceMutipleTerminalRemindSessionEntity" parentEntity="SessionEntity" syncable="YES"/>
+    <entity name="ExtendAppMsgEntity" parentEntity="ChatMessageEntity" syncable="YES">
+        <attribute name="chatID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="createTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="ExtendAppPaEntity" representedClassName="ExtendAppPaEntity" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="cName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="eName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isDiscoveryShow" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isFirstUse" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isSessionShow" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="GroupEntity" representedClassName="GroupEntity" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="announce" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="baseFileId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="capacity" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="enName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fixed" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="groupSpaceInfo" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="groupType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="intro" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isFavourited" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="joinFlag" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="msgRecvOpt" optional="YES" attributeType="Integer 32" defaultValueString="1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="ownerId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="members" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="memberOf" inverseEntity="EmployeeEntity" syncable="YES"/>
+        <relationship name="owner" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="ownerOf" inverseEntity="EmployeeEntity" syncable="YES"/>
+        <relationship name="rootFolder" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="GroupFileEntity" inverseName="ownedByGroup" inverseEntity="GroupFileEntity" syncable="YES"/>
+    </entity>
+    <entity name="GroupFileEntity" representedClassName="GroupFileEntity" syncable="YES">
+        <attribute name="createAt" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="id" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="info" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isFavor" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="lastSyncDate" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="needUpdate" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="progress" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="queuePriority" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="size" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="transferStatus" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="userPriv" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="fileOwner" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="fileOwnerOf" inverseEntity="EmployeeEntity" syncable="YES"/>
+        <relationship name="membes" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="GroupFileEntity" inverseName="membes" inverseEntity="GroupFileEntity" syncable="YES"/>
+        <relationship name="ownedByGroup" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="GroupEntity" inverseName="rootFolder" inverseEntity="GroupEntity" syncable="YES"/>
+        <relationship name="parent" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="GroupFileEntity" inverseName="membes" inverseEntity="GroupFileEntity" syncable="YES"/>
+    </entity>
+    <entity name="LightAppPaEntity" representedClassName="LightAppPaEntity" parentEntity="ExtendAppPaEntity" syncable="YES">
+        <attribute name="isDiscoveryDelete" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="openURL" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="LightAppPaMsgEntity" representedClassName="LightAppPaMsgEntity" parentEntity="ExtendAppMsgEntity" syncable="YES">
+        <attribute name="contentUrl" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="LightAppPaSessionEntity" representedClassName="LightAppPaSessionEntity" parentEntity="ChatSessionEntity" syncable="YES"/>
+    <entity name="LocalAppPaEmailMsgEntity" representedClassName="LocalAppPaEmailMsgEntity" parentEntity="LocalAppPaMsgEntity" syncable="YES">
+        <attribute name="emailDigest" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="emailID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="emailTitle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hasAttachment" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="senderAccount" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="senderEmailAdress" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="senderName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vipIndicators" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="sender" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="EmployeeEntity" syncable="YES"/>
+    </entity>
+    <entity name="LocalAppPaEntity" representedClassName="LocalAppPaEntity" parentEntity="ExtendAppPaEntity" syncable="YES">
+        <attribute name="isUsed" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+    </entity>
+    <entity name="LocalAppPaMsgEntity" parentEntity="ExtendAppMsgEntity" syncable="YES"/>
+    <entity name="LocalAppPaSessionEntity" representedClassName="LocalAppPaSessionEntity" parentEntity="ChatSessionEntity" syncable="YES"/>
+    <entity name="LocalContactEntity" representedClassName="LocalContactEntity" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="abRecId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="pinyinName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="matchedEmpl" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="macthedByLocal" inverseEntity="EmployeeEntity" syncable="YES"/>
+    </entity>
+    <entity name="MeetingSessionEntity" representedClassName="MeetingSessionEntity" syncable="YES">
+        <attribute name="accesscode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="chairmanPwd" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="confCategory" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="confID" attributeType="String" syncable="YES"/>
+        <attribute name="confType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dataConfInfo" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <attribute name="endTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isFiltered" optional="YES" attributeType="Integer 32" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="loadFullInfo" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="mediaType" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="memberPwd" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="outerAccesscode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="parentConfID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="passcode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="srtpPolicy" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="startTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 32" defaultValueString="3" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="subject" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tlsPolicy" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="attendees" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="AttendeeEntity" inverseName="attendeeOf" inverseEntity="AttendeeEntity" syncable="YES"/>
+        <relationship name="convener" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="AttendeeEntity" inverseName="convenerOf" inverseEntity="AttendeeEntity" syncable="YES"/>
+        <relationship name="master" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="AttendeeEntity" inverseName="masterOf" inverseEntity="AttendeeEntity" syncable="YES"/>
+    </entity>
+    <entity name="MessageEntity" representedClassName="MessageEntity" isAbstract="YES" syncable="YES">
+        <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="contentType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="dataBaseId" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="localStatus" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="messageId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="readed" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="receiveTimestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="transferStatus" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="translateBody" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="translateState" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="from" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ContactEntity" inverseName="sentMessages" inverseEntity="ContactEntity" syncable="YES"/>
+        <relationship name="latestOf" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="SessionEntity" inverseName="latestMessage" inverseEntity="SessionEntity" syncable="YES"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="SessionEntity" inverseName="messages" inverseEntity="SessionEntity" syncable="YES"/>
+        <relationship name="to" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ContactEntity" inverseName="recivMessages" inverseEntity="ContactEntity" syncable="YES"/>
+    </entity>
+    <entity name="MsgLogEntity" representedClassName="MsgLogEntity" parentEntity="ChatMessageEntity" syncable="YES"/>
+    <entity name="MsgLogSessionEntity" representedClassName="MsgLogSessionEntity" parentEntity="SessionEntity" syncable="YES">
+        <attribute name="logTotalCount" optional="YES" transient="YES" attributeType="Integer 32" defaultValueString="-1" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="target" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="ContactEntity" inverseName="msgLogSession" inverseEntity="ContactEntity" syncable="YES"/>
+    </entity>
+    <entity name="PersonEntity" representedClassName="EmployeeEntity" isAbstract="YES" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="address" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="assistantList" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="bdHideFlag" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="bindNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="circleBgImageUrl" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="circleInviteUpdateTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="circleInvoved" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="circleRelation" optional="YES" attributeType="Integer 32" defaultValueString="-1" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="contact" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="defaultCTDNum" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="deptDesc" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="deptDescEnglish" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="deptName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="displayName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fax" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="faxList" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="foreignName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="groupId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="homePage" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="homePhone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="interPhoneList" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isFriend" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="m2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mobile" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mobileList" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nativeName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="nickname" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="notesMail" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="officePhone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="originMobile" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="originOffice" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="otherInfo" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="personId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="phone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="phoneList" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="pinyinName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="position" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="postalCode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="recvCircleMsg" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="room" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sendCircleMsg" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="sex" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shortNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="signature" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="simplifiedPinyin" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="softClientExtPhone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="softClientExtPhoneDomain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp2Domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp3" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp3Domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp4" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp4Domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp5" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp5Domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp6" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sp6Domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="spDomain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="staffNo" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timezone" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timezoneValue" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="userStatus" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="voip" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voip2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voip2Domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voip3" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voip4" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voip5" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voip6" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voipDomain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="voipList" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="category" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="EmployeeCategoryEntity" inverseName="members" inverseEntity="EmployeeCategoryEntity" syncable="YES"/>
+    </entity>
+    <entity name="PublicAccountEntity" representedClassName="PublicAccountEntity" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="accountEntity" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="disPosition" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isAuth" optional="YES" attributeType="Boolean" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isSubscription" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="isSupportPush" optional="YES" attributeType="Boolean" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="mode" optional="YES" attributeType="Integer 32" valueTransformerName="option" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="summary" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="ownMenus" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="PublicAccountMenuEntity" inverseName="belongAccount" inverseEntity="PublicAccountMenuEntity" syncable="YES"/>
+        <relationship name="paHistorySession" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="PublicAccountHistorySessionEntity" inverseName="paEntity" inverseEntity="PublicAccountHistorySessionEntity" syncable="YES"/>
+    </entity>
+    <entity name="PublicAccountHistoryMsgEntity" representedClassName="PublicAccountHistoryMsgEntity" parentEntity="PublicAccountMsgEntity" syncable="YES"/>
+    <entity name="PublicAccountHistorySessionEntity" representedClassName="PublicAccountHistorySessionEntity" parentEntity="PublicAccountSessionEntity" syncable="YES">
+        <relationship name="paEntity" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="PublicAccountEntity" inverseName="paHistorySession" inverseEntity="PublicAccountEntity" syncable="YES"/>
+    </entity>
+    <entity name="PublicAccountMenuEntity" representedClassName="PublicAccountMenuEntity" syncable="YES">
+        <attribute name="cmdContent" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="cmdType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="materialId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="materialType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="menuId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="menuLevel" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="menuName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="menuOrder" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="parentMenuId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="publicAccountId" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="belongAccount" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="PublicAccountEntity" inverseName="ownMenus" inverseEntity="PublicAccountEntity" syncable="YES"/>
+    </entity>
+    <entity name="PublicAccountMsgEntity" representedClassName="PublicAccountMsgEntity" parentEntity="ChatMessageEntity" syncable="YES">
+        <attribute name="chatID" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="createTime" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="publicAccountMsgType" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="publicSource" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="ownMsgItem" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="PublicAccountMsgItemEntity" inverseName="belongPublicAccountMsg" inverseEntity="PublicAccountMsgItemEntity" syncable="YES"/>
+    </entity>
+    <entity name="PublicAccountMsgItemEntity" representedClassName="PublicAccountMsgItemEntity" syncable="YES">
+        <attribute name="author" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="contentURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="digest" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="order" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="sourceURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="umLocalURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="umRemoteURL" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="belongPublicAccountMsg" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="PublicAccountMsgEntity" inverseName="ownMsgItem" inverseEntity="PublicAccountMsgEntity" syncable="YES"/>
+    </entity>
+    <entity name="PublicAccountSessionEntity" representedClassName="PublicAccountSessionEntity" parentEntity="ChatSessionEntity" syncable="YES"/>
+    <entity name="SessionEntity" representedClassName="SessionEntity" isAbstract="YES" syncable="YES">
+        <attribute name="priority" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="reportUnread" optional="YES" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="sessionId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="unreadCount" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="unreadMsgNum" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="latestMessage" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="MessageEntity" inverseName="latestOf" inverseEntity="MessageEntity" syncable="YES"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="MessageEntity" inverseName="session" inverseEntity="MessageEntity" syncable="YES"/>
+        <relationship name="parent" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="SessionGroupEntity" inverseName="child" inverseEntity="SessionGroupEntity" syncable="YES"/>
+    </entity>
+    <entity name="SessionGroupEntity" representedClassName="SessionGroupEntity" parentEntity="SessionEntity" syncable="YES">
+        <attribute name="desc" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="headId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="child" optional="YES" toMany="YES" deletionRule="No Action" destinationEntity="SessionEntity" inverseName="parent" inverseEntity="SessionEntity" syncable="YES"/>
+    </entity>
+    <entity name="SpecialChatSessionEntity" representedClassName="SpecialChatSessionEntity" parentEntity="ChatSessionEntity" syncable="YES"/>
+    <entity name="ThirdPartSysEntity" representedClassName="ThirdPartSysEntity" parentEntity="ContactEntity" syncable="YES">
+        <attribute name="appLogo" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <entity name="VoiceMailMesageEntity" representedClassName="VoiceMailMesageEntity" syncable="YES">
+        <attribute name="domain" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="from" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="importance" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="messageId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sensitivity" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shortCode" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="time" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="NO" syncable="YES"/>
+        <relationship name="matchPerson" optional="YES" maxCount="1" deletionRule="No Action" destinationEntity="EmployeeEntity" inverseName="matchPersonOf" inverseEntity="EmployeeEntity" syncable="YES"/>
+    </entity>
+    <entity name="WelcomeSessionEntity" representedClassName="WelcomeSessionEntity" parentEntity="SessionEntity" syncable="YES">
+        <attribute name="detail" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="AttendeeEntity" positionX="-63" positionY="-18" width="128" height="255"/>
+        <element name="ThirdPartSysEntity" positionX="-54" positionY="-9" width="128" height="60"/>
+        <element name="MeetingSessionEntity" positionX="-36" positionY="9" width="128" height="375"/>
+        <element name="PublicAccountHistoryMsgEntity" positionX="-18" positionY="27" width="128" height="45"/>
+        <element name="GroupEntity" positionX="0" positionY="45" width="128" height="285"/>
+        <element name="SpecialChatSessionEntity" positionX="18" positionY="63" width="128" height="45"/>
+        <element name="ContactEntity" positionX="36" positionY="81" width="128" height="330"/>
+        <element name="SessionEntity" positionX="-9" positionY="36" width="128" height="180"/>
+        <element name="LocalAppPaEmailMsgEntity" positionX="0" positionY="45" width="128" height="180"/>
+        <element name="AssistantMessageEntity" positionX="9" positionY="54" width="128" height="75"/>
+        <element name="ChatMessageEntity" positionX="18" positionY="63" width="128" height="225"/>
+        <element name="LightAppPaMsgEntity" positionX="27" positionY="72" width="128" height="60"/>
+        <element name="ChatSessionEntity" positionX="36" positionY="81" width="128" height="120"/>
+        <element name="CallLogEntity" positionX="45" positionY="90" width="128" height="120"/>
+        <element name="PublicAccountMsgEntity" positionX="-9" positionY="36" width="128" height="120"/>
+        <element name="CircleSessionEntity" positionX="0" positionY="45" width="128" height="255"/>
+        <element name="EmployeeEntity" positionX="9" positionY="54" width="128" height="210"/>
+        <element name="ExtendAppPaEntity" positionX="18" positionY="63" width="128" height="120"/>
+        <element name="PersonEntity" positionX="27" positionY="72" width="128" height="1155"/>
+        <element name="MessageEntity" positionX="36" positionY="81" width="128" height="285"/>
+        <element name="DeptMessageEntity" positionX="45" positionY="90" width="128" height="45"/>
+        <element name="ESpaceMutipleTerminalRemindSessionEntity" positionX="-9" positionY="36" width="128" height="45"/>
+        <element name="EmployeeCategoryEntity" positionX="0" positionY="45" width="128" height="135"/>
+        <element name="GroupFileEntity" positionX="9" positionY="54" width="128" height="300"/>
+        <element name="LocalAppPaEntity" positionX="18" positionY="63" width="128" height="60"/>
+        <element name="LocalContactEntity" positionX="27" positionY="72" width="128" height="90"/>
+        <element name="PublicAccountSessionEntity" positionX="36" positionY="81" width="128" height="45"/>
+        <element name="CustomContactEntity" positionX="45" positionY="90" width="128" height="45"/>
+        <element name="SessionGroupEntity" positionX="-9" positionY="36" width="128" height="105"/>
+        <element name="LocalAppPaSessionEntity" positionX="0" positionY="45" width="128" height="45"/>
+        <element name="ExtendAppMsgEntity" positionX="9" positionY="54" width="128" height="75"/>
+        <element name="MsgLogEntity" positionX="18" positionY="63" width="128" height="45"/>
+        <element name="DeptSessionEntity" positionX="27" positionY="72" width="128" height="75"/>
+        <element name="LightAppPaSessionEntity" positionX="36" positionY="81" width="128" height="45"/>
+        <element name="WelcomeSessionEntity" positionX="45" positionY="90" width="128" height="75"/>
+        <element name="CircleComment" positionX="-9" positionY="36" width="128" height="90"/>
+        <element name="LightAppPaEntity" positionX="0" positionY="45" width="128" height="75"/>
+        <element name="LocalAppPaMsgEntity" positionX="9" positionY="54" width="128" height="45"/>
+        <element name="PublicAccountEntity" positionX="18" positionY="63" width="128" height="210"/>
+        <element name="PublicAccountHistorySessionEntity" positionX="27" positionY="72" width="128" height="60"/>
+        <element name="VoiceMailMesageEntity" positionX="36" positionY="81" width="128" height="225"/>
+        <element name="PublicAccountMenuEntity" positionX="45" positionY="90" width="128" height="210"/>
+        <element name="BulletinEntity" positionX="-9" positionY="36" width="128" height="135"/>
+        <element name="AssistantSessionEntity" positionX="0" positionY="45" width="128" height="45"/>
+        <element name="CallSessionEntity" positionX="9" positionY="54" width="128" height="60"/>
+        <element name="CallContactEntity" positionX="18" positionY="63" width="128" height="60"/>
+        <element name="PublicAccountMsgItemEntity" positionX="27" positionY="72" width="128" height="180"/>
+        <element name="MsgLogSessionEntity" positionX="36" positionY="81" width="128" height="75"/>
+    </elements>
+</model>

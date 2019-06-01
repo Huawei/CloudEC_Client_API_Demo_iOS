@@ -8,8 +8,6 @@
 
 #import "TextMessageCell.h"
 #import "HeadImageView.h"
-#import <TUPIOSSDK/TUPIOSSDK.h>
-#import <TUPIMSDK/TUPIMSDK.h>
 #import "EmojiTextAttachment.h"
 
 #define TEXT_TOP_SPACE  50

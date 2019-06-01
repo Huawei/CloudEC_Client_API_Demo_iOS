@@ -36,7 +36,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 @property (nonatomic, assign) NSString *dataConfIdWaitConfInfo;   // get current confId
 @property (nonatomic, copy)NSString *sipAccount;                  // current sipAccount
 @property (nonatomic, copy)NSString *account;                     // current account
-@property (nonatomic, strong) NSString *confCtrlUrl;              // recorde dateconf_uri
+@property (nonatomic, copy) NSString *confCtrlUrl;              // recorde dateconf_uri
 @property (nonatomic, strong) NSMutableDictionary *confTokenDic;  // update conference token in SMC
 @property (nonatomic, assign) BOOL hasReportMediaxSpeak;          // has reportMediaxSpeak or not in Mediax
 @property (nonatomic, retain) NSTimer *heartBeatTimer;            // NSTime record heart beat
@@ -362,28 +362,28 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             
             BOOL isStopSharing = NO;
             
-            //收到开始程序共享的通知，结束之前的共享
-            if (1 == notify.param2) {
-                isStopSharing = YES;
-            }
+//            //收到开始程序共享的通知，结束之前的共享
+//            if (1 == notify.param2) {
+//                isStopSharing = YES;
+//            }
             
             TSDK_E_CONF_SHARE_STATE state =  shareState->state;
             
             switch (state) {
                 case TSDK_E_CONF_AS_STATE_NULL:
                 {
-                    if (0 == notify.param2) {
+//                    if (0 == notify.param2) {
                         _isStartScreenSharing = NO;
                         isStopSharing = YES;
-                    }
+//                    }
                 }
                     break;
                 case TSDK_E_CONF_AS_STATE_START:
                 case TSDK_E_CONF_AS_STATE_VIEW:
                 {
-                    if (0 == notify.param2) {
+//                    if (0 == notify.param2) {
                         _isStartScreenSharing = YES;
-                    }
+//                    }
                     [self handleScreenShareDataConfhandle:notify.param1];
                 }
                     break;
@@ -411,11 +411,23 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             DDLogInfo(@"TSDK_E_CONF_EVT_DS_DOC_NEW");
         }
             break;
+        case TSDK_E_CONF_EVT_DS_DOC_PAGE_NEW:
+        {
+            DDLogInfo(@"TSDK_E_CONF_EVT_DS_DOC_PAGE_NEW");
+
+            [self handleDsDocShareDataConfHandle:notify.param1];
+            
+        }
+            break;
         
         case TSDK_E_CONF_EVT_DS_DOC_CURRENT_PAGE_IND:
         {
-            TSDK_S_DOC_PAGE_BASE_INFO *pageInfo = (TSDK_S_DOC_PAGE_BASE_INFO *)notify.data;
-            [self handleDsDocCurrentPageInfoWithConfHandle:notify.param1 andPageInfo:pageInfo];
+//            dispatch_async(espace_dataconf_datashare_queue, ^{ //在espace_dataconf_datashare_queue线程中调用结束，确保无时序问题
+                TSDK_S_DOC_PAGE_BASE_INFO *pageInfo = (TSDK_S_DOC_PAGE_BASE_INFO *)notify.data;
+                [self handleDsDocCurrentPageInfoWithConfHandle:notify.param1 andPageInfo:pageInfo];
+//                [self handleDsDocShareDataConfHandle:notify.param1];
+            
+//            });
             
         }
             break;
@@ -435,12 +447,13 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         {
             __weak typeof(self) weakSelf = self;
             dispatch_async(espace_dataconf_datashare_queue, ^{ //在espace_dataconf_datashare_queue线程中调用结束，确保无时序问题
-//                //                    dispatch_async(espace_dataconf_queue, ^{
-//                [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
-//                //                    });
-            
-            [weakSelf stopSharedData];
-            
+                //dispatch_async(espace_dataconf_queue, ^{
+                //    [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
+                //});
+                
+                [weakSelf stopSharedData];
+                _currentDataShareTypeId = 0;
+                
             });
         }
             break;
@@ -468,11 +481,12 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         {
             __weak typeof(self) weakSelf = self;
             dispatch_async(espace_dataconf_datashare_queue, ^{ //在espace_dataconf_datashare_queue线程中调用结束，确保无时序问题
-                //                //                    dispatch_async(espace_dataconf_queue, ^{
-                //                [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
-                //                //                    });
+                //dispatch_async(espace_dataconf_queue, ^{
+                //    [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
+                //});
                 
                 [weakSelf stopSharedData];
+                _currentDataShareTypeId = 0;
                 
             });
         }
@@ -520,30 +534,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             [self onShareStatusUpateInd:statusInfo];
         }
             break;
-            
-            //        case CONFCTRL_E_EVT_FLOOR_ATTENDEE_IND:
-//        {
-//            //Speaker report in this place
-//            DDLogInfo(@"CONFCTRL_E_EVT_FLOOR_ATTENDEE_IND handle is : %d",notify.param1);
-//            CONFCTRL_S_FLOOR_ATTENDEE_INFO *floorAttendee = (CONFCTRL_S_FLOOR_ATTENDEE_INFO *)notify.data;
-//            CONFCTRL_S_SPEAKER *speakers = floorAttendee->speakers;
-//            NSMutableArray *tempArray = [[NSMutableArray alloc] init];
-//            for (int i =0; i< floorAttendee->num_of_speaker; i++)
-//            {
-//                DDLogInfo(@"speakers[i].number :%s,speakers[i].is_speaking :%d",speakers[i].number,speakers[i].is_speaking);
-//                ConfCtrlSpeaker *speaker = [[ConfCtrlSpeaker alloc] init];
-//                speaker.number = [NSString stringWithUTF8String:speakers[i].number];
-//                speaker.is_speaking = speakers[i].is_speaking;
-//                speaker.speaking_volume = speakers[i].speaking_volume;
-//                [tempArray addObject:speaker];
-//            }
-//
-//            NSDictionary *resultInfo = @{
-//                                         ECCONF_SPEAKERLIST_KEY : [NSArray arrayWithArray:tempArray]
-//                                         };
-//            [self respondsECConferenceDelegateWithType:CONF_E_SPEAKER_LIST result:resultInfo];
-//        }
-//            break;
         default:
             break;
     }
@@ -615,7 +605,7 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
         return;
     }
     
-    if (_currentDataShareTypeId != 0x0002) {
+    if (_currentDataShareTypeId != 0x0002 && _currentDataShareTypeId != 0 && _currentDataShareTypeId != -1) {
         return;
     }
     
@@ -650,9 +640,9 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
 
 - (void)handleDsDocShareDataConfHandle:(TSDK_UINT32)confHandle
 {
-    if (_currentDataShareTypeId != 0x0001) {
-        return;
-    }
+//    if (_currentDataShareTypeId != 0x0001) {
+//        return;
+//    }
     
     __weak typeof(self) weakSelf = self;
     dispatch_async(espace_dataconf_datashare_queue, ^{
@@ -696,9 +686,9 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
 - (void)handleWbDocShareDataConfHandle:(TSDK_UINT32)confHandle
 {
     
-    if (_currentDataShareTypeId != 0x0200) {
-        return;
-    }
+//    if (_currentDataShareTypeId != 0x0200) {
+//        return;
+//    }
     
     __weak typeof(self) weakSelf = self;
     dispatch_async(espace_dataconf_datashare_queue, ^{
@@ -1227,7 +1217,7 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
     }
     
     bookConfInfoUportal->conf_media_type = (TSDK_E_CONF_MEDIA_TYPE)mediaType;
-    bookConfInfoUportal->is_hd_conf = TSDK_FALSE;
+    bookConfInfoUportal->is_hd_conf = TSDK_TRUE;
     bookConfInfoUportal->is_multi_stream_conf = TSDK_FALSE;
     bookConfInfoUportal->is_auto_record = TSDK_FALSE;
     bookConfInfoUportal->is_auto_prolong = TSDK_TRUE;
@@ -1725,6 +1715,7 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
     _currentCallId = 0;
     self.isVideoConfInvited = NO;
     self.currentConfBaseInfo = nil;
+    self.lastConfSharedData = nil;
 }
 
 /**

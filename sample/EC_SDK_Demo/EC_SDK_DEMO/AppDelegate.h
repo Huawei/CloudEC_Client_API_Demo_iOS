@@ -10,6 +10,7 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+//@property (nonatomic, strong) ESpaceLocalDataManager* localDataManager;
 
 /**
  *This method is used to switch to the conf running page

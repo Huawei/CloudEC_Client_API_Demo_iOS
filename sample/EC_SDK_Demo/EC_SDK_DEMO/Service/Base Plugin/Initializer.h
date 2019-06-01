@@ -15,7 +15,8 @@ typedef NS_ENUM(NSUInteger, TUP_MODULE)
     CALL_SIP_MODULE,           // call sip module
     CALL_CTD_MODULE,           // call ctd module
     CONF_MODULE,               // conference module
-    CONTACT_MODULE             // contact module
+    CONTACT_MODULE,            // contact module
+    IM_CONTACT_MODULE          // IM contact module
 };
 
 @protocol TupLoginNotification <NSObject>
@@ -66,6 +67,18 @@ typedef NS_ENUM(NSUInteger, TUP_MODULE)
 
 @end
 
+@protocol ImContactNotification <NSObject>
+
+/**
+ * This method is used to deel contact event callback from service
+ * 分发IM 联系人业务相关回调
+ *@param module TUP_MODULE
+ *@param notification Notification
+ */
+- (void)imContactModule:(TUP_MODULE)module notification:(Notification *)notification;
+
+@end
+
 @interface Initializer : NSObject
 
 + (BOOL)startupWithLogPath:(NSString *)logPath;
@@ -77,5 +90,9 @@ typedef NS_ENUM(NSUInteger, TUP_MODULE)
 + (void)registerConfCallBack:(id<TupConfNotifacation>)confDelegate;
 
 + (void)registerContactCallBack:(id<ContactNotification>)contactDelegate;
+
++ (void)registerImContactCallBack:(id<ImContactNotification>)imContactDelegate;
+
+
 
 @end

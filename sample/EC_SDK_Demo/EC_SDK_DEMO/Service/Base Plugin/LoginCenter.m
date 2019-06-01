@@ -17,9 +17,6 @@
 #import "CommonUtils.h"
 #import "ManagerService.h"
 
-#import <TUPIOSSDK/ECSAppConfig.h>
-#import <TUPIOSSDK/TUPMAALoginService.h>
-
 NSString * const UPortalTokenKey = @"UPortalTokenKey";
 NSString * const CallRegisterStatusKey = @"CallRegisterStatusKey";
 NSString * const PushTimeEnableRecoud = @"PushTimeEnableRecoud";
@@ -83,7 +80,7 @@ static LoginCenter *g_loginCenter = nil;
             localAddress:(NSString *)localAddress
               completion:(void (^)(BOOL isSuccess, NSError *error))completionBlock
 {
-//    [self configSipRelevantParam];
+    [self configSipRelevantParam];
     TSDK_S_LOGIN_PARAM loginParam;
     memset(&loginParam, 0, sizeof(TSDK_S_LOGIN_PARAM));
     loginParam.user_id = 1;
@@ -273,6 +270,8 @@ static LoginCenter *g_loginCenter = nil;
             LoginAccessServer.token = [NSString stringWithUTF8String:im_login_parama->token];
             self.loginServerInfo = LoginAccessServer;
             
+//            [ManagerService loginService].serviceStatus = ECServiceLogin;
+            
 //            NSArray *pushTime = [CommonUtils getUserDefaultValueWithKey:PushTimeEnableRecoud];
 //            NSString *noPushStart = nil;
 //            NSString *noPushEnd = nil;
@@ -293,55 +292,86 @@ static LoginCenter *g_loginCenter = nil;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_AUTH_FAILED object:nil userInfo:nil];
             });
+            
+//            [ManagerService loginService].serviceStatus = ECServiceKickOff;
             DDLogInfo(@"authorize failed, reason code: %d", reasonCode);
             break;
         }
         case TSDK_E_LOGIN_EVT_AUTH_REFRESH_FAILED:
         {
             TSDK_UINT32 reasonCode = notify.param2;
+//            [ManagerService loginService].serviceStatus = ECServiceKickOff;
             DDLogInfo(@"authorize refresh failed, reason code: %d", reasonCode);
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGIN_SUCCESS:
         {
-            DDLogInfo(@"sip have been login");
+            
             sipStatus = kCallSipStatusRegistered;
             [self isSipRegistered:sipStatus];
             TSDK_S_LOGIN_SUCCESS_INFO *login_success_info = notify.data;
             if (login_success_info != NULL) {
                 [ManagerService confService].uPortalConfType = [self configDeployMode:login_success_info->conf_env_type];
+                
             }
+            TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
+            if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
+                DDLogInfo(@"sip have been login");
+            }else if (accountType == TSDK_E_IM_SERVICE_ACCOUNT){
+                DDLogInfo(@"im have been login");
+                [ManagerService loginService].serviceStatus = ECServiceLogin;
+//                [[NSNotificationCenter defaultCenter] postNotificationName:IM_LOGIN_SUCCESSED object:nil];
+            }else{
+                
+            }
+            
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGIN_FAILED:
         {
-            sipStatus = kCallSipStatusUnRegistered;
-            TSDK_UINT32 reasonCode = notify.param2;
-            DDLogInfo(@"sip login failed, reason code: %d", reasonCode);
-            [self isSipRegistered:sipStatus];
+            TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
+            if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
+                sipStatus = kCallSipStatusUnRegistered;
+                TSDK_UINT32 reasonCode = notify.param2;
+                //            [ManagerService loginService].serviceStatus = ECServiceKickOff;
+                DDLogInfo(@"sip login failed, reason code: %d", reasonCode);
+                [self isSipRegistered:sipStatus];
+            }
+            
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGOUT_SUCCESS:
         {
-            DDLogInfo(@"sip unregister");
-            sipStatus = kCallSipStatusUnRegistered;
-            [self isSipRegistered:sipStatus];
+            TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
+            if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
+                DDLogInfo(@"sip unregister");
+                sipStatus = kCallSipStatusUnRegistered;
+                [self isSipRegistered:sipStatus];
+                //            [ManagerService loginService].serviceStatus = ECServiceOffline;
+            }
+            
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGOUT_FAILED:
         {
-            sipStatus = kCallSipStatusRegistered;
+//            sipStatus = kCallSipStatusRegistered;
             TSDK_UINT32 reasonCode = notify.param2;
+//            [ManagerService loginService].serviceStatus = ECServiceOffline;
             DDLogInfo(@"sip logout failed, reason code: %d", reasonCode);
-            [self isSipRegistered:sipStatus];
+//            [self isSipRegistered:sipStatus];
             break;
         }
         case TSDK_E_LOGIN_EVT_FORCE_LOGOUT:
         {
-            [self logout];
-            DDLogInfo(@"sip unregister");
-            sipStatus = kCallSipStatusUnRegistered;
-            [self isSipRegistered:sipStatus];
+            TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
+            if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
+                [self logout];
+                DDLogInfo(@"sip unregister");
+                sipStatus = kCallSipStatusUnRegistered;
+                [self isSipRegistered:sipStatus];
+            }
+            
+            [ManagerService loginService].serviceStatus = ECServiceLogout;
             break;
         }
         case TSDK_E_LOGIN_EVT_VOIP_ACCOUNT_STATUS:

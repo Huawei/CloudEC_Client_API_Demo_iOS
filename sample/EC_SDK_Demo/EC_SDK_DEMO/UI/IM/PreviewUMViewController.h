@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <TUPIMSDK/TUPIMSDK.h>
+#import "ChatMessageEntity.h"
 
 @interface PreviewUMViewController : UIViewController
 @property (nonatomic, strong)ChatMessageEntity *message;     // current chat message entity

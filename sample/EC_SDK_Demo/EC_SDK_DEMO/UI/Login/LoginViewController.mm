@@ -50,18 +50,18 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     _versionLabel.text = [NSString stringWithFormat:@"Version: %@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]];
     [self.navigationController.navigationBar setHidden:YES];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginSipUnregistered) name:LOGIN_UNREGISTERED_RESULT object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginSipUnregistered) name:LOGIN_UNREGISTERED_RESULT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginAuthFailed) name:LOGIN_AUTH_FAILED object:nil];
 }
 
-- (void)loginSipUnregistered
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self showMessage:@"lgoin faild! sip unregistered!"];
-        [self hiddenActivityIndicator:YES];
-    });
-    
-}
+//- (void)loginSipUnregistered
+//{
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [self showMessage:@"lgoin faild! sip unregistered!"];
+//        [self hiddenActivityIndicator:YES];
+//    });
+//    
+//}
 
 - (void)loginAuthFailed
 {

@@ -7,8 +7,12 @@
 //
 
 #import "ContactGroupListViewController.h"
+#import "EmployeeCategoryEntity.h"
+#import "EmployeeCategoryEntity+ServiceObject.h"
+#import "ESpaceContactService.h"
 
-#import <TUPContactSDK/EmployeeCategoryEntity+ServiceObject.h>
+#import "eSpaceDBService.h"
+#import "ManagerService.h"
 
 @interface ContactGroupListViewController ()
 @property (nonatomic, strong) NSMutableArray *contactGroups;
@@ -21,11 +25,72 @@
     
     self.title = @"Group Selected";
     self.contactGroups = [NSMutableArray arrayWithArray:[EmployeeCategoryEntity allCategoryEntities]];
+    
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc]initWithTitle:@"Create" style:UIBarButtonItemStylePlain target:self action:@selector(createGroup)];
+    self.navigationItem.rightBarButtonItem = btn;
 }
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)createGroup
+{
+    UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:nil message:@"Please enter new contact group name" preferredStyle:UIAlertControllerStyleAlert];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"name";
+        textField.secureTextEntry = NO;
+    }];
+
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UITextField *nameFiled = alertCon.textFields.firstObject;
+
+        
+        NSString *name = nameFiled.text;
+
+        if (name != nil) {
+            [[ESpaceContactService sharedInstance] createContactGroupWithGroupName:name completionBlock:^(NSString *groupId, NSError* error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (error == nil) {
+                        self.contactGroups = [NSMutableArray arrayWithArray:[EmployeeCategoryEntity allCategoryEntities]];
+                        [self.tableView reloadData];
+                    }
+                });
+            }];
+        }
+        
+    }];
+    [alertCon addAction:okAction];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    [alertCon addAction:cancelAction];
+    [self presentViewController:alertCon animated:YES completion:nil];
+}
+
+- (void)deleteContactGroupWithIndexRow:(NSInteger)row
+{
+    EmployeeCategoryEntity *entity = self.contactGroups[row -1];
+    
+    for (id obj in entity.members) {
+        if ([obj isKindOfClass:[EmployeeEntity class]]) {
+            [[ESpaceContactService sharedInstance] deleteFriend:obj completion:^(NSError *error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (!error) {
+                    }else {
+                    }
+                });
+                
+            }];
+        }
+    }
+    
+    [[ESpaceContactService sharedInstance] deleteContactGroupWithGroupId:entity.id completionBlock:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error == nil) {
+                self.contactGroups = [NSMutableArray arrayWithArray:[EmployeeCategoryEntity allCategoryEntities]];
+                [self.tableView reloadData];            }
+        });
+    }];
 }
 
 #pragma mark - Table view data source
@@ -55,12 +120,23 @@
     EmployeeCategoryEntity *category;
     if (0 == indexPath.row) {
         category = nil;
+        [ESpaceContactService sharedInstance].currentContactGroupId = nil;
     }else {
         category = self.contactGroups[indexPath.row-1];
+        [ESpaceContactService sharedInstance].currentContactGroupId = category.id;
     }
     if (self.delegate && [self.delegate respondsToSelector:@selector(didSelectedContactGroupCategory:)]) {
         [self.delegate didSelectedContactGroupCategory:category];
         [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        if (indexPath.row != 0) {
+            [self deleteContactGroupWithIndexRow:indexPath.row];
+        }
     }
 }
 

@@ -7,9 +7,10 @@
 //
 
 #import "GroupInfoModifyController.h"
-#import <TUPIOSSDK/GroupEntity.h>
-#import <TUPContactSDK/GroupEntity+ServiceObject.h>
-#import <TUPIOSSDK/ECSAppConfig.h>
+#import "GroupEntity.h"
+#import "ECSAppConfig.h"
+
+#import "GroupEntity+ServiceObject.h"
 
 @interface GroupInfoModifyController ()<UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UITextView *modifyTextView;   // modify text view
@@ -94,6 +95,7 @@
 -(BOOL)isGroupManager
 {
     return [[ECSAppConfig sharedInstance].latestAccount isEqualToString:_group.ownerId];
+    return YES;
 }
 
 /**
