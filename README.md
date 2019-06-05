@@ -1,9 +1,8 @@
 # CloudEC_Client_API_Demo_iOS
 
-Description:
-CloudEC client SDK full function Demo, have voice and video call, voice and video device management, conference management, conference access, conference control, desktop collaboration and sharing and so on basic function. 
-At present only fit to convergent meeting network of CloudEC solution plan.
-
-描述：
-CloudEC客户端SDK全量功能Demo，具备音视频呼叫、音视频设备管理、会议管理、会议接入、会议控制、桌面协同与共享等基本功能。
-暂仅适用于CloudEC解决方案下的融合会议组网。
+华为云会议提供了适用于iOS系统平台的基于Native SDK的集成方式，您可以在自己的应用程序中集成音视频呼叫业务、会议业务以及通讯录业务。
+文件夹内容说明如下：
+sdk：SDK库文件，您可以获取后进行集成开发。
+sample：Demo，您可以直接调用Demo，体验业务功能。
+Demo体验指导以及集成方法请参见《客户端SDK参考》，获取路径如下：
+https://support.huaweicloud.com/sdkreference-meeting/zh-cn_topic_0155665812.html
