@@ -10,7 +10,6 @@
 #import "Initializer.h"
 #import "ManagerService.h"
 #import "LoginCenter.h"
-#import "ESpaceContactService.h"
 
 @implementation ServiceManager
 
@@ -22,7 +21,6 @@
 {
     [ManagerService loadAllService];
     [LoginCenter sharedInstance];
-    [ESpaceContactService sharedInstance];
     NSString *logPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingString:@"/TUPC60log"];
     [Initializer startupWithLogPath:logPath];
 }

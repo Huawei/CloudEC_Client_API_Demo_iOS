@@ -150,7 +150,7 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     app_info.support_ctd = TSDK_TRUE;
     app_info.support_audio_and_video_conf = TSDK_TRUE;
     app_info.support_enterprise_address_book = TSDK_TRUE;
-    app_info.support_im = TSDK_TRUE;
+    app_info.support_im = TSDK_FALSE;
 //    app_info.support_data_conf = TSDK_TRUE;
     app_info.support_rich_media_message = TSDK_TRUE;
     TSDK_RESULT result = tsdk_init(&app_info ,&onTSDKNotifications);

@@ -463,7 +463,7 @@
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
             if (nil != _localViewShower) {
-                _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(5, 64 + 5, 95, 126)];
+                _localViewShower.frame = CGRectMake(5, 64 + 5, 95, 126);
                 _localView.frame = CGRectMake(0, 0, 95, 126);
             }
             
@@ -477,7 +477,7 @@
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
             if (nil != _localViewShower) {
-                _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(5, 64 + 5, 126, 95)];
+                _localViewShower.frame = CGRectMake(5, 64 + 5, 126, 95);
                 _localView.frame = CGRectMake(0, 0, 126, 95);
             }
         }

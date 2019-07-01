@@ -13,7 +13,6 @@
 #import "SearchResultInfo.h"
 #import "DeptInfo.h"
 #import "ContactInfo.h"
-#import "EmployeeEntity.h"
 
 #import <UIKit/UIKit.h>
 #import "ManagerService.h"
@@ -22,7 +21,6 @@
 #import "tsdk_eaddr_interface.h"
 #import "tsdk_error_def.h"
 
-#import "eSpaceDBService.h"
 
 #define SIZE52 CGSizeMake(52, 52)
 #define SIZE120 CGSizeMake(120, 120)
@@ -210,19 +208,9 @@ NSString *const TUP_ICON_FILE_KEY                   = @"TUP_ICON_FILE_KEY";
         completionBlock(result);
     }
     if (result) {
-        [self setHeadID:[NSString stringWithFormat:@"%d", sysIconID]];
     }
 }
 
-/**
- * headId's set method
- * 头像Id 的set方法
- *@param headId NSString
- */
-- (void)setHeadID:(NSString *)headId {
-    EmployeeEntity *selfEntity = LOCAL_DATA_MANAGER.currentUser;
-    selfEntity.headId = headId;
-}
 
 /**
  * This method is used to set custom head image (if completionBlock result is YES, set self hedID with headID)
@@ -265,7 +253,6 @@ NSString *const TUP_ICON_FILE_KEY                   = @"TUP_ICON_FILE_KEY";
         completionBlock(result, mTime);
     }
     if (result) {
-        [self setHeadID:mTime];
     }
     
 }

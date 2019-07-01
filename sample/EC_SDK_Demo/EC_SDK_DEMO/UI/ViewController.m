@@ -12,9 +12,6 @@
 #import "ManagerService.h"
 #import "DataConfBaseViewController.h"
 
-#import "ECSAppConfig.h"
-#import "NSManagedObjectContext+Persistent.h"
-#import "eSpaceDBService.h"
 
 @interface ViewController ()<LoginServiceDelegate>
 @property (nonatomic,assign)BOOL isBeKickOut;
@@ -65,8 +62,6 @@
                 case ECServiceOffline:
                 case ECServiceKickOff:
                 {
-                    [[ECSAppConfig sharedInstance] save];
-                    [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
                     [[ManagerService loginService] logout];
                 }
                     break;

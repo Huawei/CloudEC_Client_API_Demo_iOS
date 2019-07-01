@@ -621,13 +621,14 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
     }
     DDLogInfo(@"tsdk_app_share_get_screen_data :%d",dataRet);
     char *data = (char *)screenData.data;
-    TSDK_UINT32 ssize = *((TSDK_UINT32 *)((char *)data + sizeof(TSDK_UINT16)));
-    NSData *imageData = [NSData dataWithBytes:data length:ssize];
-    if (imageData == nil)
+    if (data == NULL)
     {
         DDLogInfo(@"share imageData from data fail!");
         return;
     }
+    TSDK_UINT32 ssize = *((TSDK_UINT32 *)((char *)data + sizeof(TSDK_UINT16)));
+    NSData *imageData = [NSData dataWithBytes:data length:ssize];
+    
 //    NSDictionary *shareDataInfo = @{
 //                                    DATACONF_SHARE_DATA_KEY:imageData
 //                                    };

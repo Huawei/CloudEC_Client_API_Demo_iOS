@@ -9,23 +9,17 @@
 #import "MeViewController.h"
 #import "ManagerService.h"
 #import "CommonUtils.h"
-#import "HeadImageView.h"
-#import "EmployeeEntity.h"
 
-#import "PersonDetailViewController.h"
+
 #import "NoDisturbViewController.h"
 #import "LoginCenter.h"
 
-#import "eSpaceDBService.h"
-#import "ECSAppConfig.h"
-#import "NSManagedObjectContext+Persistent.h"
-#import "ESpaceContactService.h"
+
 
 @interface MeViewController ()
 @property(weak, nonatomic)IBOutlet UILabel *sipAccountLabel;
 @property(weak, nonatomic)IBOutlet UILabel *callBackNumber;
-@property (weak, nonatomic) IBOutlet UILabel *userStatusLabel;
-@property (weak, nonatomic) IBOutlet HeadImageView *headImg;
+
 
 @end
 
@@ -34,19 +28,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     _sipAccountLabel.text = [ManagerService callService].sipAccount;
-    NSString *account = [[eSpaceDBService sharedInstance].localDataManager userAccount];
-    EspaceUserOnlineStatus* status = [[ESpaceContactService sharedInstance] onlineStatusForUser:account];
-    [self reloadUserStatus:status.userStatus];
+
     [self updateCallBackNumber];
-    ContactEntity *entity = [eSpaceDBService sharedInstance].localDataManager.currentUser;
-    [self.headImg setContactEntity:entity];
+
     // Do any additional setup after loading the view.
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    self.headImg.layer.cornerRadius = 50.0f;
-    self.headImg.layer.masksToBounds = YES;
+
     
 }
 
@@ -71,12 +61,7 @@
 
 - (IBAction)logout:(id)sender
 {
-    ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
-    if (userConfig.isAutoLogin) {
-        userConfig.isAutoLogin = NO;
-    }
-    [[ECSAppConfig sharedInstance] save];
-    [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
+
     [[ManagerService loginService] logout];
     
     [self goToLoginViewController];
@@ -86,85 +71,6 @@
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     UINavigationController *loginNavigationViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"LoginNavigationController"];
     [UIApplication sharedApplication].delegate.window.rootViewController = loginNavigationViewController;
-}
-
-- (IBAction)showSelfDetail:(id)sender {
-    EmployeeEntity *selfEntity = [[eSpaceDBService sharedInstance].localDataManager currentUser];
-    PersonDetailViewController *detailVC = [[PersonDetailViewController alloc] initWithPerson:selfEntity];
-    detailVC.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:detailVC animated:YES];
-}
-
-- (IBAction)setUserStatus:(UITapGestureRecognizer *)sender {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Select The Status"
-                                                                             message:nil
-                                                                      preferredStyle:UIAlertControllerStyleActionSheet];
-    UIAlertAction *online = [UIAlertAction actionWithTitle:@"Online"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction *action) {
-                                                       [self setSelfUserStatus:ESpaceUserStatusAvailable];
-                                                   }];
-    UIAlertAction *busy = [UIAlertAction actionWithTitle:@"Busy"
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     [self setSelfUserStatus:ESpaceUserStatusBusy];
-                                                 }];
-    UIAlertAction *away = [UIAlertAction actionWithTitle:@"Away"
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *action) {
-                                                     [self setSelfUserStatus:ESpaceUserStatusAway];
-                                                 }];
-    UIAlertAction *uninterrupt = [UIAlertAction actionWithTitle:@"UnInterruptable"
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction *action) {
-                                                            [self setSelfUserStatus:ESpaceUserStatusUninteruptable];
-                                                        }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:nil];
-    [alertController addAction:online];
-    [alertController addAction:busy];
-    [alertController addAction:away];
-    [alertController addAction:uninterrupt];
-    [alertController addAction:cancel];
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)setSelfUserStatus:(ESpaceUserStatus)status
-{
-    NSString *account = [[eSpaceDBService sharedInstance].localDataManager userAccount];
-    [[ESpaceContactService sharedInstance] onlineStatusForUser:account forceSubscribe:YES];
-    [[ESpaceContactService sharedInstance] setSelfStatus:status completion:^(NSError *error) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (!error) {
-                [self reloadUserStatus:status];
-            }else {
-                [self showMessage:@"Set user status failed."];
-            }
-        });
-    }];
-}
-
-- (void)reloadUserStatus:(ESpaceUserStatus)status {
-    NSString *stateStr;
-    switch (status) {
-        case ESpaceUserStatusAvailable:
-            stateStr = @"Online";
-            break;
-        case ESpaceUserStatusBusy:
-            stateStr = @"Busy";
-            break;
-        case ESpaceUserStatusAway:
-            stateStr = @"Away";
-            break;
-        case ESpaceUserStatusUninteruptable:
-            stateStr = @"UnInterruptable";
-            break;
-        default:
-            stateStr = @"Offline";
-            break;
-    }
-    self.userStatusLabel.text = stateStr;
 }
 
 - (IBAction)modifyCallBackNumber:(id)sender

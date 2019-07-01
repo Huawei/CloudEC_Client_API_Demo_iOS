@@ -33,7 +33,6 @@
 #import "tsdk_ctd_def.h"
 #import "tsdk_ctd_interface.h"
 
-#import "LocalNotificationCenter.h"
 
 NSString* const TSDK_COMING_CALL_NOTIFY = @"TSDK_COMING_CALL_NOTIFY";
 

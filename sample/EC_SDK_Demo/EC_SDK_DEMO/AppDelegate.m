@@ -12,7 +12,6 @@
 #import "CallWindowController.h"
 #import "ConfRunningViewController.h"
 #import "ECSLogger.h"
-#import "LocalNotificationCenter.h"
 #import <PushKit/PushKit.h>
 #import <UserNotifications/UserNotifications.h>
 #import "ViewController.h"
@@ -28,10 +27,6 @@
 #import "VideoShareViewController.h"
 //#import "AudioConfViewController.h"
 
-#import "ECSAppConfig.h"
-
-#import "eSpaceDBService.h"
-#import "NSManagedObjectContext+Persistent.h"
 
 
 @interface AppDelegate ()<PKPushRegistryDelegate>
@@ -76,11 +71,7 @@
 //    [ECSAppConfig sharedInstance].appLogLevel = kECSLogDebug;
 //    [ECSAppConfig sharedInstance].isLogEnabled = YES;
 //    [ECSAppConfig sharedInstance].version = @"V3.0.4.5";
-    //固定key值替换为安全随机字符,仅初次安装程序时进行设置
-    if (ESPACE_APP_CFG.isFirstUsed)
-    {
-        [ESPACE_APP_CFG initializeSecurityRandomKey];
-    }
+
 //    [TUPIOSSDKService start];
 
     // start up tup module.(module: Call/Conference/SipLogin)
@@ -89,7 +80,6 @@
     
     // other UI Things
     [CallWindowController shareInstance];
-    [[LocalNotificationCenter sharedInstance] start];
 
     [self gotoNormalFlow];
     
@@ -102,11 +92,7 @@
     
     //[self prepareForAutoLogin];
     
-    if ([ECSAppConfig sharedInstance].isFirstUsed) {
-        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
-        [ECSAppConfig sharedInstance].isFirstUsed = NO;
-        [[ECSAppConfig sharedInstance] save];
-    } else {
+
 //        // check is auto login
         BOOL bNeedAutoLogin = [self shouldStartAutoLogin];
 //        BOOL bNeedAutoLogin = YES;
@@ -114,7 +100,6 @@
             [self startAutoLogin];
             [AppDelegate gotoRecentChatSessionView];
         }
-    }
 }
 
 
@@ -139,12 +124,9 @@
 
 - (BOOL)shouldStartAutoLogin
 {
-    ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
-    if (nil == userConfig) {
+
         return NO;
-    }
-    
-    return userConfig.isAutoLogin;
+
 }
 
 + (void)gotoRecentChatSessionView
@@ -160,8 +142,7 @@
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
     
-    [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
-    [[ECSAppConfig sharedInstance] save];
+
 }
 
 
@@ -174,8 +155,7 @@
         taskID = UIBackgroundTaskInvalid;
     }];
     
-    [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
-    [[ECSAppConfig sharedInstance] save];
+
 }
 
 
@@ -193,8 +173,7 @@
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     
-    [[LOCAL_DATA_MANAGER managedObjectContext] saveToPersistent];
-    [[ECSAppConfig sharedInstance] save];
+
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -208,8 +187,7 @@
     
     NSString *str = [NSString stringWithFormat:@"%@",deviceToken];
     NSString *tokenStr = [[[str stringByReplacingOccurrencesOfString:@"<" withString:@""] stringByReplacingOccurrencesOfString:@">" withString:@""] stringByReplacingOccurrencesOfString:@" " withString:@""];
-    [ECSAppConfig sharedInstance].deviceToken = tokenStr;
-    [ECSAppConfig sharedInstance].apnsType = APNS_DEV;
+
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -217,7 +195,6 @@
     NSString *errorDesc = [error localizedDescription];
     NSString *errorFailedReason = [error localizedFailureReason];
     NSString *errorRecoverySuggestion = [error localizedRecoverySuggestion];
-    [ECSAppConfig sharedInstance].deviceToken = @"";
     DDLogError(@"error desc:%@\nreson:%@\nsuggestion:%@",errorDesc,errorFailedReason,errorRecoverySuggestion);
 }
 
@@ -237,7 +214,6 @@
     NSString *str = [NSString stringWithFormat:@"%@",pushCredentials.token];
     NSString *tokenStr = [[[str stringByReplacingOccurrencesOfString:@"<" withString:@""] stringByReplacingOccurrencesOfString:@">" withString:@""] stringByReplacingOccurrencesOfString:@" " withString:@""];
     
-    [ECSAppConfig sharedInstance].voipToken = tokenStr;
     
 }
 
@@ -288,8 +264,8 @@
         return;
     }
     UITabBarController *tabbar = (UITabBarController*)controller;
-    tabbar.selectedIndex = 1;
-    UINavigationController *navigationCtrl = tabbar.viewControllers[1];
+    tabbar.selectedIndex = 0;
+    UINavigationController *navigationCtrl = tabbar.viewControllers[0];
 //    if ([[navigationCtrl.viewControllers lastObject] isKindOfClass:[ConfRunningViewController class]]) {
 //        return;
 //    }

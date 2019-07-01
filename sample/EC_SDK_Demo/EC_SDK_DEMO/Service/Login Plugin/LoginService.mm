@@ -22,8 +22,6 @@
 #import "tsdk_manager_interface.h"
 #import "tsdk_error_def.h"
 
-#import "ECSAppConfig.h"
-#import "eSpaceDBService.h"
 
 @interface LoginService()
 
@@ -107,21 +105,6 @@
  */
 -(void)authorizeLoginWithLoginInfo:(LoginInfo *)LoginInfo completionBlock:(void (^)(BOOL isSuccess, NSError *error))completionBlock
 {
-    NSString *userAccount = LoginInfo.account;
-    [ECSAppConfig sharedInstance].latestAccount = userAccount;
-    
-    NSString *currentAccount = [ECSAppConfig sharedInstance].currentUser.account;
-    
-    if ((currentAccount.length == 0 || currentAccount == nil) && userAccount.length > 0 && userAccount != nil) {
-        // 使用登陆maa时的account 作为当前ECSAppConfig的帐号
-        [ECSAppConfig sharedInstance].currentUser.account = userAccount;
-        [[ECSAppConfig sharedInstance] save];
-    }
-    
-    if (nil == [eSpaceDBService sharedInstance].localDataManager) {
-        [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userAccount];
-    }
-    
     self.loginInfo = LoginInfo;
     // 登陆uportal鉴权
     [[LoginCenter sharedInstance] loginWithAccount:LoginInfo.account
@@ -135,18 +118,12 @@
          dispatch_async(dispatch_get_main_queue(), ^{
              if (isSuccess) {
                  
-                 ECSUserConfig *userConfig = [[ECSAppConfig sharedInstance] currentUser];
-                 if (!userConfig.isAutoLogin) {
-                     userConfig.isAutoLogin = YES;
-                     
-                 }
                  
                  
                  //             [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userConfig.account];
                  //             ESPACE_APP_DELEGATE.localDataManager = [eSpaceDBService sharedInstance].localDataManager;
                  
                  
-                 [[ECSAppConfig sharedInstance] save];
                  
                  //搜索自己软终端号码
                  [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
