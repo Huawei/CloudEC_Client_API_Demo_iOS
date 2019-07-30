@@ -728,7 +728,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN) {
+    if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN || _mineConfInfo.isPresent) {
         ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
 //        unsigned int userId = [attendee.userID intValue];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:attendee.name
@@ -737,51 +737,80 @@
         if (attendee.state == ATTENDEE_STATUS_IN_CONF || attendee.state == ATTENDEE_STATUS_JOINING ||  attendee.state == ATTENDEE_STATUS_CALLING) {
             
             if (attendee.state != ATTENDEE_STATUS_JOINING &&  attendee.state != ATTENDEE_STATUS_CALLING) {
-                if (attendee.isJoinDataconf && !attendee.isPresent) {
-                    UIAlertAction *presentAction = [UIAlertAction actionWithTitle:@"Set Presenter"
-                                                                            style:UIAlertActionStyleDefault
-                                                                          handler:^(UIAlertAction *action)
-                                                    {
-                                                        BOOL result = [[ManagerService confService] setPresenterNumber:attendee.number];
-                                                        if (result) {
-                                                            [self showMessage:@"set presenter success."];
-                                                        }else {
-                                                            [self showMessage:@"set presenter failed."];
-                                                        }
-                                                    }];
-                    [alertController addAction:presentAction];
+                if (attendee.isJoinDataconf) {
+                    if (!attendee.isPresent) {
+                        UIAlertAction *presentAction = [UIAlertAction actionWithTitle:@"Set Presenter"
+                                                                                style:UIAlertActionStyleDefault
+                                                                              handler:^(UIAlertAction *action)
+                                                        {
+                                                            BOOL result = [[ManagerService confService] setPresenterNumber:attendee.number];
+                                                            if (result) {
+                                                                [self showMessage:@"set presenter success."];
+                                                            }else {
+                                                                [self showMessage:@"set presenter failed."];
+                                                            }
+                                                        }];
+                        [alertController addAction:presentAction];
+                    }
+                    
+                    if (!attendee.isSelf) {
+                        if (attendee.isShareOwner) {
+                            UIAlertAction *cancelShareAction = [UIAlertAction actionWithTitle:@"Cancen Share"
+                                                                                        style:UIAlertActionStyleDefault
+                                                                                      handler:^(UIAlertAction *action)
+                                                                {
+                                                                    [[ManagerService confService] cancelDataShareWithNumber:attendee.number];
+
+                                                                }];
+                            [alertController addAction:cancelShareAction];
+                        }else{
+                            UIAlertAction *setShareAction = [UIAlertAction actionWithTitle:@"Set Share"
+                                                                                     style:UIAlertActionStyleDefault
+                                                                                   handler:^(UIAlertAction *action)
+                                                             {
+                                                                 [[ManagerService confService] inviteDataShareWithNumber:attendee.number];
+
+                                                             }];
+                            [alertController addAction:setShareAction];
+                        }
+                    }
+                    
+                    
                 }
                 
-                
-                
-                NSString *title = attendee.is_mute ? @"Grant Talk Right" : @"Revoke Talk Right";
-                
-                UIAlertAction * action = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [[ManagerService confService] confCtrlMuteAttendee:attendee.number isMute:!attendee.is_mute];
-                }];
-                [alertController addAction:action];
-            }
-            
-            if ([ManagerService confService].isVideoConfInvited) {
-                NSString *broastcast = @"Broatcast attendee";
-                BOOL BroatcastAttendee = YES;
-                if (attendee.isBroadcast) {
-                    broastcast = @"UnBroatcast attendee";
-                    BroatcastAttendee = NO;
+                if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN) {
+                    NSString *title = attendee.is_mute ? @"Grant Talk Right" : @"Revoke Talk Right";
+                    
+                    UIAlertAction * action = [UIAlertAction actionWithTitle:title style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                        [[ManagerService confService] confCtrlMuteAttendee:attendee.number isMute:!attendee.is_mute];
+                    }];
+                    [alertController addAction:action];
+                    
+                    if ([ManagerService confService].isVideoConfInvited) {
+                        NSString *broastcast = @"Broatcast attendee";
+                        BOOL BroatcastAttendee = YES;
+                        if (attendee.isBroadcast) {
+                            broastcast = @"UnBroatcast attendee";
+                            BroatcastAttendee = NO;
+                        }
+                        UIAlertAction * borastAction = [UIAlertAction actionWithTitle:broastcast style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                            [[ManagerService confService] broadcastAttendee:attendee.number isBoardcast:BroatcastAttendee];
+                        }];
+                        [alertController addAction:borastAction];
+                    }
+                    
                 }
-                UIAlertAction * borastAction = [UIAlertAction actionWithTitle:broastcast style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                    [[ManagerService confService] broadcastAttendee:attendee.number isBoardcast:BroatcastAttendee];
-                }];
-                [alertController addAction:borastAction];
+                
             }
             
-//            UIAlertAction* action = [UIAlertAction actionWithTitle:@"HangUp Participant" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//                [[ManagerService confService] confCtrlHangUpAttendee:attendee.number];
-//                if (attendee.dataState == DataConfAttendeeMediaStateIn || attendee.dataState == DataConfAttendeeMediaStatePresent) {
-//                    [[ManagerService dataConfService] kickoutUser:[attendee.userID intValue]];
-//                }
-//            }];
-//            [alertController addAction:action];
+            
+            //            UIAlertAction* action = [UIAlertAction actionWithTitle:@"HangUp Participant" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            //                [[ManagerService confService] confCtrlHangUpAttendee:attendee.number];
+            //                if (attendee.dataState == DataConfAttendeeMediaStateIn || attendee.dataState == DataConfAttendeeMediaStatePresent) {
+            //                    [[ManagerService dataConfService] kickoutUser:[attendee.userID intValue]];
+            //                }
+            //            }];
+            //            [alertController addAction:action];
             
         }
         else if (attendee.state == ATTENDEE_STATUS_LEAVED
@@ -800,10 +829,12 @@
             [alertController addAction:action];
         }
         
-        UIAlertAction* action = [UIAlertAction actionWithTitle:@"Remove Participant" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [[ManagerService confService] confCtrlRemoveAttendee:attendee.number];
-        }];
-        [alertController addAction:action];
+        if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN) {
+            UIAlertAction* action = [UIAlertAction actionWithTitle:@"Remove Participant" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                [[ManagerService confService] confCtrlRemoveAttendee:attendee.number];
+            }];
+            [alertController addAction:action];
+        }
         
         UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"cancel" style:UIAlertActionStyleDefault handler:nil];
         [alertController addAction:cancelAction];

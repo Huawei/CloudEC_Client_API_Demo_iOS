@@ -18,5 +18,7 @@
  */
 +(void)goConference;
 
++(void)appConfShareRequestAction;
+
 @end
 

@@ -99,9 +99,9 @@
     [self.view addConstraints:hConstraints];
     [self.view addConstraints:vConstraints];
     
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                          action:@selector(screenTap:)];
-    [self.view addGestureRecognizer:tap];
+    self.baseTap = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                           action:@selector(screenTap:)];
+    [self.view addGestureRecognizer:self.baseTap];
     
     [self configBasicBtns];
 }
@@ -145,8 +145,8 @@
 //        [backBtn addTarget:self action:@selector(gobackBtnAction) forControlEvents:UIControlEventTouchUpInside];
 //        [_barView addSubview:backBtn];
         
-        UITapGestureRecognizer *tapBar = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
-        [_barView addGestureRecognizer:tapBar];
+//        UITapGestureRecognizer *tapBar = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
+//        [_barView addGestureRecognizer:tapBar];
         
         //[_barView addSubview:self.timeLabel];
         [_barView addSubview:self.titleLabel];
@@ -162,8 +162,8 @@
         _bottomView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"dataconf_navbg"]];
         _bottomView.translatesAutoresizingMaskIntoConstraints = NO;
 
-        UITapGestureRecognizer *tapBar = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
-        [_bottomView addGestureRecognizer:tapBar];
+//        UITapGestureRecognizer *tapBar = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
+//        [_bottomView addGestureRecognizer:tapBar];
         
         [self.view addSubview:_bottomView];
     }

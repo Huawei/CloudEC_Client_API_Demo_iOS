@@ -25,6 +25,8 @@
 #import "ChatMsg.h"
 #import "ConfBaseInfo.h"
 #import "CommonUtils.h"
+#import <CloudLinkMeetingScreenShare/ScreenShareManager.h>
+#define CG2TCPoint(point) { .x = (int)point.x, .y = (int)point.y }
 
 //数据共享线程
 dispatch_queue_t espace_dataconf_datashare_queue = 0;
@@ -44,11 +46,22 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 @property (nonatomic, assign) BOOL isStartScreenSharing;
 @property (nonatomic, assign) int currentDataShareTypeId;
+@property (nonatomic, assign) BOOL isJoinDataConfSuccess; // 是否加入数据会议
+@property (nonatomic, strong) ScreenShareManager *screenShareManager;
+@property (nonatomic, assign) TSDK_UINT32 mWidthPixels;
+@property (nonatomic, assign) TSDK_UINT32 mHeightPixels;
+@property (nonatomic, assign) TSDK_UINT32 mScreenShareType; // 屏幕共享类型
+@property (nonatomic, assign) BOOL mIsStartScreenShareDelayed;
 //@property (nonatomic, assign) BOOL
 
 @end
 
 @implementation ConferenceService
+{
+    //屏幕共享 远端ppi
+    CGFloat _remotePpiX;
+    CGFloat _remotePpiY;
+}
 
 //creat getter and setter method of delegate
 @synthesize delegate;
@@ -73,7 +86,11 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 @synthesize lastConfSharedData;
 
+@synthesize isBeginAnnotation;
 
+@synthesize imageScale;
+
+@synthesize mIsScreenSharing;
 
 /**
  *This method is used to get sip account from call service
@@ -125,9 +142,145 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         self.isVideoConfInvited = NO;
         self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
         _isStartScreenSharing = NO;
+        self.isJoinDataConfSuccess = NO;
         _currentDataShareTypeId = -1;
+        self.isBeginAnnotation = NO;
+        self.imageScale = 1.0;
+        self.mIsScreenSharing = NO;
+        
+        [self initScreenShareManager];
     }
     return self;
+}
+
+- (void)initScreenShareManager {
+    DDLogInfo(@"enter initScreenShareManager ");
+    NSString *appGroup = @"group.eSpaceMclientV2";
+    self.screenShareManager = [[ScreenShareManager alloc]initWithAppGroupIdentifier:appGroup];
+    [self.screenShareManager listenForMessageWithIdentifier:@"screenshare" listener:^(id messageObject) {
+        
+        NSDictionary *dir = [messageObject valueForKey:@"screendata"];
+        [self processImage:dir];
+    }];
+    
+    [self.screenShareManager listenForMessageWithIdentifier:@"screenShareStateChange" listener:^(id messageObject) {
+        long state = [[messageObject valueForKey:@"state"] longValue];
+        if (state == 1) {
+            if (self.isJoinDataConfSuccess) {
+                self.mIsScreenSharing = YES;
+                [self startDataConfAsPre];
+                [self startDataShare];
+                
+            } else {
+                NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"the meeting is unavailable", nil)}];
+                [self.screenShareManager passMessageObject:@{@"result" : error} identifier:@"StopBroadcast"];
+            }
+            
+        } else if (state == 0) {
+            [self confStopReplayKitBroadcast];
+        
+        }
+    }];
+}
+
+- (void)confStopReplayKitBroadcast
+{
+    
+    if (self.mIsScreenSharing) {
+        TSDK_RESULT result = tsdk_app_share_stop(_confHandle);
+    }
+    
+    [self confStopReplay];
+}
+
+- (void)confStopReplay
+{
+    NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"stop_screen_share", nil)}];
+    [self.screenShareManager passMessageObject:@{@"result" : error} identifier:@"StopBroadcast"];
+    
+    _mWidthPixels = 0;
+    _mHeightPixels = 0;
+    self.mIsScreenSharing = NO;
+    _mIsStartScreenShareDelayed = NO;
+}
+
+- (BOOL)inviteDataShareWithNumber:(NSString *)number
+{
+    TSDK_RESULT result = tsdk_app_share_set_owner(_confHandle, (TSDK_CHAR*)[number UTF8String], TSDK_E_CONF_AS_ACTION_ADD);
+    
+    return result;
+}
+
+- (BOOL)cancelDataShareWithNumber:(NSString *)number
+{
+    TSDK_RESULT result = tsdk_app_share_set_owner(_confHandle, (TSDK_CHAR*)[number UTF8String], TSDK_E_CONF_AS_ACTION_DELETE);
+    
+    return result;
+}
+
+
+- (void)startDataShare
+{
+    TSDK_RESULT result = tsdk_app_share_start(_confHandle, TSDK_E_CONF_APP_SHARE_DESKTOP);
+}
+
+- (void) startDataConfAsPre {
+    DDLogInfo(@"enter startDataConfAsPre _mIsScreenSharing: %d _mWidthPixels: %d _mHeightPixels: %d " , self.mIsScreenSharing, self.mWidthPixels , self.mHeightPixels);
+    self.mIsStartScreenShareDelayed = NO;
+    if (self.mWidthPixels == 0 || self.mHeightPixels == 0) {
+        self.mIsStartScreenShareDelayed = YES;
+        return;
+    }
+    TSDK_S_CONF_AS_VIRTUAL_VIEW_INFO virtual_view_info;
+    memset(&virtual_view_info, 0, sizeof(TSDK_S_CONF_AS_VIRTUAL_VIEW_INFO));
+    virtual_view_info.width = _mWidthPixels;
+    virtual_view_info.height = _mHeightPixels;
+    virtual_view_info.bit_count = 32;
+    
+    tsdk_app_share_set_virtual_view_info(_confHandle, &virtual_view_info);
+    
+}
+
+-(void)processImage:(NSDictionary *)dictionary {
+    unsigned int width = [[dictionary objectForKey:@"width"] unsignedIntValue];
+    unsigned int height = [[dictionary objectForKey:@"height"] unsignedIntValue];
+    long orientation = [[dictionary objectForKey:@"orientation"] longValue];
+    if (!self.mIsScreenSharing) {
+        if (orientation == UIImageOrientationLeft
+            || orientation == UIImageOrientationRight
+            || orientation == UIImageOrientationLeftMirrored
+            || orientation == UIImageOrientationRightMirrored) {
+            self.mWidthPixels = height;
+            self.mHeightPixels = width;
+        } else {
+            self.mWidthPixels = width;
+            self.mHeightPixels = height;
+        }
+        if (self.mIsStartScreenShareDelayed) {
+            [self startDataConfAsPre];
+        }
+        return;
+    }
+    
+    unsigned int yPitch = [[dictionary objectForKey:@"yPitch"] unsignedIntValue];
+    unsigned int cbCrPitch = [[dictionary objectForKey:@"yPitch"] unsignedIntValue];
+    NSData *yData = [dictionary objectForKey:@"yData"];
+    NSData *uvData = [dictionary objectForKey:@"uvData"];
+    uint8_t *yBuffer = (unsigned char *)[yData bytes];
+    uint8_t *cbCrBuffer = (unsigned char *)[uvData bytes];
+    
+    TSDK_S_CONF_AS_VIEW_DATA_INFO asViewUpdataData;
+    memset(&asViewUpdataData, 0, sizeof(TSDK_S_CONF_AS_VIEW_DATA_INFO));
+    asViewUpdataData.y_data = yBuffer;
+    asViewUpdataData.cb_cr_data = cbCrBuffer;
+    asViewUpdataData.y_data_size = yPitch;
+    asViewUpdataData.cb_cr_data_size = cbCrPitch;
+    asViewUpdataData.width = width;
+    asViewUpdataData.height = height;
+    asViewUpdataData.orientation = (TSDK_E_IMAGE_ORIENTATION)orientation;
+    
+    
+    tsdk_app_share_update_view_data(_confHandle, &asViewUpdataData);
 }
 
 #pragma mark - EC 6.0
@@ -337,7 +490,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
             });
 //            [self respondsECConferenceDelegateWithType:CONF_E_END_RESULT result:nil];
-            [self confCtrlLeaveConference];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self confCtrlLeaveConference];
+            });
             [self restoreConfParamsInitialValue];
             
         }
@@ -348,6 +503,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             DDLogInfo(@"TSDK_E_CONF_EVT_JOIN_DATA_CONF_RESULT");
             NSDictionary *resultInfo = nil;
             BOOL isSuccess = notify.param2 == TSDK_SUCCESS;
+            self.isJoinDataConfSuccess = isSuccess;
             resultInfo = @{
                            UCCONF_RESULT_KEY :[NSNumber numberWithBool:isSuccess]
                            };
@@ -362,35 +518,33 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             
             BOOL isStopSharing = NO;
             
-//            //收到开始程序共享的通知，结束之前的共享
-//            if (1 == notify.param2) {
-//                isStopSharing = YES;
-//            }
             
             TSDK_E_CONF_SHARE_STATE state =  shareState->state;
             
             switch (state) {
                 case TSDK_E_CONF_AS_STATE_NULL:
                 {
-//                    if (0 == notify.param2) {
-                        _isStartScreenSharing = NO;
-                        isStopSharing = YES;
-//                    }
+                    _isStartScreenSharing = NO;
+                    isStopSharing = YES;
                 }
                     break;
                 case TSDK_E_CONF_AS_STATE_START:
                 case TSDK_E_CONF_AS_STATE_VIEW:
                 {
-//                    if (0 == notify.param2) {
-                        _isStartScreenSharing = YES;
-//                    }
+                    TSDK_S_CONF_AS_STATE_INFO *as_state_info = (TSDK_S_CONF_AS_STATE_INFO *)notify.data;
+                    TSDK_UINT32 Annotation = as_state_info->sub_state;
+                    
+                    [self beginAnnotation:(Annotation == 512)];
+                    
+                    _isStartScreenSharing = YES;
+                    _currentDataShareTypeId = TSDK_E_COMPONENT_AS;
                     [self handleScreenShareDataConfhandle:notify.param1];
                 }
                     break;
                 default:
                     break;
             }
-
+            
             if (isStopSharing) {
                 __weak typeof(self) weakSelf = self;
                 dispatch_async(espace_dataconf_datashare_queue, ^{
@@ -534,6 +688,34 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             [self onShareStatusUpateInd:statusInfo];
         }
             break;
+            
+        case TSDK_E_CONF_EVT_AS_OWNER_CHANGE:
+        {
+            TSDK_E_CONF_AS_ACTION_TYPE actionType = (TSDK_E_CONF_AS_ACTION_TYPE)notify.param2;
+            TSDK_S_ATTENDEE *owner =  (TSDK_S_ATTENDEE *)notify.data;
+            TSDK_BOOL isSelf = owner->status_info.is_self;
+            if (@available(iOS 12, *)) {
+                if (isSelf) {
+                    if (actionType == TSDK_E_CONF_AS_ACTION_ADD) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [[NSNotificationCenter defaultCenter] postNotificationName:APP_START_SYSTEM_SHARE_VIEW object:nil];
+                        });
+                    }else if (actionType == TSDK_E_CONF_AS_ACTION_DELETE){
+                        self.mIsScreenSharing = NO;
+                        [self confStopReplay];
+                    }else if (actionType == TSDK_E_CONF_AS_ACTION_REQUEST){
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [[NSNotificationCenter defaultCenter] postNotificationName:CONF_SHARE_REQUEST_ACTION
+                                                                                object:nil];
+                            
+                        });
+                    }
+                }
+            }
+            
+        }
+            break;
+        
         default:
             break;
     }
@@ -569,35 +751,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     }
 }
 
-bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const char *pEndNode, unsigned int &value) {
-    char tempValue[32];
-    memset_s(tempValue, 32, 0, 32);
-    
-    size_t  iKeyLength = strlen(pBeginNode);
-    const char *pBegin = strstr(xml, pBeginNode);
-    
-    if (NULL == pBegin) {
-        return false;
-    }
-    
-    const char *pEnd = strstr(xml, pEndNode);
-    if (NULL == pEnd) {
-        return false;
-    }
-    
-    memcpy(tempValue, pBegin+iKeyLength,  pEnd-pBegin-iKeyLength);
-    
-    NSString *tempValueString = [NSString stringWithFormat:@"%s",tempValue];
-    NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
-    [f setNumberStyle:NSNumberFormatterDecimalStyle];
-    //value = atoi(tempValue);
-    NSNumber *tempValueNumber = [f numberFromString:tempValueString];
-    value = [tempValueNumber unsignedIntValue];
-    //value = strtoul(tempValue, NULL, 10);
-    
-    return true;
-}
-
 -(void)handleScreenShareDataConfhandle:(TSDK_UINT32 )confHandle
 {
     if (!_isStartScreenSharing) {
@@ -621,14 +774,16 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
     }
     DDLogInfo(@"tsdk_app_share_get_screen_data :%d",dataRet);
     char *data = (char *)screenData.data;
-    if (data == NULL)
-    {
-        DDLogInfo(@"share imageData from data fail!");
+    if (data == NULL) {
         return;
     }
     TSDK_UINT32 ssize = *((TSDK_UINT32 *)((char *)data + sizeof(TSDK_UINT16)));
     NSData *imageData = [NSData dataWithBytes:data length:ssize];
-    
+    if (imageData == nil)
+    {
+        DDLogInfo(@"share imageData from data fail!");
+        return;
+    }
 //    NSDictionary *shareDataInfo = @{
 //                                    DATACONF_SHARE_DATA_KEY:imageData
 //                                    };
@@ -862,6 +1017,7 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
                                          ECCONF_RESULT_KEY : [NSNumber numberWithInt:result]
                                          };
             [self respondsECConferenceDelegateWithType:CONF_E_HANGUP_ATTENDEE_RESULT result:resultInfo];
+            
         }
             break;
         case TSDK_E_CONF_MUTE_ATTENDEE:
@@ -1005,6 +1161,7 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
         addAttendee.isPresent = participant.status_info.is_present;
         addAttendee.isSelf = participant.status_info.is_self;
         addAttendee.isBroadcast = participant.status_info.is_broadcast;
+        addAttendee.isShareOwner = participant.status_info.is_share_owner;
         
         [self.haveJoinAttendeeArray addObject:addAttendee];
         if (!self.selfJoinNumber) {
@@ -1693,11 +1850,6 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
 }
 
 
-
-
-
-
-
 /**
  * This method is used to dealloc conference params
  * 销毁会议参数信息
@@ -1717,6 +1869,11 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
     self.isVideoConfInvited = NO;
     self.currentConfBaseInfo = nil;
     self.lastConfSharedData = nil;
+    self.isJoinDataConfSuccess = NO;
+    self.isBeginAnnotation = NO;
+    self.imageScale = 1.0;
+    
+    [self confStopReplay];
 }
 
 /**
@@ -1773,6 +1930,248 @@ bool getIntValueFromXmlByNodeName(const char* xml, const char *pBeginNode, const
     TSDK_RESULT joinConfResult = tsdk_join_conference_by_anonymous(&anonymousParam);
     
     return joinConfResult == TSDK_SUCCESS;
+}
+
+/**
+ 开始标注
+ */
+- (void)beginAnnotation:(BOOL)shouldBegin {
+    if (shouldBegin) {
+        self.isBeginAnnotation = YES;
+    }else{
+        self.isBeginAnnotation = NO;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        DDLogInfo(@"Annotation beginAnnotation :%@", @(shouldBegin));
+        [[NSNotificationCenter defaultCenter] postNotificationName:NTF_MULTI_MEDIA_CONF_SHOULD_HAS_ANNO
+                                                            object:nil
+                                                          userInfo:@{ @"annotationMode" : @(shouldBegin)}];
+    });
+}
+
+- (void)annotationSetPenAndAnnotationColor:(unsigned int)color lineWidth:(int)lineWidth {
+    
+    TSDK_S_ANNOTATION_PEN_INFO newPenInfo;
+    memset(&newPenInfo, 0, sizeof(TSDK_S_ANNOTATION_PEN_INFO));
+    newPenInfo.style = TSDK_E_ANNOTATION_PEN_STYLE_SOLID;
+    newPenInfo.color = color;
+    newPenInfo.width = lineWidth;
+    
+    TSDK_S_ANNOTATION_PEN_INFO oldPenInfo;
+    memset(&oldPenInfo, 0, sizeof(TSDK_S_ANNOTATION_PEN_INFO));
+    
+    
+    TSDK_RESULT result = tsdk_annotation_set_pen(_confHandle, (TSDK_E_COMPONENT_ID)_currentDataShareTypeId, TSDK_E_ANNOTATION_PEN_NORMAL, &newPenInfo, &oldPenInfo);
+    DDLogInfo(@"Annotation tsdk_annotation_set_pen: %d", result);
+    
+    
+    TSDK_S_ANNOTATION_BRUSH_INFO newBrushInfo;
+    memset(&newBrushInfo, 0, sizeof(TSDK_S_ANNOTATION_BRUSH_INFO));
+    newBrushInfo.style = TSDK_E_ANNOTATION_BRUSH_SOLID;
+    newBrushInfo.color = color;
+    
+    TSDK_S_ANNOTATION_BRUSH_INFO oldBrushInfo;
+    memset(&oldBrushInfo, 0, sizeof(TSDK_S_ANNOTATION_BRUSH_INFO));
+    
+    TSDK_RESULT brushResult = tsdk_annotation_set_brush(_confHandle, (TSDK_E_COMPONENT_ID)_currentDataShareTypeId, &newBrushInfo, &oldBrushInfo);
+    DDLogInfo(@"Annotation tsdk_annotation_set_brush: %d", brushResult);
+    
+}
+
+-(void)conferenceCreateAnnotationWithStartPointx:(long)pointx Pointy:(long)pointy {
+//    TSDK_S_DOC_PAGE_BASE_INFO page_info;
+//    memset(&page_info, 0, sizeof(TSDK_S_DOC_PAGE_BASE_INFO));
+//    page_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+//    if (_currentDataShareTypeId == TSDK_E_COMPONENT_AS) {
+//        page_info.document_id = 0;
+//        page_info.page_count = 0;
+//        page_info.page_index = 0;
+//    } else if (_currentDataShareTypeId == TSDK_E_COMPONENT_DS) {
+//        // TODO 白板标注时需要设置docid 和 pageid
+//    }
+    
+    CGFloat hScale = [self heightScale];
+    CGFloat wScale = [self widthScale];
+    
+    TSDK_S_POINT tsdkPoint;
+    memset(&tsdkPoint, 0, sizeof(TSDK_S_POINT));
+    tsdkPoint.x = (TSDK_INT32)pointx * wScale;
+    tsdkPoint.y = (TSDK_INT32)pointy * hScale;
+    
+    tsdk_annotation_create_start(_confHandle, (TSDK_E_COMPONENT_ID)_currentDataShareTypeId, TSDK_NULL_PTR, TSDK_E_ANNOTATION_DRAWING, 1, &tsdkPoint);
+}
+
+- (void)conferenceUpdateAnnotationWithPointx:(long)pointx Pointy:(long)pointy {
+    CGFloat hScale = [self heightScale];
+    CGFloat wScale = [self widthScale];
+    
+    TSDK_S_ANNOTATION_DRAWING_DATA data;
+    memset(&data, 0, sizeof(TSDK_S_ANNOTATION_DRAWING_DATA));
+    data.point.x = (TSDK_INT32)pointx * wScale;
+    data.point.y = (TSDK_INT32)pointy * hScale;
+    
+    tsdk_annotation_create_update(_confHandle, (TSDK_E_COMPONENT_ID)_currentDataShareTypeId, TSDK_E_ANNOTATION_DRAWING, &data);
+}
+
+- (void)conferenceFinishAnnotation {
+    TSDK_UINT32 annotation_id = 0;
+    tsdk_annotation_create_done(_confHandle, (TSDK_E_COMPONENT_ID)_currentDataShareTypeId, 0, &annotation_id);
+}
+
+- (void)conferenceCancelAnnotation {
+    TSDK_UINT32 annotation_id = 0;
+    tsdk_annotation_create_done(_confHandle, (TSDK_E_COMPONENT_ID)_currentDataShareTypeId, 1, &annotation_id);
+}
+
+- (CGFloat)widthScale {
+    if (_currentDataShareTypeId == TSDK_E_COMPONENT_AS) {
+        //若为屏幕共享，则cgpoint转化为twips 需要 scale 为 1440 / 对端ppi * 像素
+        return _remotePpiX * self.imageScale * [UIScreen mainScreen].scale;
+    } else if (_currentDataShareTypeId == TSDK_E_COMPONENT_WB) {
+        // TODO 白板标注时需要另外计算
+        //return _dsDageinfo.width / self.wbImageViewSize.width;
+        return 1.0;
+    } else {
+        return 1.0;
+    }
+}
+
+
+- (CGFloat)heightScale {
+    if (_currentDataShareTypeId == TSDK_E_COMPONENT_AS) {
+        return _remotePpiY * self.imageScale * [UIScreen mainScreen].scale;
+    } else if (_currentDataShareTypeId == TSDK_E_COMPONENT_WB) {
+        // TODO 白板标注时需要另外计算
+        //return _dsDageinfo.height / self.wbImageViewSize.height;
+        return 1.0;
+    } else {
+        return 1.0;
+    }
+}
+- (void)conferenceShareGetParam {
+    
+    TSDK_S_SIZE sizeParam;
+    memset(&sizeParam, 0, sizeof(TSDK_S_SIZE));
+    
+    TSDK_RESULT result = tsdk_get_remote_view_ppi_info(_confHandle, &sizeParam);
+    if (TSDK_SUCCESS == result) {
+        _remotePpiY = sizeParam.high;
+        _remotePpiX = sizeParam.width;
+    }
+}
+
+/**
+ 擦除线
+ 先通过线选选中需要删除的线，再调用删除接口进行删除
+ 
+ @param startPoint 起始点
+ @param endPoint 终止点
+ */
+- (void)conferenceEraseAnnotationsIntersectedBySegmentWithStartPoint:(CGPoint)startPoint endPoint:(CGPoint)endPoint {
+    
+    TSDK_S_ANNOTATION_HIT_TEST_LINE_INFO hit_test_line_info;
+    memset(&hit_test_line_info, 0, sizeof(TSDK_S_ANNOTATION_HIT_TEST_LINE_INFO));
+    hit_test_line_info.doc_page_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+    hit_test_line_info.doc_page_info.document_id = 0;
+    hit_test_line_info.doc_page_info.page_count = 0;
+    hit_test_line_info.doc_page_info.page_index = 0;
+    
+    hit_test_line_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+    
+    CGFloat hScale = [self heightScale];
+    CGFloat wScale = [self widthScale];
+    hit_test_line_info.start_point.x = (TSDK_INT32)startPoint.x * wScale;
+    hit_test_line_info.start_point.y = (TSDK_INT32)startPoint.y * hScale;
+    
+    hit_test_line_info.end_point.x = (TSDK_INT32)endPoint.x * wScale;
+    hit_test_line_info.end_point.y = (TSDK_INT32)endPoint.y * hScale;
+    
+    hit_test_line_info.hit_test_mode = TSDK_E_ANNOTATION_HIT_TEST_SOMEONE;
+    
+    strcpy(hit_test_line_info.user_number, [self.selfJoinNumber UTF8String]);
+    
+    TSDK_UINT32 *selectedIds = NULL;
+    
+    TSDK_UINT32 idsCount = 0;
+    
+    TSDK_RESULT result = tsdk_annotation_hit_test_line(_confHandle, &hit_test_line_info, &selectedIds, &idsCount);
+    DDLogInfo(@"tsdk_annotation_hit_test_line: %d", result);
+    
+    if (selectedIds && idsCount > 0) {
+        TSDK_S_ANNOTATION_DELETE_INFO delete_info;
+        delete_info.annotation_id_list = selectedIds;
+        delete_info.count = idsCount;
+        delete_info.doc_page_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+        delete_info.doc_page_info.document_id = 0;
+        delete_info.doc_page_info.page_count = 0;
+        delete_info.doc_page_info.page_index = 0;
+        
+        delete_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+        
+        result = tsdk_annotation_delete_annotation(_confHandle, &delete_info);
+        DDLogInfo(@"Annotation tsdk_annotation_delete_annotation: %d", result);
+    }
+}
+
+- (void)conferenceEraseAnnotationAtLocation:(CGPoint)location {
+    
+    CGFloat scale = [self widthScale];
+    CGPoint scaledLocation = CGPointMake(location.x * scale, location.y * scale);
+    
+    const CGFloat cgRectSideHalf = 5; //5 points in CG coordinate space as a half of the rectangle's side
+    TSDK_INT32 tupRectSideHalf = (TSDK_INT32)(cgRectSideHalf * [self widthScale]); //same in TUP's coordinate space
+    TSDK_S_POINT rectCenter = CG2TCPoint(scaledLocation);
+    TSDK_INT32 minX = rectCenter.x - tupRectSideHalf;
+    TSDK_INT32 minY = rectCenter.y - tupRectSideHalf;
+    TSDK_INT32 maxX = rectCenter.x + tupRectSideHalf;
+    TSDK_INT32 maxY = rectCenter.y + tupRectSideHalf;
+    TSDK_S_RECTANGULAR rect = { .left = minX, .top = minY, .right = maxX, .bottom = maxY };
+    [self conferenceEraseAnnotationsInRect:rect];
+}
+
+
+- (void)conferenceEraseAllAnnotations {
+    TSDK_S_RECTANGULAR rect = { .left = 0, .top = 0, .right = (TSDK_INT32)INT_MAX, .bottom = (TSDK_INT32)INT_MAX };
+    [self conferenceEraseAnnotationsInRect:rect];
+}
+
+- (void)conferenceEraseAnnotationsInRect:(TSDK_S_RECTANGULAR)rect {
+    TSDK_UINT32 *selectedIds = NULL;
+    TSDK_UINT32 idsCount = 0;
+    TSDK_S_ANNOTATION_HIT_TEST_RECT_INFO hit_test_rect_info;
+    hit_test_rect_info.doc_page_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+    if (_currentDataShareTypeId == TSDK_E_COMPONENT_AS) {
+        hit_test_rect_info.doc_page_info.document_id = 0;
+        hit_test_rect_info.doc_page_info.page_count = 0;
+        hit_test_rect_info.doc_page_info.page_index = 0;
+    }
+    hit_test_rect_info.hit_test_mode = TSDK_E_ANNOTATION_HIT_TEST_SOMEONE;
+    hit_test_rect_info.rectangle_area.bottom = rect.bottom;
+    hit_test_rect_info.rectangle_area.left = rect.left;
+    hit_test_rect_info.rectangle_area.right = rect.right;
+    hit_test_rect_info.rectangle_area.top = rect.top;
+    strcpy(hit_test_rect_info.user_number, [self.selfJoinNumber UTF8String]);
+    
+    hit_test_rect_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+    
+    TSDK_RESULT result = tsdk_annotation_hit_test_rect(_confHandle, &hit_test_rect_info, &selectedIds, &idsCount);
+    
+    DDLogInfo(@"Annotation eraseAnnotationsInRect: tsdk_annotation_hit_test_rect returns: %d", result);
+    
+    if (selectedIds && idsCount > 0) {
+        TSDK_S_ANNOTATION_DELETE_INFO delete_info;
+        delete_info.annotation_id_list = selectedIds;
+        delete_info.count = idsCount;
+        delete_info.doc_page_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+        delete_info.doc_page_info.document_id = 0;
+        delete_info.doc_page_info.page_count = 0;
+        delete_info.doc_page_info.page_index = 0;
+        
+        delete_info.component_id = (TSDK_E_COMPONENT_ID)_currentDataShareTypeId;
+        
+        result = tsdk_annotation_delete_annotation(_confHandle, &delete_info);
+        DDLogInfo(@"Annotation eraseAnnotationsInRect: tsdk_annotation_delete_annotation returns: %d", result);
+    }
 }
 
 @end

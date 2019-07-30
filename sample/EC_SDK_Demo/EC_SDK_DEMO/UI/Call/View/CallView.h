@@ -24,6 +24,7 @@
 @property (nonatomic,assign)BOOL isCameraClose;
 @property (nonatomic,assign)BOOL isMuteMic;
 @property (nonatomic,assign)BOOL isHold;
+@property (nonatomic,assign)BOOL isloudSpeak;
 @property (nonatomic,assign)BOOL isLeaveConference;
 @property (nonatomic,strong)CallInfo *currentTupCallInfo;
 @property (nonatomic,assign)UIInterfaceOrientation showOrient;

@@ -20,6 +20,7 @@
 
 @property (nonatomic, strong)ConfAttendeeInConf *selfConfInfo;
 
+@property (nonatomic, strong)UITapGestureRecognizer *baseTap;
 
 - (CGFloat)selfViewWidth;
 - (CGFloat)selfViewHeight;

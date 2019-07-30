@@ -87,7 +87,7 @@
 //            });
             
         }
-        
+            break;
         default:
             break;
     }
@@ -245,6 +245,11 @@
     [backBtn addTarget:self action:@selector(gobackBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self.barView addSubview:backBtn];
     
+    BOOL isSuccess = [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:[ManagerService confService].currentConfBaseInfo.call_id];
+    if (isSuccess) {
+        [self deviceMotionOrientationChanged];
+    }
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -363,6 +368,17 @@
     }else{
         [self.confCtrlArray addObject:@"Request Chair"];
     }
+    
+    if (@available(iOS 12, *)) {
+        EC_CONF_MEDIATYPE mediaType = [ManagerService confService].currentConfBaseInfo.media_type;
+        if (mediaType == CONF_MEDIATYPE_VIDEO_DATA || mediaType == CONF_MEDIATYPE_DATA) {
+            NSString *shareString = @"Screen Share";
+            if ([ManagerService confService].mIsScreenSharing) {
+                shareString = @"Stop Share";
+            }
+            [self.confCtrlArray addObject:shareString];
+        }
+    }
 
 }
 
@@ -463,7 +479,7 @@
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
             if (nil != _localViewShower) {
-                _localViewShower.frame = CGRectMake(5, 64 + 5, 95, 126);
+                _localViewShower.frame = CGRectMake(5, 64 + 5, 126, 95);
                 _localView.frame = CGRectMake(0, 0, 95, 126);
             }
             
@@ -1032,6 +1048,13 @@
             [self setConfModeBtnClicked:nil];
         }
         
+        if ([confCtrlAction isEqualToString:@"Screen Share"]) {
+            [self startSharingScreen];
+        }
+        
+        if ([confCtrlAction isEqualToString:@"Stop Share"]) {
+            [self stopSharingScreen];
+        }
     }
 }
 
@@ -1170,8 +1193,6 @@
     
 }
 
-
-
 - (void)gobackBtnAction
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1226,6 +1247,51 @@
         [self.navigationController popViewControllerAnimated:YES];
     }
 }
+
+
+- (void)startSharingScreen {
+    DDLogInfo(@"MainViewController startSharingScreen ");
+    // 开始replaykit
+    
+    [[ManagerService confService]inviteDataShareWithNumber:[ManagerService confService].selfJoinNumber];
+}
+
+- (void)stopSharingScreen {
+    DDLogInfo(@"MainViewController stopSharingScreen ");
+    
+    [[ManagerService confService] confStopReplayKitBroadcast];
+    
+    
+//    // 停止replaykit
+//        [self stopReplayKitBroadcast];
+    
+//        // 调用会议组件接口停止屏幕共享
+//        [[WLVideoCallService shareInstance] releaseDataConfAsShare];
+//        [self.OCJSBridge screenSharingIsLive:NO];
+}
+
+
+
+//- (void)startReplayKitBroadcast {
+//    DDLogInfo(@"enter startReplayKitBroadcast ");
+//    if (@available(iOS 12, *)) {
+//        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+//        BOOL isNeedSetpreferredExtension = [userDefaults boolForKey:@"ScreenShareFlag"];
+//        NSString *mainBundleId = [[NSBundle mainBundle]bundleIdentifier];
+//        NSString *extensionId = [mainBundleId stringByAppendingString:@".ScreenShareExtension"];
+//        if (isNeedSetpreferredExtension) {
+//            self.broadcastPickerView.preferredExtension = extensionId;
+//        }
+//        self.broadcastPickerView.showsMicrophoneButton = NO;
+//
+//        for (UIView *view in self.broadcastPickerView.subviews) {
+//            if ([view isKindOfClass:[UIButton class]]) {
+//                [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchDown];
+//            }
+//        }
+//    }
+//}
+
 
 
 /*

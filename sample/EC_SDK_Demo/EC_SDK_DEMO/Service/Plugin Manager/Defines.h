@@ -74,6 +74,13 @@ extern NSString* const TUP_RECEIVE_GROUP_MESSAGE_NOTIFY;
 
 extern NSString *const NTF_AUDIOROUTE_CHANGED; // audio route changed notification
 
+extern NSString *const NTF_MULTI_MEDIA_CONF_SHOULD_HAS_ANNO;
+
+extern NSString *const APP_START_SYSTEM_SHARE_VIEW;
+
+extern NSString *const CONF_SHARE_REQUEST_ACTION;
+
+
 /**
  * [en]This enumeration is used to describe the call type.
  * [cn]∫ÙΩ–¿‡–Õ
@@ -586,7 +593,7 @@ typedef enum
     CONF_E_UPGRADE_RESULT,
     DATA_CONF_JOIN_RESOULT,
     DATA_CONF_AS_ON_SCREEN_DATA,
-    DATACONF_SHARE_SCREEN_DATA_STOP
+    DATACONF_SHARE_SCREEN_DATA_STOP,
 }EC_CONF_E_TYPE;
 
 /**
@@ -854,6 +861,14 @@ typedef NS_ENUM(NSUInteger, ECSLoginServiceStatus) {
 typedef NS_ENUM(NSInteger, ECSGroupType) {
     ECSFixGroup = 0,
     ECSChatGroup = 1
+};
+
+typedef NS_ENUM(NSInteger, VideoZoomingViewMarkupColor) {
+    VideoZoomingViewMarkupColorBlack,
+    VideoZoomingViewMarkupColorRed,
+    VideoZoomingViewMarkupColorGreen,
+    VideoZoomingViewMarkupColorBlue,
+    VideoZoomingViewMarkupColorNotSelected
 };
 
 @interface Defines : NSObject

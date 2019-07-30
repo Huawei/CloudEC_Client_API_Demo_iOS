@@ -87,7 +87,6 @@
 		12C23FBB1F31C06D00C21D91 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 12C23FBA1F31C06D00C21D91 /* main.m */; };
 		12C23FBE1F31C06D00C21D91 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 12C23FBD1F31C06D00C21D91 /* AppDelegate.m */; };
 		12C23FC41F31C06D00C21D91 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12C23FC21F31C06D00C21D91 /* Main.storyboard */; };
-		12C23FC61F31C06D00C21D91 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 12C23FC51F31C06D00C21D91 /* Assets.xcassets */; };
 		12C23FC91F31C06D00C21D91 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 12C23FC71F31C06D00C21D91 /* LaunchScreen.storyboard */; };
 		12C242091F31CEB600C21D91 /* NetworkUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 12C242061F31CEB600C21D91 /* NetworkUtils.mm */; };
 		12C2420A1F31CEB600C21D91 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 12C242081F31CEB600C21D91 /* Reachability.m */; };
@@ -120,7 +119,14 @@
 		8DF8381C1F43EA86009BA0C1 /* NSString+SizeWithFont.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF838111F43EA86009BA0C1 /* NSString+SizeWithFont.m */; };
 		8DF8381D1F43EA86009BA0C1 /* UIImage+Stretchable.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF838131F43EA86009BA0C1 /* UIImage+Stretchable.m */; };
 		8DF838461F44019A009BA0C1 /* ConfDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8DF838441F44019A009BA0C1 /* ConfDetailViewController.m */; };
-		DE12B47222C208940021AAF9 /* libtup_conf_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE12B47122C208940021AAF9 /* libtup_conf_agent.a */; };
+		D0C5767322A51C2900C6559A /* ScreenShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5767122A51C2800C6559A /* ScreenShareView.m */; };
+		D0C5767922A51E0600C6559A /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5767822A51E0600C6559A /* Utils.m */; };
+		D0C5767B22A5209100C6559A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0C5767A22A5209000C6559A /* Assets.xcassets */; };
+		D0C5768322A553CC00C6559A /* ECMarkupView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5767D22A553CB00C6559A /* ECMarkupView.m */; };
+		D0C5768422A553CC00C6559A /* ECMarkupToolboxPopoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5767E22A553CB00C6559A /* ECMarkupToolboxPopoverView.m */; };
+		D0C5768522A553CC00C6559A /* ECMarkupToolboxView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5767F22A553CC00C6559A /* ECMarkupToolboxView.m */; };
+		D0C5768822A556C500C6559A /* UIButton+VerticalLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5768722A556C500C6559A /* UIButton+VerticalLayout.m */; };
+		DE0D84C822CB3F0900FFB281 /* libtup_conf_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */; };
 		DE59FD62215DD0C700724BC1 /* libtup_cwmp_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */; };
 		DE7410EF2119731F00FC9EBC /* JoinConfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */; };
 		DE87F1C3214A89B3006D50DC /* BaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C2214A89B3006D50DC /* BaseNavigationController.m */; };
@@ -163,17 +169,13 @@
 		DEAB8FF4212E9824005BC744 /* libtup_call_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F54212E9823005BC744 /* libtup_call_service.a */; };
 		DEAB8FF5212E9824005BC744 /* libtup_call_sip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F55212E9823005BC744 /* libtup_call_sip.a */; };
 		DEAB8FF6212E9824005BC744 /* libtup_call_video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F56212E9823005BC744 /* libtup_call_video.a */; };
-		DEAB8FF7212E9824005BC744 /* libtup_cloudrecord.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F57212E9823005BC744 /* libtup_cloudrecord.a */; };
 		DEAB8FF8212E9824005BC744 /* libtup_cmpt_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F58212E9823005BC744 /* libtup_cmpt_service.a */; };
 		DEAB8FF9212E9824005BC744 /* libtup_commonlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F59212E9823005BC744 /* libtup_commonlib.a */; };
 		DEAB8FFA212E9824005BC744 /* libtup_confctrl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F5A212E9823005BC744 /* libtup_confctrl.a */; };
-		DEAB8FFB212E9824005BC744 /* libtup_confmng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F5B212E9823005BC744 /* libtup_confmng.a */; };
-		DEAB8FFC212E9824005BC744 /* libtup_corpdirectory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F5C212E9823005BC744 /* libtup_corpdirectory.a */; };
 		DEAB8FFD212E9824005BC744 /* libtup_ctd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F5D212E9823005BC744 /* libtup_ctd.a */; };
 		DEAB8FFF212E9824005BC744 /* libtup_dns.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F5F212E9823005BC744 /* libtup_dns.a */; };
 		DEAB9000212E9824005BC744 /* libtup_eaddr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F60212E9823005BC744 /* libtup_eaddr.a */; };
 		DEAB9001212E9824005BC744 /* libtup_eaddr_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F61212E9823005BC744 /* libtup_eaddr_h5.a */; };
-		DEAB9002212E9824005BC744 /* libtup_exception.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F62212E9823005BC744 /* libtup_exception.a */; };
 		DEAB9003212E9824005BC744 /* libtup_ftp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F63212E9823005BC744 /* libtup_ftp.a */; };
 		DEAB9004212E9824005BC744 /* libtup_httpofflinefile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F64212E9823005BC744 /* libtup_httpofflinefile.a */; };
 		DEAB9005212E9824005BC744 /* libtup_https_clt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F65212E9823005BC744 /* libtup_https_clt.a */; };
@@ -197,10 +199,8 @@
 		DEAB9018212E9824005BC744 /* libtup_login.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F78212E9823005BC744 /* libtup_login.a */; };
 		DEAB9019212E9824005BC744 /* libtup_logone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F79212E9823005BC744 /* libtup_logone.a */; };
 		DEAB901A212E9824005BC744 /* libtup_msg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F7A212E9823005BC744 /* libtup_msg.a */; };
-		DEAB901B212E9824005BC744 /* libtup_openmedia.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F7B212E9823005BC744 /* libtup_openmedia.a */; };
 		DEAB901C212E9824005BC744 /* libtup_os_adapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F7C212E9823005BC744 /* libtup_os_adapter.a */; };
 		DEAB901D212E9824005BC744 /* libtup_publiclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F7D212E9823005BC744 /* libtup_publiclib.a */; };
-		DEAB901E212E9824005BC744 /* libtup_rsa_encrypt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F7E212E9823005BC744 /* libtup_rsa_encrypt.a */; };
 		DEAB901F212E9824005BC744 /* libtup_socket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F7F212E9823005BC744 /* libtup_socket.a */; };
 		DEAB9020212E9824005BC744 /* libtup_socket_stg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F80212E9823005BC744 /* libtup_socket_stg.a */; };
 		DEAB9021212E9824005BC744 /* libtup_support.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F81212E9823005BC744 /* libtup_support.a */; };
@@ -214,16 +214,22 @@
 		DEAB902A212E9824005BC744 /* libvcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F8A212E9823005BC744 /* libvcom.a */; };
 		DEAB902C212E9824005BC744 /* websockets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F8C212E9823005BC744 /* websockets.framework */; };
 		DEAB9039212E9F41005BC744 /* websockets.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEAB8F8C212E9823005BC744 /* websockets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DEBDCCF122E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */; };
 		DEC49B76221CE7940089A88A /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC49B75221CE7940089A88A /* libc++.tbd */; };
+		DED4CBD622EECC160035334C /* libtup_service_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED4CBD522EECC160035334C /* libtup_service_base.a */; };
+		DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01690E022A4FB85002B2A27 /* ReplayKit.framework */; };
+		DED4CC1722EF16AF0035334C /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DED4CC1622EF16AF0035334C /* SampleHandler.m */; };
+		DED4CC1B22EF16AF0035334C /* ECSdkScreenShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DED4CC2022EF174A0035334C /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		12C23FD01F31C06D00C21D91 /* PBXContainerItemProxy */ = {
+		DED4CC1922EF16AF0035334C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 12C23FAE1F31C06D00C21D91 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 12C23FB51F31C06D00C21D91;
-			remoteInfo = EC_SDK_DEMO;
+			remoteGlobalIDString = DED4CC1122EF16AF0035334C;
+			remoteInfo = ECSdkScreenShareExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -236,6 +242,17 @@
 			files = (
 				DEAB9039212E9F41005BC744 /* websockets.framework in CopyFiles */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D016910022A4FB85002B2A27 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DED4CC1B22EF16AF0035334C /* ECSdkScreenShareExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -392,10 +409,8 @@
 		12C23FBC1F31C06D00C21D91 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		12C23FBD1F31C06D00C21D91 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		12C23FC31F31C06D00C21D91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		12C23FC51F31C06D00C21D91 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		12C23FC81F31C06D00C21D91 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		12C23FCA1F31C06D00C21D91 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		12C23FCF1F31C06D00C21D91 /* EC_SDK_DEMOUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EC_SDK_DEMOUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		12C242051F31CEB600C21D91 /* NetworkUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkUtils.h; sourceTree = "<group>"; };
 		12C242061F31CEB600C21D91 /* NetworkUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NetworkUtils.mm; sourceTree = "<group>"; };
 		12C242071F31CEB600C21D91 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -453,7 +468,22 @@
 		8DF838131F43EA86009BA0C1 /* UIImage+Stretchable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Stretchable.m"; sourceTree = "<group>"; };
 		8DF838431F44019A009BA0C1 /* ConfDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfDetailViewController.h; sourceTree = "<group>"; };
 		8DF838441F44019A009BA0C1 /* ConfDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfDetailViewController.m; sourceTree = "<group>"; };
-		DE12B47122C208940021AAF9 /* libtup_conf_agent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_conf_agent.a; sourceTree = "<group>"; };
+		D01690E022A4FB85002B2A27 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
+		D01690ED22A4FB85002B2A27 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		D0C5767122A51C2800C6559A /* ScreenShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenShareView.m; sourceTree = "<group>"; };
+		D0C5767222A51C2800C6559A /* ScreenShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenShareView.h; sourceTree = "<group>"; };
+		D0C5767722A51E0600C6559A /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		D0C5767822A51E0600C6559A /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
+		D0C5767A22A5209000C6559A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D0C5767D22A553CB00C6559A /* ECMarkupView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECMarkupView.m; sourceTree = "<group>"; };
+		D0C5767E22A553CB00C6559A /* ECMarkupToolboxPopoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECMarkupToolboxPopoverView.m; sourceTree = "<group>"; };
+		D0C5767F22A553CC00C6559A /* ECMarkupToolboxView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECMarkupToolboxView.m; sourceTree = "<group>"; };
+		D0C5768022A553CC00C6559A /* ECMarkupToolboxView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECMarkupToolboxView.h; sourceTree = "<group>"; };
+		D0C5768122A553CC00C6559A /* ECMarkupView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECMarkupView.h; sourceTree = "<group>"; };
+		D0C5768222A553CC00C6559A /* ECMarkupToolboxPopoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECMarkupToolboxPopoverView.h; sourceTree = "<group>"; };
+		D0C5768622A556C400C6559A /* UIButton+VerticalLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+VerticalLayout.h"; sourceTree = "<group>"; };
+		D0C5768722A556C500C6559A /* UIButton+VerticalLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+VerticalLayout.m"; sourceTree = "<group>"; };
+		DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_conf_agent.a; sourceTree = "<group>"; };
 		DE1A16C021C8E7860009E042 /* tsdk_im_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_im_def.h; sourceTree = "<group>"; };
 		DE1A16C121C8E7860009E042 /* tsdk_im_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_im_interface.h; sourceTree = "<group>"; };
 		DE53D7F92138E9D000804D42 /* tsdk_manager_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_interface.h; sourceTree = "<group>"; };
@@ -520,17 +550,13 @@
 		DEAB8F54212E9823005BC744 /* libtup_call_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_service.a; sourceTree = "<group>"; };
 		DEAB8F55212E9823005BC744 /* libtup_call_sip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_sip.a; sourceTree = "<group>"; };
 		DEAB8F56212E9823005BC744 /* libtup_call_video.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_video.a; sourceTree = "<group>"; };
-		DEAB8F57212E9823005BC744 /* libtup_cloudrecord.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cloudrecord.a; sourceTree = "<group>"; };
 		DEAB8F58212E9823005BC744 /* libtup_cmpt_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cmpt_service.a; sourceTree = "<group>"; };
 		DEAB8F59212E9823005BC744 /* libtup_commonlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_commonlib.a; sourceTree = "<group>"; };
 		DEAB8F5A212E9823005BC744 /* libtup_confctrl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_confctrl.a; sourceTree = "<group>"; };
-		DEAB8F5B212E9823005BC744 /* libtup_confmng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_confmng.a; sourceTree = "<group>"; };
-		DEAB8F5C212E9823005BC744 /* libtup_corpdirectory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_corpdirectory.a; sourceTree = "<group>"; };
 		DEAB8F5D212E9823005BC744 /* libtup_ctd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ctd.a; sourceTree = "<group>"; };
 		DEAB8F5F212E9823005BC744 /* libtup_dns.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_dns.a; sourceTree = "<group>"; };
 		DEAB8F60212E9823005BC744 /* libtup_eaddr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_eaddr.a; sourceTree = "<group>"; };
 		DEAB8F61212E9823005BC744 /* libtup_eaddr_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_eaddr_h5.a; sourceTree = "<group>"; };
-		DEAB8F62212E9823005BC744 /* libtup_exception.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_exception.a; sourceTree = "<group>"; };
 		DEAB8F63212E9823005BC744 /* libtup_ftp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ftp.a; sourceTree = "<group>"; };
 		DEAB8F64212E9823005BC744 /* libtup_httpofflinefile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_httpofflinefile.a; sourceTree = "<group>"; };
 		DEAB8F65212E9823005BC744 /* libtup_https_clt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_https_clt.a; sourceTree = "<group>"; };
@@ -554,10 +580,8 @@
 		DEAB8F78212E9823005BC744 /* libtup_login.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_login.a; sourceTree = "<group>"; };
 		DEAB8F79212E9823005BC744 /* libtup_logone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_logone.a; sourceTree = "<group>"; };
 		DEAB8F7A212E9823005BC744 /* libtup_msg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_msg.a; sourceTree = "<group>"; };
-		DEAB8F7B212E9823005BC744 /* libtup_openmedia.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_openmedia.a; sourceTree = "<group>"; };
 		DEAB8F7C212E9823005BC744 /* libtup_os_adapter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_os_adapter.a; sourceTree = "<group>"; };
 		DEAB8F7D212E9823005BC744 /* libtup_publiclib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_publiclib.a; sourceTree = "<group>"; };
-		DEAB8F7E212E9823005BC744 /* libtup_rsa_encrypt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_rsa_encrypt.a; sourceTree = "<group>"; };
 		DEAB8F7F212E9823005BC744 /* libtup_socket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_socket.a; sourceTree = "<group>"; };
 		DEAB8F80212E9823005BC744 /* libtup_socket_stg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_socket_stg.a; sourceTree = "<group>"; };
 		DEAB8F81212E9823005BC744 /* libtup_support.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_support.a; sourceTree = "<group>"; };
@@ -570,7 +594,14 @@
 		DEAB8F89212E9823005BC744 /* libuspsdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libuspsdk.a; sourceTree = "<group>"; };
 		DEAB8F8A212E9823005BC744 /* libvcom.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libvcom.a; sourceTree = "<group>"; };
 		DEAB8F8C212E9823005BC744 /* websockets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = websockets.framework; sourceTree = "<group>"; };
+		DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
 		DEC49B75221CE7940089A88A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		DED4CBD522EECC160035334C /* libtup_service_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_service_base.a; sourceTree = "<group>"; };
+		DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ECSdkScreenShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DED4CC1522EF16AF0035334C /* SampleHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleHandler.h; sourceTree = "<group>"; };
+		DED4CC1622EF16AF0035334C /* SampleHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleHandler.m; sourceTree = "<group>"; };
+		DED4CC1822EF16AF0035334C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DED4CC2122EF197D0035334C /* ECSdkScreenShareExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = ECSdkScreenShareExtension.entitlements; sourceTree = "<group>"; };
 		DEF009482118375D002F7757 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -584,9 +615,6 @@
 				DEAB8FF4212E9824005BC744 /* libtup_call_service.a in Frameworks */,
 				DEAB902A212E9824005BC744 /* libvcom.a in Frameworks */,
 				DEAB900D212E9824005BC744 /* libtup_im_ecsimp.a in Frameworks */,
-				DEAB9002212E9824005BC744 /* libtup_exception.a in Frameworks */,
-				DEAB8FFC212E9824005BC744 /* libtup_corpdirectory.a in Frameworks */,
-				DE12B47222C208940021AAF9 /* libtup_conf_agent.a in Frameworks */,
 				DEAB9022212E9824005BC744 /* libtup_svnapi.a in Frameworks */,
 				DEAB900B212E9824005BC744 /* libtup_im_core.a in Frameworks */,
 				DEAB8FDC212E9823005BC744 /* libHW_MPT_IOS_ILBC_LIB.a in Frameworks */,
@@ -603,10 +631,8 @@
 				DEAB9009212E9824005BC744 /* libtup_im_clib.a in Frameworks */,
 				DEAB900E212E9824005BC744 /* libtup_im_eserverimpl.a in Frameworks */,
 				DE59FD62215DD0C700724BC1 /* libtup_cwmp_h5.a in Frameworks */,
-				DEAB8FF7212E9824005BC744 /* libtup_cloudrecord.a in Frameworks */,
 				DEAB9003212E9824005BC744 /* libtup_ftp.a in Frameworks */,
 				41640D292109748B0050D2B9 /* PushKit.framework in Frameworks */,
-				DEAB8FFB212E9824005BC744 /* libtup_confmng.a in Frameworks */,
 				DEAB9017212E9824005BC744 /* libtup_ldapstack.a in Frameworks */,
 				DEAB901C212E9824005BC744 /* libtup_os_adapter.a in Frameworks */,
 				DEAB8FDE212E9823005BC744 /* libipsi_crypto.a in Frameworks */,
@@ -629,16 +655,18 @@
 				DEAB9000212E9824005BC744 /* libtup_eaddr.a in Frameworks */,
 				DEAB9012212E9824005BC744 /* libtup_im_util.a in Frameworks */,
 				DEAB9029212E9824005BC744 /* libuspsdk.a in Frameworks */,
+				DED4CBD622EECC160035334C /* libtup_service_base.a in Frameworks */,
 				DEAB8FFD212E9824005BC744 /* libtup_ctd.a in Frameworks */,
 				DEAB8FF1212E9824005BC744 /* libtup_call_bfcp.a in Frameworks */,
+				DE0D84C822CB3F0900FFB281 /* libtup_conf_agent.a in Frameworks */,
 				DEAB8FD8212E9823005BC744 /* libHW_MPT_IOS_AMR_LIB.a in Frameworks */,
 				1258C1D81F39593100654D80 /* libresolv.9.dylib in Frameworks */,
 				DEAB9005212E9824005BC744 /* libtup_https_clt.a in Frameworks */,
 				DEAB8FD2212E9823005BC744 /* libACE.a in Frameworks */,
-				DEAB901E212E9824005BC744 /* libtup_rsa_encrypt.a in Frameworks */,
 				DEAB8FE4212E9823005BC744 /* libjsoncpp.a in Frameworks */,
 				1258C1DA1F39593100654D80 /* libz.1.dylib in Frameworks */,
 				DEAB8FE2212E9823005BC744 /* libipsi_pse.a in Frameworks */,
+				DEBDCCF122E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework in Frameworks */,
 				DEAB8FDF212E9823005BC744 /* libipsi_eap.a in Frameworks */,
 				DEAB9025212E9824005BC744 /* libtup_zip.a in Frameworks */,
 				DEAB9026212E9824005BC744 /* libTupConf.a in Frameworks */,
@@ -674,16 +702,17 @@
 				DEAB8FE0212E9823005BC744 /* libipsi_http.a in Frameworks */,
 				1258C1CC1F3958EF00654D80 /* AudioToolbox.framework in Frameworks */,
 				DEAB9014212E9824005BC744 /* libtup_ldap.a in Frameworks */,
-				DEAB901B212E9824005BC744 /* libtup_openmedia.a in Frameworks */,
 				DEAB901F212E9824005BC744 /* libtup_socket.a in Frameworks */,
 				DEAB8FE5212E9823005BC744 /* libKMC.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		12C23FCC1F31C06D00C21D91 /* Frameworks */ = {
+		DED4CC0F22EF16AF0035334C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DED4CC2022EF174A0035334C /* CloudLinkMeetingScreenShare.framework in Frameworks */,
+				DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -981,6 +1010,16 @@
 		12868EF61F3C8D6000302072 /* DataConf */ = {
 			isa = PBXGroup;
 			children = (
+				D0C5768622A556C400C6559A /* UIButton+VerticalLayout.h */,
+				D0C5768722A556C500C6559A /* UIButton+VerticalLayout.m */,
+				D0C5768222A553CC00C6559A /* ECMarkupToolboxPopoverView.h */,
+				D0C5767E22A553CB00C6559A /* ECMarkupToolboxPopoverView.m */,
+				D0C5768022A553CC00C6559A /* ECMarkupToolboxView.h */,
+				D0C5767F22A553CC00C6559A /* ECMarkupToolboxView.m */,
+				D0C5768122A553CC00C6559A /* ECMarkupView.h */,
+				D0C5767D22A553CB00C6559A /* ECMarkupView.m */,
+				D0C5767222A51C2800C6559A /* ScreenShareView.h */,
+				D0C5767122A51C2800C6559A /* ScreenShareView.m */,
 				124214DF1F442B2F00BDC932 /* DataConfBaseViewController.h */,
 				124214E01F442B2F00BDC932 /* DataConfBaseViewController.m */,
 				124214E11F442B2F00BDC932 /* DataConfChatViewController.h */,
@@ -1031,6 +1070,7 @@
 			isa = PBXGroup;
 			children = (
 				12C23FB81F31C06D00C21D91 /* EC_SDK_DEMO */,
+				DED4CC1422EF16AF0035334C /* ECSdkScreenShareExtension */,
 				12C23FB71F31C06D00C21D91 /* Products */,
 				12C241EE1F31C5A600C21D91 /* Frameworks */,
 			);
@@ -1040,7 +1080,7 @@
 			isa = PBXGroup;
 			children = (
 				12C23FB61F31C06D00C21D91 /* EC_SDK_DEMO.app */,
-				12C23FCF1F31C06D00C21D91 /* EC_SDK_DEMOUITests.xctest */,
+				DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1056,7 +1096,7 @@
 				12C241FE1F31CAF100C21D91 /* Common */,
 				12C23FBC1F31C06D00C21D91 /* AppDelegate.h */,
 				12C23FBD1F31C06D00C21D91 /* AppDelegate.m */,
-				12C23FC51F31C06D00C21D91 /* Assets.xcassets */,
+				D0C5767A22A5209000C6559A /* Assets.xcassets */,
 				12C23FC21F31C06D00C21D91 /* Main.storyboard */,
 				12C23FC71F31C06D00C21D91 /* LaunchScreen.storyboard */,
 				12C23FCA1F31C06D00C21D91 /* Info.plist */,
@@ -1090,6 +1130,8 @@
 				1258C1CF1F3958F900654D80 /* AVFoundation.framework */,
 				1258C1CD1F3958F500654D80 /* VideoToolbox.framework */,
 				1258C1CB1F3958EF00654D80 /* AudioToolbox.framework */,
+				D01690E022A4FB85002B2A27 /* ReplayKit.framework */,
+				D01690ED22A4FB85002B2A27 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1097,6 +1139,8 @@
 		12C241FE1F31CAF100C21D91 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				D0C5767722A51E0600C6559A /* Utils.h */,
+				D0C5767822A51E0600C6559A /* Utils.m */,
 				1258C1F51F3C828000654D80 /* DeviceMotionManager.h */,
 				1258C1F61F3C828000654D80 /* DeviceMotionManager.m */,
 				12C242051F31CEB600C21D91 /* NetworkUtils.h */,
@@ -1198,7 +1242,9 @@
 		DEAB8F26212E9823005BC744 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				DE12B47122C208940021AAF9 /* libtup_conf_agent.a */,
+				DED4CBD522EECC160035334C /* libtup_service_base.a */,
+				DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */,
+				DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */,
 				DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */,
 				DEAB8F32212E9823005BC744 /* libACE.a */,
 				DEAB8F33212E9823005BC744 /* libcrypto.a */,
@@ -1236,17 +1282,13 @@
 				DEAB8F54212E9823005BC744 /* libtup_call_service.a */,
 				DEAB8F55212E9823005BC744 /* libtup_call_sip.a */,
 				DEAB8F56212E9823005BC744 /* libtup_call_video.a */,
-				DEAB8F57212E9823005BC744 /* libtup_cloudrecord.a */,
 				DEAB8F58212E9823005BC744 /* libtup_cmpt_service.a */,
 				DEAB8F59212E9823005BC744 /* libtup_commonlib.a */,
 				DEAB8F5A212E9823005BC744 /* libtup_confctrl.a */,
-				DEAB8F5B212E9823005BC744 /* libtup_confmng.a */,
-				DEAB8F5C212E9823005BC744 /* libtup_corpdirectory.a */,
 				DEAB8F5D212E9823005BC744 /* libtup_ctd.a */,
 				DEAB8F5F212E9823005BC744 /* libtup_dns.a */,
 				DEAB8F60212E9823005BC744 /* libtup_eaddr.a */,
 				DEAB8F61212E9823005BC744 /* libtup_eaddr_h5.a */,
-				DEAB8F62212E9823005BC744 /* libtup_exception.a */,
 				DEAB8F63212E9823005BC744 /* libtup_ftp.a */,
 				DEAB8F64212E9823005BC744 /* libtup_httpofflinefile.a */,
 				DEAB8F65212E9823005BC744 /* libtup_https_clt.a */,
@@ -1270,10 +1312,8 @@
 				DEAB8F78212E9823005BC744 /* libtup_login.a */,
 				DEAB8F79212E9823005BC744 /* libtup_logone.a */,
 				DEAB8F7A212E9823005BC744 /* libtup_msg.a */,
-				DEAB8F7B212E9823005BC744 /* libtup_openmedia.a */,
 				DEAB8F7C212E9823005BC744 /* libtup_os_adapter.a */,
 				DEAB8F7D212E9823005BC744 /* libtup_publiclib.a */,
-				DEAB8F7E212E9823005BC744 /* libtup_rsa_encrypt.a */,
 				DEAB8F7F212E9823005BC744 /* libtup_socket.a */,
 				DEAB8F80212E9823005BC744 /* libtup_socket_stg.a */,
 				DEAB8F81212E9823005BC744 /* libtup_support.a */,
@@ -1315,6 +1355,17 @@
 			path = include;
 			sourceTree = "<group>";
 		};
+		DED4CC1422EF16AF0035334C /* ECSdkScreenShareExtension */ = {
+			isa = PBXGroup;
+			children = (
+				DED4CC2122EF197D0035334C /* ECSdkScreenShareExtension.entitlements */,
+				DED4CC1522EF16AF0035334C /* SampleHandler.h */,
+				DED4CC1622EF16AF0035334C /* SampleHandler.m */,
+				DED4CC1822EF16AF0035334C /* Info.plist */,
+			);
+			path = ECSdkScreenShareExtension;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1326,33 +1377,34 @@
 				12C23FB31F31C06D00C21D91 /* Frameworks */,
 				12C23FB41F31C06D00C21D91 /* Resources */,
 				12C2420C1F32B49100C21D91 /* CopyFiles */,
+				D016910022A4FB85002B2A27 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DED4CC1A22EF16AF0035334C /* PBXTargetDependency */,
 			);
 			name = EC_SDK_DEMO;
 			productName = EC_SDK_DEMO;
 			productReference = 12C23FB61F31C06D00C21D91 /* EC_SDK_DEMO.app */;
 			productType = "com.apple.product-type.application";
 		};
-		12C23FCE1F31C06D00C21D91 /* EC_SDK_DEMOUITests */ = {
+		DED4CC1122EF16AF0035334C /* ECSdkScreenShareExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 12C23FDB1F31C06D00C21D91 /* Build configuration list for PBXNativeTarget "EC_SDK_DEMOUITests" */;
+			buildConfigurationList = DED4CC1C22EF16AF0035334C /* Build configuration list for PBXNativeTarget "ECSdkScreenShareExtension" */;
 			buildPhases = (
-				12C23FCB1F31C06D00C21D91 /* Sources */,
-				12C23FCC1F31C06D00C21D91 /* Frameworks */,
-				12C23FCD1F31C06D00C21D91 /* Resources */,
+				DED4CC0E22EF16AF0035334C /* Sources */,
+				DED4CC0F22EF16AF0035334C /* Frameworks */,
+				DED4CC1022EF16AF0035334C /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				12C23FD11F31C06D00C21D91 /* PBXTargetDependency */,
 			);
-			name = EC_SDK_DEMOUITests;
-			productName = EC_SDK_DEMOUITests;
-			productReference = 12C23FCF1F31C06D00C21D91 /* EC_SDK_DEMOUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
+			name = ECSdkScreenShareExtension;
+			productName = ECSdkScreenShareExtension;
+			productReference = DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -1368,6 +1420,9 @@
 						DevelopmentTeam = T2W92832FD;
 						ProvisioningStyle = Manual;
 						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 0;
 							};
@@ -1376,10 +1431,15 @@
 							};
 						};
 					};
-					12C23FCE1F31C06D00C21D91 = {
-						CreatedOnToolsVersion = 8.3.2;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 12C23FB51F31C06D00C21D91;
+					DED4CC1122EF16AF0035334C = {
+						CreatedOnToolsVersion = 10.1;
+						DevelopmentTeam = T2W92832FD;
+						ProvisioningStyle = Manual;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -1398,7 +1458,7 @@
 			projectRoot = "";
 			targets = (
 				12C23FB51F31C06D00C21D91 /* EC_SDK_DEMO */,
-				12C23FCE1F31C06D00C21D91 /* EC_SDK_DEMOUITests */,
+				DED4CC1122EF16AF0035334C /* ECSdkScreenShareExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -1413,10 +1473,10 @@
 				12C23FC91F31C06D00C21D91 /* LaunchScreen.storyboard in Resources */,
 				12627B0A1F4AE0AB00B5E4F3 /* AttendeeListCell.xib in Resources */,
 				419522621FBC3FFD00CA3429 /* CallHistoryCell.xib in Resources */,
-				12C23FC61F31C06D00C21D91 /* Assets.xcassets in Resources */,
 				126C637F1F38675800048A9F /* ConfigIPTViewController.xib in Resources */,
 				12627B081F4A742600B5E4F3 /* ConfRunningViewController.xib in Resources */,
 				126C638B1F38675800048A9F /* TransferView.xib in Resources */,
+				D0C5767B22A5209100C6559A /* Assets.xcassets in Resources */,
 				1254C8F21F68E28C002A0802 /* TupHeadViewCell.xib in Resources */,
 				1254C8F41F68E28C002A0802 /* TupPersonDetailCell.xib in Resources */,
 				126C63861F38675800048A9F /* CallView.xib in Resources */,
@@ -1428,7 +1488,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		12C23FCD1F31C06D00C21D91 /* Resources */ = {
+		DED4CC1022EF16AF0035334C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1452,11 +1512,13 @@
 				1298B3F01F66282B00910855 /* DeptInfo.m in Sources */,
 				DE7410EF2119731F00FC9EBC /* JoinConfViewController.m in Sources */,
 				124B28FA1F616A8100DBDD77 /* ECSDDASLLogger.m in Sources */,
+				D0C5768322A553CC00C6559A /* ECMarkupView.m in Sources */,
 				126C63CA1F386A0700048A9F /* CallSessionModifyInfo.m in Sources */,
 				126C63851F38675800048A9F /* CallView.m in Sources */,
 				124214EB1F442B2F00BDC932 /* DataShareViewController.m in Sources */,
 				DEAB8F23212E6309005BC744 /* CallLogMessage.m in Sources */,
 				124B83821F3B06A800631769 /* ConfCameraInfo.m in Sources */,
+				D0C5767922A51E0600C6559A /* Utils.m in Sources */,
 				DEAB8F20212E5DCF005BC744 /* CommonUtils.mm in Sources */,
 				124B28F81F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.m in Sources */,
 				126C63A91F38698E00048A9F /* CallInfo.mm in Sources */,
@@ -1466,10 +1528,12 @@
 				126C63811F38675800048A9F /* CallEndView.m in Sources */,
 				12627B061F43EF7400B5E4F3 /* CallTakingViewController.m in Sources */,
 				124214E91F442B2F00BDC932 /* DataConfBaseViewController.m in Sources */,
+				D0C5768822A556C500C6559A /* UIButton+VerticalLayout.m in Sources */,
 				1258C1DD1F395B4B00654D80 /* Initializer.m in Sources */,
 				419522671FBC400700CA3429 /* CallHistoryViewController.m in Sources */,
 				8DF838171F43EA86009BA0C1 /* ConfRunningViewController.m in Sources */,
 				124B28F71F616A8100DBDD77 /* ECSCLIColor.m in Sources */,
+				D0C5768422A553CC00C6559A /* ECMarkupToolboxPopoverView.m in Sources */,
 				1298B3FA1F666AD800910855 /* DeptListCell.m in Sources */,
 				8DF838461F44019A009BA0C1 /* ConfDetailViewController.m in Sources */,
 				124214EA1F442B2F00BDC932 /* DataConfChatViewController.m in Sources */,
@@ -1512,6 +1576,8 @@
 				124B83851F3B06A800631769 /* ChatMsg.m in Sources */,
 				12C23FBB1F31C06D00C21D91 /* main.m in Sources */,
 				41281125211181EC00A7C765 /* NoDisturbViewController.m in Sources */,
+				D0C5767322A51C2900C6559A /* ScreenShareView.m in Sources */,
+				D0C5768522A553CC00C6559A /* ECMarkupToolboxView.m in Sources */,
 				126C638F1F38676C00048A9F /* ViewController.m in Sources */,
 				126C637E1F38675800048A9F /* ConfigIPTViewController.m in Sources */,
 				1254C8EA1F68E27F002A0802 /* AddressMemberListController.m in Sources */,
@@ -1537,20 +1603,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		12C23FCB1F31C06D00C21D91 /* Sources */ = {
+		DED4CC0E22EF16AF0035334C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DED4CC1722EF16AF0035334C /* SampleHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		12C23FD11F31C06D00C21D91 /* PBXTargetDependency */ = {
+		DED4CC1A22EF16AF0035334C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 12C23FB51F31C06D00C21D91 /* EC_SDK_DEMO */;
-			targetProxy = 12C23FD01F31C06D00C21D91 /* PBXContainerItemProxy */;
+			target = DED4CC1122EF16AF0035334C /* ECSdkScreenShareExtension */;
+			targetProxy = DED4CC1922EF16AF0035334C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1621,7 +1688,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -1667,7 +1734,7 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
@@ -1676,14 +1743,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = EC_SDK_DEMO/EC_SDK_DEMO.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
 				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = T2W92832FD;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib",
+					"$(PROJECT_DIR)/EC_SDK_DEMO/frameworks",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = EC_SDK_DEMO/PrefixHeader.pch;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/EC_SDK_DEMO/Depand/include";
@@ -1697,7 +1767,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "a8e2e670-7e88-4381-a018-07cc99eee2b9";
 				PROVISIONING_PROFILE_SPECIFIER = eSpaceMclientV2_Developer;
-				VALID_ARCHS = "armv7 arm64 armv7s";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -1706,13 +1776,16 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = EC_SDK_DEMO/EC_SDK_DEMO.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = T2W92832FD;
 				ENABLE_BITCODE = NO;
 				ENABLE_TESTABILITY = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib",
+					"$(PROJECT_DIR)/EC_SDK_DEMO/frameworks",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREFIX_HEADER = EC_SDK_DEMO/PrefixHeader.pch;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/EC_SDK_DEMO/Depand/include";
@@ -1726,29 +1799,81 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "a8e2e670-7e88-4381-a018-07cc99eee2b9";
 				PROVISIONING_PROFILE_SPECIFIER = eSpaceMclientV2_Developer;
-				VALID_ARCHS = "armv7 arm64 armv7s";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
-		12C23FDC1F31C06D00C21D91 /* Debug */ = {
+		DED4CC1D22EF16AF0035334C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = EC_SDK_DEMOUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.huawei.eSpaceMclientV2.TUP-Mobile-DemoUITests";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = ECSdkScreenShareExtension/ECSdkScreenShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = T2W92832FD;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = ECSdkScreenShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huawei.eSpaceMclientV2.ECScreenShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = EC_SDK_DEMO;
+				PROVISIONING_PROFILE_SPECIFIER = "eSpaceMclientV2 ECScreenShareExtension";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		12C23FDD1F31C06D00C21D91 /* Release */ = {
+		DED4CC1E22EF16AF0035334C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = EC_SDK_DEMOUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.huawei.eSpaceMclientV2.TUP-Mobile-DemoUITests";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = ECSdkScreenShareExtension/ECSdkScreenShareExtension.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = T2W92832FD;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/EC_SDK_DEMO/Depand/lib",
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = ECSdkScreenShareExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.huawei.eSpaceMclientV2.ECScreenShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = EC_SDK_DEMO;
+				PROVISIONING_PROFILE_SPECIFIER = "eSpaceMclientV2 ECScreenShareExtension";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1773,11 +1898,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		12C23FDB1F31C06D00C21D91 /* Build configuration list for PBXNativeTarget "EC_SDK_DEMOUITests" */ = {
+		DED4CC1C22EF16AF0035334C /* Build configuration list for PBXNativeTarget "ECSdkScreenShareExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				12C23FDC1F31C06D00C21D91 /* Debug */,
-				12C23FDD1F31C06D00C21D91 /* Release */,
+				DED4CC1D22EF16AF0035334C /* Debug */,
+				DED4CC1E22EF16AF0035334C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12120" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina3_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,7 +19,7 @@
                     <rect key="frame" x="0.0" y="257" width="320" height="223"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZtT-3o-OlE" userLabel="hang up">
-                            <rect key="frame" x="128" y="150" width="65" height="65"/>
+                            <rect key="frame" x="127.5" y="150" width="65" height="65"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="65" id="84y-zu-l2M"/>
                                 <constraint firstAttribute="height" constant="65" id="xiz-I3-vZx"/>
@@ -59,7 +59,7 @@
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RxM-EU-SQE">
                             <rect key="frame" x="98" y="14" width="45" height="45"/>
-                            <state key="normal" image="voice_call_speaker_normal"/>
+                            <state key="normal" image="voice_headphonebt_normal"/>
                             <connections>
                                 <action selector="routeButtonAction:" destination="ywn-SE-Zxg" eventType="touchUpInside" id="MD3-n4-uDb"/>
                             </connections>
@@ -200,8 +200,8 @@
         <image name="voice_call_hangup_normal" width="65" height="65"/>
         <image name="voice_call_hold_normal" width="45" height="45"/>
         <image name="voice_call_mute_normal" width="45" height="45"/>
-        <image name="voice_call_speaker_normal" width="45" height="45"/>
         <image name="voice_call_transfer_normal" width="45" height="45"/>
         <image name="voice_call_video_normal" width="45" height="45"/>
+        <image name="voice_headphonebt_normal" width="45" height="45"/>
     </resources>
 </document>

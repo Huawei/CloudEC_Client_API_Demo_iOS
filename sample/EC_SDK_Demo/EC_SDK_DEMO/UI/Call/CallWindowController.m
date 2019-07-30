@@ -21,6 +21,8 @@
 #import "CallTakingViewController.h"
 #import "AppDelegate.h"
 
+#import <ReplayKit/ReplayKit.h>
+
 @interface CallWindowController ()<CallServiceDelegate,CallViewDelegate,DialSecondPlateDelegate,CallEndViewDelegate>
 @property (nonatomic, strong)UIWindow *callWindow;
 @property (nonatomic, strong)CallTakingViewController *talkingCtrl;
@@ -40,6 +42,9 @@
 @property (nonatomic, strong)NSMutableArray *callInfoArray;
 @property (nonatomic,assign)BOOL hasAddView;
 @property (nonatomic ,assign) BOOL isJoinConfCall;
+
+@property (nonatomic, strong) RPSystemBroadcastPickerView *broadcastPickerView API_AVAILABLE(ios(12.0));
+
 @end
 static CallWindowController *g_windowCtrl = nil;
 @implementation CallWindowController
@@ -79,6 +84,13 @@ static CallWindowController *g_windowCtrl = nil;
         _hasAddView = NO;
         _isJoinConfCall = NO;
         
+        if (@available(iOS 12, *)) {
+            CGRect broadcastPickerViewFrame = CGRectMake(0, 0, 100.0f, 100.0f);
+            self.broadcastPickerView = [[RPSystemBroadcastPickerView alloc] initWithFrame:broadcastPickerViewFrame];
+            [self.callWindow.rootViewController.view addSubview:_broadcastPickerView];
+            self.broadcastPickerView.hidden = YES;
+        }
+        
         [self addNotify];
     }
     return self;
@@ -110,6 +122,40 @@ static CallWindowController *g_windowCtrl = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confIcomingDeal:) name:EC_COMING_CONF_NOTIFY object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startReplayKitBroadcast) name:APP_START_SYSTEM_SHARE_VIEW object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confShareRequestAction) name:CONF_SHARE_REQUEST_ACTION object:nil];
+    
+}
+
+- (void)confShareRequestAction
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [AppDelegate appConfShareRequestAction];
+    });
+}
+
+- (void)startReplayKitBroadcast {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        DDLogInfo(@"enter startReplayKitBroadcast ");
+        if (@available(iOS 12, *)) {
+            NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+            BOOL isNeedSetpreferredExtension = [userDefaults boolForKey:@"ScreenShareFlag"];
+            NSString *mainBundleId = [[NSBundle mainBundle]bundleIdentifier];
+            NSString *extensionId = [mainBundleId stringByAppendingString:@".ScreenShareExtension"];
+            if (isNeedSetpreferredExtension) {
+                self.broadcastPickerView.preferredExtension = extensionId;
+            }
+            self.broadcastPickerView.showsMicrophoneButton = NO;
+            
+            for (UIView *view in self.broadcastPickerView.subviews) {
+                if ([view isKindOfClass:[UIButton class]]) {
+                    [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchDown];
+                }
+            }
+        }
+    });
 }
 
 -(void)confIcomingDeal:(NSNotification *)notify
@@ -541,15 +587,18 @@ static CallWindowController *g_windowCtrl = nil;
         [_callViewArray addObject:callView];
         BOOL isVideo = _currentTupCallInfo.stateInfo.callType ;
         
-        
         if (isVideo)
         {
+            _cameraClose = NO;
 //            callView.showOrient = ((1 == _currentTupCallInfo.orientType) ? UIInterfaceOrientationPortrait : UIInterfaceOrientationLandscapeRight);
+            [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:_currentTupCallInfo.stateInfo.callId];
             callView.showOrient = UIInterfaceOrientationPortrait;
             [self addGLViewInCallView:callView];
             [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
             _talkingCtrl.orientation = callView.showOrient;
             [CommonUtils setToOrientation:(UIDeviceOrientation)callView.showOrient];
+            
+            
         }
     }
 }
@@ -777,6 +826,7 @@ static CallWindowController *g_windowCtrl = nil;
             ROUTE_TYPE routeType = [[ManagerService callService] obtainMobileAudioRoute];
             ROUTE_TYPE configType = routeType == ROUTE_LOUDSPEAKER_TYPE ? ROUTE_DEFAULT_TYPE : ROUTE_LOUDSPEAKER_TYPE;
             [[ManagerService callService] configAudioRoute:configType];
+            currentCallView.isloudSpeak = configType == ROUTE_LOUDSPEAKER_TYPE ? YES : NO;
             break;
         }
         case HOLD_BUTTON:

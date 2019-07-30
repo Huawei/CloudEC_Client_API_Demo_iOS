@@ -162,7 +162,7 @@ static LoginCenter *g_loginCenter = nil;
     }
     NSString *priorityTypeString = array[2];
     if (priorityTypeString == nil) {
-        priorityTypeString = @"1";
+        priorityTypeString = @"0";
     }
     CONFIG_PRIORITY_TYPE priorityType = [priorityTypeString intValue];
     TSDK_S_SERVICE_SECURITY_PARAM securityParam;
@@ -179,15 +179,11 @@ static LoginCenter *g_loginCenter = nil;
     memset(&networkInfo, 0, sizeof(TSDK_S_NETWORK_INFO_PARAM));
     NSString * isApplyConfigPriorityString = array[5];
     BOOL is_apply_config_priority = [isApplyConfigPriorityString boolValue];
-    if (is_apply_config_priority || isApplyConfigPriorityString == nil)
+    if (is_apply_config_priority)
     {
         networkInfo.sip_server_udp_port = [array[3] intValue];
         networkInfo.sip_server_tls_port = [array[4] intValue];
         networkInfo.sip_server_tcp_port = [array[3] intValue];
-    }else{
-        networkInfo.sip_server_udp_port = 0;
-        networkInfo.sip_server_tls_port = 0;
-        networkInfo.sip_server_tcp_port = 0;
     }
 
     configResult = tsdk_set_config_param(TSDK_E_CONFIG_NETWORK_INFO, &networkInfo);

@@ -172,7 +172,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    
+    [[ManagerService confService] restoreConfParamsInitialValue];
 
 }
 
@@ -277,13 +277,32 @@
     }
     
 
-
     VideoShareViewController *videoShareView = [[VideoShareViewController alloc] init];
     videoShareView.hidesBottomBarWhenPushed = YES;
     
     [navigationCtrl pushViewController:videoShareView animated:YES];
     
     DDLogInfo(@"goConference");
+}
+
++ (void)appConfShareRequestAction
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Accept Share Screen ?" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *refuseAction = [UIAlertAction actionWithTitle:@"Refuse" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [[ManagerService confService] cancelDataShareWithNumber:[ManagerService confService].selfJoinNumber];
+        }];
+        UIAlertAction *answerAction = [UIAlertAction actionWithTitle:@"Accept" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+            [[NSNotificationCenter defaultCenter] postNotificationName:APP_START_SYSTEM_SHARE_VIEW object:nil];;
+            
+        }];
+        [alertController addAction:refuseAction];
+        [alertController addAction:answerAction];
+        UIViewController *controller = [UIApplication sharedApplication].delegate.window.rootViewController;
+        [controller presentViewController:alertController animated:YES completion:nil];
+    });
 }
 
 

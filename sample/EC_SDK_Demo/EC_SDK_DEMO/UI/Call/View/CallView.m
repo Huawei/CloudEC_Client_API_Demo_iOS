@@ -53,8 +53,6 @@
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideCurrentCallViewToolbar)];
         [self addGestureRecognizer:tap];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSpeakerStatus:) name:NTF_AUDIOROUTE_CHANGED object:nil];
-        
         NSArray *nib = [[NSBundle mainBundle] loadNibNamed:@"CallView" owner:self options:nil];
         _showOrient = UIInterfaceOrientationPortrait;
         self = [nib objectAtIndex:0];
@@ -75,17 +73,6 @@
         return;
     }
     [_toolBarView setHidden:!_toolBarView.hidden];
-}
-
-- (void)updateSpeakerStatus:(NSNotification *)notification
-{
-    ROUTE_TYPE currentRoute = (ROUTE_TYPE)[notification.userInfo[AUDIO_ROUTE_KEY] integerValue];
-    if (currentRoute == ROUTE_LOUDSPEAKER_TYPE)
-    {
-        [_routeButton setImage:[UIImage imageNamed:@"voice_headphonebt_normal"] forState:UIControlStateNormal];
-    } else {
-        [_routeButton setImage:[UIImage imageNamed:@"voice_call_speaker_normal"] forState:UIControlStateNormal];
-    }
 }
 
 -(void)setCurrentTupCallInfo:(CallInfo *)currentTupCallInfo
@@ -123,9 +110,10 @@
     ROUTE_TYPE currentRoute = [[ManagerService callService] obtainMobileAudioRoute];
     if (currentRoute == ROUTE_LOUDSPEAKER_TYPE)
     {
-        [_routeButton setImage:[UIImage imageNamed:@"voice_headphonebt_normal"] forState:UIControlStateNormal];
-    } else {
         [_routeButton setImage:[UIImage imageNamed:@"voice_call_speaker_normal"] forState:UIControlStateNormal];
+       
+    } else {
+         [_routeButton setImage:[UIImage imageNamed:@"voice_headphonebt_normal"] forState:UIControlStateNormal];
     }
 }
 
@@ -220,5 +208,18 @@
         [_holdButton setImage:[UIImage imageNamed:@"voice_call_hold_normal"] forState:UIControlStateNormal];
     }
 }
+
+-(void)setIsloudSpeak:(BOOL)isloudSpeak
+{
+    _isloudSpeak = isloudSpeak;
+    if (isloudSpeak)
+    {
+        [_routeButton setImage:[UIImage imageNamed:@"voice_call_speaker_normal"] forState:UIControlStateNormal];
+        
+    } else {
+        [_routeButton setImage:[UIImage imageNamed:@"voice_headphonebt_normal"] forState:UIControlStateNormal];
+    }
+}
+
 
 @end

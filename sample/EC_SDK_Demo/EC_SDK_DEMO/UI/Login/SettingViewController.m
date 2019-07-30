@@ -68,7 +68,7 @@
     
     NSString *priorityTypeString = array[2];
     _priorityType = [priorityTypeString intValue];
-    if(_priorityType == CONFIG_PRIORITY_TYPE_APP ||  priorityTypeString == nil){
+    if(_priorityType == CONFIG_PRIORITY_TYPE_APP){
         _udpSwitch.enabled = YES;
         _tlsSwitch.enabled = YES;
         _tcpSwitch.enabled = YES;
@@ -96,7 +96,7 @@
     NSString *sipPortPriorityString = array[5];
     _sipPortPriority = [sipPortPriorityString boolValue];
     
-    if (_sipPortPriority || sipPortPriorityString == nil) {
+    if (_sipPortPriority) {
         _udpPortField.enabled = YES;
         _tlsPortField.enabled = YES;
         _portConfigSwitch.on = YES;

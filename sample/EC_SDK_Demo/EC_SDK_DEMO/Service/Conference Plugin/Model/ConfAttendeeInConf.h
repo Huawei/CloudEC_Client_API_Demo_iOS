@@ -27,6 +27,7 @@
 @property (nonatomic, assign) BOOL isPresent; //是否是主讲人
 @property (nonatomic, assign) BOOL isSelf; //是否是自己
 @property (nonatomic, assign) BOOL isBroadcast; //是否被广播
+@property (nonatomic, assign) BOOL isShareOwner; //是否是共享者
 
 @end
 

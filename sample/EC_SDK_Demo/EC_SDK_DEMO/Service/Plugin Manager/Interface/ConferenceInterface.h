@@ -10,6 +10,8 @@
 #define ConferenceInterface_h
 
 #import "Defines.h"
+#import <UIKit/UIKit.h>
+
 @class ChatMsg;
 @class ConfBaseInfo;
 extern NSString *const CONFERENCE_END_NOTIFY;
@@ -55,6 +57,12 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  *数据会议中文字聊天业务代理
  */
 @property (nonatomic, weak) id<DataConferenceChatMessageDelegate> chatDelegate;
+
+@property (assign, nonatomic) CGFloat imageScale;
+
+@property (nonatomic, assign) BOOL isBeginAnnotation;
+
+@property (nonatomic, assign) BOOL mIsScreenSharing;
 
 /**
  *Indicates whether have joined data conf
@@ -312,6 +320,30 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 
 - (BOOL)joinConferenceWithDisPlayName:(NSString *)disPlayName ConfId:(NSString *)confID PassWord:(NSString *)passWord ServerAdd:(NSString *)serverAdd ServerPort:(int)serverPort;
 
+
+- (void)confStopReplayKitBroadcast;
+
+- (void)annotationSetPenAndAnnotationColor:(unsigned int)color lineWidth:(int)lineWidth;
+
+- (void)conferenceCreateAnnotationWithStartPointx:(long)pointx Pointy:(long)pointy;
+
+- (void)conferenceUpdateAnnotationWithPointx:(long)pointx Pointy:(long)pointy;
+
+- (void)conferenceFinishAnnotation;
+
+- (void)conferenceCancelAnnotation;
+
+- (void)conferenceShareGetParam;
+
+- (void)conferenceEraseAnnotationsIntersectedBySegmentWithStartPoint:(CGPoint)startPoint endPoint:(CGPoint)endPoint;
+
+- (void)conferenceEraseAnnotationAtLocation:(CGPoint)location;
+
+- (void)conferenceEraseAllAnnotations;
+
+- (BOOL)inviteDataShareWithNumber:(NSString *)number;
+
+- (BOOL)cancelDataShareWithNumber:(NSString *)number;
 @end
 
 #endif /* ConferenceInterface_h */
