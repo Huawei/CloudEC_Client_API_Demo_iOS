@@ -216,6 +216,7 @@
 		DEAB9039212E9F41005BC744 /* websockets.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEAB8F8C212E9823005BC744 /* websockets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DEBDCCF122E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */; };
 		DEC49B76221CE7940089A88A /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC49B75221CE7940089A88A /* libc++.tbd */; };
+		DEC809C82307A0340024A89B /* LocalNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC809C72307A0330024A89B /* LocalNotificationCenter.m */; };
 		DED4CBD622EECC160035334C /* libtup_service_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED4CBD522EECC160035334C /* libtup_service_base.a */; };
 		DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01690E022A4FB85002B2A27 /* ReplayKit.framework */; };
 		DED4CC1722EF16AF0035334C /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DED4CC1622EF16AF0035334C /* SampleHandler.m */; };
@@ -596,6 +597,8 @@
 		DEAB8F8C212E9823005BC744 /* websockets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = websockets.framework; sourceTree = "<group>"; };
 		DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
 		DEC49B75221CE7940089A88A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		DEC809C62307A0330024A89B /* LocalNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationCenter.h; sourceTree = "<group>"; };
+		DEC809C72307A0330024A89B /* LocalNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationCenter.m; sourceTree = "<group>"; };
 		DED4CBD522EECC160035334C /* libtup_service_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_service_base.a; sourceTree = "<group>"; };
 		DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ECSdkScreenShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DED4CC1522EF16AF0035334C /* SampleHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleHandler.h; sourceTree = "<group>"; };
@@ -1147,6 +1150,8 @@
 				12C242061F31CEB600C21D91 /* NetworkUtils.mm */,
 				12C242071F31CEB600C21D91 /* Reachability.h */,
 				12C242081F31CEB600C21D91 /* Reachability.m */,
+				DEC809C62307A0330024A89B /* LocalNotificationCenter.h */,
+				DEC809C72307A0330024A89B /* LocalNotificationCenter.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1574,6 +1579,7 @@
 				1298B3ED1F6627BA00910855 /* ContactInfo.m in Sources */,
 				1258C1E61F399CF500654D80 /* ServiceManager.m in Sources */,
 				124B83851F3B06A800631769 /* ChatMsg.m in Sources */,
+				DEC809C82307A0340024A89B /* LocalNotificationCenter.m in Sources */,
 				12C23FBB1F31C06D00C21D91 /* main.m in Sources */,
 				41281125211181EC00A7C765 /* NoDisturbViewController.m in Sources */,
 				D0C5767322A51C2900C6559A /* ScreenShareView.m in Sources */,

@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "CallInterface.h"
 
-extern NSString* const TSDK_COMING_CALL_NOTIFY;              // 新来电通知
-
 @class CallInfo;
 @interface CallService : NSObject<CallInterface>
 

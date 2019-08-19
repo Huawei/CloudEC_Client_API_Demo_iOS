@@ -26,6 +26,7 @@
 #import "LoginCenter.h"
 #import "VideoShareViewController.h"
 //#import "AudioConfViewController.h"
+#import "LocalNotificationCenter.h"
 
 
 
@@ -80,6 +81,7 @@
     
     // other UI Things
     [CallWindowController shareInstance];
+    [[LocalNotificationCenter sharedInstance] start];
 
     [self gotoNormalFlow];
     

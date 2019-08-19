@@ -16,7 +16,6 @@
 #define SDK_CONFIG_RESULT(result)  (((TUP_SUCCESS) == result)?@"YES":[NSString stringWithFormat:@"NO error =%d",result])
 
 #define EC_SET_CONF_MODE_NOTIFY  @"EC_SET_CONF_MODE_NOTIFY"
-#define EC_COMING_CONF_NOTIFY  @"EC_COMING_CONF_NOTIFY"
 #pragma mark - Call
 
 extern NSString *const SIP_STATUS_KEY;                  // current sip register status: CALL_E_REG_STATE
@@ -79,6 +78,10 @@ extern NSString *const NTF_MULTI_MEDIA_CONF_SHOULD_HAS_ANNO;
 extern NSString *const APP_START_SYSTEM_SHARE_VIEW;
 
 extern NSString *const CONF_SHARE_REQUEST_ACTION;
+
+extern NSString* const TSDK_COMING_CALL_NOTIFY;              
+
+extern NSString* const EC_COMING_CONF_NOTIFY;
 
 
 /**

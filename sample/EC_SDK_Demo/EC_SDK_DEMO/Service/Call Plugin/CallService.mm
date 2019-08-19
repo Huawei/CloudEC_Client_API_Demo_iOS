@@ -34,8 +34,6 @@
 #import "tsdk_ctd_interface.h"
 
 
-NSString* const TSDK_COMING_CALL_NOTIFY = @"TSDK_COMING_CALL_NOTIFY";
-
 #define CHECKCSTR(str) (((str) == NULL) ? "" : (str))
 
 #define CALLINFO_CALLNUMBER_KEY @"CALLINFO_CALLNUMBER_KEY"
