@@ -18,9 +18,17 @@
 #import "ConfAttendee.h"
 #import "ConfListViewController.h"
 #import "CommonUtils.h"
+#import "CallWindowController.h"
+#import "SignalScrollView.h"
 
-#define SCREEN_WIDTH MIN(self.view.bounds.size.width, self.view.bounds.size.height)
-#define SCREEN_HIGHT MAX(self.view.bounds.size.height, self.view.bounds.size.width)
+#import "ImageViewBtn.h"
+#import "JoinConfIndInfo.h"
+#import "ECSDKProgressHud.h"
+#import "SVCConfWatchAttendeeInfo.h"
+#import "CallStatisticInfo.h"
+#import "SignalDataScrollView.h"
+
+#import "StatisticShowInfo.h"
 
 @interface VideoShareViewController ()<UITableViewDelegate, UITableViewDataSource, CallServiceDelegate, ConferenceServiceDelegate>
 
@@ -28,10 +36,26 @@
 @property (nonatomic, strong) UIImageView *backImageView;
 @property (nonatomic, strong) EAGLView *remoteView;
 @property (nonatomic, strong) EAGLView *localView;
+@property (nonatomic, strong) EAGLView *localBigView;
+
+@property (nonatomic, strong) UIView *firstSVCViewShower;
+@property (nonatomic, strong) EAGLView *firstSVCView;
+@property (nonatomic, strong) UIView *secondSVCViewShower;
+@property (nonatomic, strong) EAGLView *secondSVCView;
+@property (nonatomic, strong) UIView *thirdSVCViewShower;
+@property (nonatomic, strong) EAGLView *thirdSVCView;
+
+@property (nonatomic, strong) UILabel *bigViewNameLabel;
+@property (nonatomic, strong) UILabel *localNameLabel;
+@property (nonatomic, strong) UILabel *firstNameLabel;
+@property (nonatomic, strong) UILabel *secondNameLabel;
+@property (nonatomic, strong) UILabel *thirdNameLabel;
+
+@property (nonatomic, strong) UIView *backSVCView;
+
 @property (nonatomic, strong) UIButton *confDataShareBtn;
 @property (nonatomic, strong) UIImageView *confDataShareImageView;
 @property (nonatomic, strong) UIButton *attendCameraChooseBtn;
-@property (nonatomic, strong) UIButton *cameraHandleBtn;
 @property (nonatomic, strong) UIButton *setConfModeBtn;
 @property (nonatomic, strong) UITableView *attendTableView;
 @property (nonatomic, strong) UIImageView *attendTableViewBackImageView;
@@ -46,15 +70,27 @@
 
 @property (nonatomic,strong) UIImageView* audioBackImageView;
 
-@property (nonatomic, assign) BOOL isCameraOpen;
-@property (nonatomic, strong) CallInfo *currentTupCallInfo;
-@property (nonatomic, assign) NSInteger cameraCaptureIndex;
 @property (nonatomic, strong) NSMutableArray *localCameraInfos;
 @property (nonatomic, strong) NSMutableArray *remoteCameraInfos;
 
 @property (nonatomic, assign) BOOL isEnterBackground;
 
 @property (nonatomic, assign) EC_CONF_MODE currentConfMode;
+
+@property (nonatomic, strong) ImageViewBtn *signalBtn;
+@property (nonatomic, strong) SignalScrollView *signalScrollView;
+@property (nonatomic, strong) UIView *signalBackView;
+
+@property (nonatomic, strong) SignalDataScrollView *signalDataScrollView;
+
+@property (nonatomic, assign) NSInteger currentWatchPage;
+@property (nonatomic, strong) ImageViewBtn *nextPageBtn;
+@property (nonatomic, strong) ImageViewBtn *previousPageBtn;
+
+@property (nonatomic, assign) CGFloat currentNameWith;
+@property (nonatomic, assign) CGFloat currentNameHeight;
+
+@property (nonatomic, strong) NSArray *currentAttendeeWatchArray;
 
 @end
 
@@ -70,6 +106,174 @@
 
 -(void)callEventCallback:(TUP_CALL_EVENT_TYPE)callEvent result:(NSDictionary *)resultDictionary
 {
+    switch (callEvent) {
+        case CALL_EVT_STATISTIC_INFO:
+        {
+            CallStatisticInfo *callInfo = resultDictionary[CALL_STATISTIC_INFO];
+            [self updatesignalImageWithSignalStrength:callInfo.signalStrength];
+            AudioStreamInfo *audioStreamInfo = callInfo.audioStreamInfo;
+
+            NSMutableArray *audioInfoArray = [[NSMutableArray alloc] init];
+            
+            StatisticShowInfo *locallSendInfo = [[StatisticShowInfo alloc] init];
+            locallSendInfo.name = @"local send";
+            locallSendInfo.bandWidth = audioStreamInfo.sendBitRate/1000;
+            locallSendInfo.lossFraction = audioStreamInfo.sendLossFraction;
+            locallSendInfo.delay = audioStreamInfo.sendDelay;
+            locallSendInfo.jitter = audioStreamInfo.sendJitter;
+            StatisticShowInfo *localRecvInfo = [[StatisticShowInfo alloc] init];
+            localRecvInfo.name = @"local recv";
+            localRecvInfo.bandWidth = audioStreamInfo.recvBitRate/1000;
+            localRecvInfo.lossFraction = audioStreamInfo.recvLossFraction;
+            localRecvInfo.delay = audioStreamInfo.recvDelay;
+            localRecvInfo.jitter = audioStreamInfo.recvJitter;
+            
+            [audioInfoArray addObject:locallSendInfo];
+            [audioInfoArray addObject:localRecvInfo];
+            self.signalDataScrollView.audioInfoArray = [NSArray arrayWithArray:audioInfoArray];
+            
+            NSMutableArray *videoInfoArray = [[NSMutableArray alloc] init];
+
+            if (callInfo.isSvcConf) {
+                NSArray *currentMutiStream = [NSArray arrayWithArray:callInfo.svcStreamInfoArray];
+                int localNumber = 1;
+                for (int i = 0 ; i < callInfo.svcStreamCount; i ++) {
+                    VideoStreamInfo *videoSingleStream = currentMutiStream[i];
+                    if (videoSingleStream.sendBitRate != 0) {
+                        StatisticShowInfo *videoLocallSendInfo = [[StatisticShowInfo alloc] init];
+                        videoLocallSendInfo.name = [NSString stringWithFormat:@"local send %d",localNumber];
+                        videoLocallSendInfo.bandWidth = videoSingleStream.sendBitRate/1000;
+                        videoLocallSendInfo.lossFraction = videoSingleStream.sendLossFraction;
+                        videoLocallSendInfo.delay = videoSingleStream.sendDelay;
+                        videoLocallSendInfo.jitter = videoSingleStream.sendJitter;
+                        videoLocallSendInfo.frameRate = videoSingleStream.sendFrameRate;
+                        videoLocallSendInfo.frameSize = videoSingleStream.sendFrameSize;
+                        
+                        [videoInfoArray addObject:videoLocallSendInfo];
+                        localNumber ++;
+                    }
+                }
+                for (int i = 0 ; i < callInfo.svcStreamCount; i ++) {
+                    VideoStreamInfo *videoSingleStream = currentMutiStream[i];
+                    if (videoSingleStream.recvBitRate != 0) {
+                        StatisticShowInfo *videoRecvInfo = [[StatisticShowInfo alloc] init];
+                        
+                        videoRecvInfo.bandWidth = videoSingleStream.recvBitRate/1000;
+                        videoRecvInfo.lossFraction = videoSingleStream.recvLossFraction;
+                        videoRecvInfo.delay = videoSingleStream.recvDelay;
+                        videoRecvInfo.jitter = videoSingleStream.recvJitter;
+                        videoRecvInfo.frameRate = videoSingleStream.recvFrameRate;
+                        videoRecvInfo.frameSize = videoSingleStream.recvFrameSize;
+
+                        NSString *recvName = @"";
+                        if (_firstSVCView.currentlabel == videoSingleStream.recvSsrcLabel) {
+                            recvName = _firstSVCView.currentAttendee.name;
+                            if (recvName.length == 0) {
+                                recvName = _firstSVCView.currentAttendee.number;
+                            }
+                        }else if (_secondSVCView.currentlabel == videoSingleStream.recvSsrcLabel){
+                            recvName = _secondSVCView.currentAttendee.name;
+                            if (recvName.length == 0) {
+                                recvName = _secondSVCView.currentAttendee.number;
+                            }
+                        }else if (_thirdSVCView.currentlabel == videoSingleStream.recvSsrcLabel){
+                            recvName = _thirdSVCView.currentAttendee.name;
+                            if (recvName.length == 0) {
+                                recvName = _thirdSVCView.currentAttendee.number;
+                            }
+                        }else{
+                            
+                        }
+                        videoRecvInfo.name = [NSString stringWithFormat:@"%@ recv",recvName];
+                        [videoInfoArray addObject:videoRecvInfo];
+                    }
+                }
+            }else{
+                VideoStreamInfo *singleStream = callInfo.videoStreamInfo;
+                StatisticShowInfo *videoLocallSendInfo = [[StatisticShowInfo alloc] init];
+                videoLocallSendInfo.name = @"local send";
+                videoLocallSendInfo.bandWidth = singleStream.sendBitRate/1000;
+                videoLocallSendInfo.lossFraction = singleStream.sendLossFraction;
+                videoLocallSendInfo.delay = singleStream.sendDelay;
+                videoLocallSendInfo.jitter = singleStream.sendJitter;
+                videoLocallSendInfo.frameRate = singleStream.sendFrameRate;
+                videoLocallSendInfo.frameSize = singleStream.sendFrameSize;
+                
+                StatisticShowInfo *videoLocallRecvInfo = [[StatisticShowInfo alloc] init];
+                videoLocallRecvInfo.name = @"local recv";
+                videoLocallRecvInfo.bandWidth = singleStream.sendBitRate/1000;
+                videoLocallRecvInfo.lossFraction = singleStream.sendLossFraction;
+                videoLocallRecvInfo.delay = singleStream.sendDelay;
+                videoLocallRecvInfo.jitter = singleStream.sendJitter;
+                videoLocallRecvInfo.frameRate = singleStream.sendFrameRate;
+                videoLocallRecvInfo.frameSize = singleStream.sendFrameSize;
+                
+                [videoInfoArray addObject:videoLocallSendInfo];
+                [videoInfoArray addObject:videoLocallRecvInfo];
+                
+            }
+            self.signalDataScrollView.videoInfoArray = [NSArray arrayWithArray:videoInfoArray];
+            
+            NSMutableArray *dataInfoArray = [[NSMutableArray alloc] init];
+            if ([ManagerService confService].isStartScreenSharing) {
+                VideoStreamInfo *dataStream = callInfo.dataStreamInfo;
+                StatisticShowInfo *dataLocallSendInfo = [[StatisticShowInfo alloc] init];
+                dataLocallSendInfo.name = @"local send";
+                dataLocallSendInfo.bandWidth = dataStream.sendBitRate/1000;
+                dataLocallSendInfo.lossFraction = dataStream.sendLossFraction;
+                dataLocallSendInfo.delay = dataStream.sendDelay;
+                dataLocallSendInfo.jitter = dataStream.sendJitter;
+                dataLocallSendInfo.frameRate = dataStream.sendFrameRate;
+                dataLocallSendInfo.frameSize = dataStream.sendFrameSize;
+                
+                StatisticShowInfo *dataLocallRecvInfo = [[StatisticShowInfo alloc] init];
+                dataLocallRecvInfo.name = @"local recv";
+                dataLocallRecvInfo.bandWidth = dataStream.sendBitRate/1000;
+                dataLocallRecvInfo.lossFraction = dataStream.sendLossFraction;
+                dataLocallRecvInfo.delay = dataStream.sendDelay;
+                dataLocallRecvInfo.jitter = dataStream.sendJitter;
+                dataLocallRecvInfo.frameRate = dataStream.sendFrameRate;
+                dataLocallRecvInfo.frameSize = dataStream.sendFrameSize;
+                
+                [dataInfoArray addObject:dataLocallSendInfo];
+                [dataInfoArray addObject:dataLocallRecvInfo];
+                
+                self.signalDataScrollView.dataInfoArray = [NSArray arrayWithArray:dataInfoArray];
+            }
+            
+            
+            
+            DDLogInfo(@"call");
+            
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
+
+- (void)updatesignalImageWithSignalStrength:(NSInteger)signalStrength
+{
+    switch (signalStrength) {
+        case 1:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_1"] forState:UIControlStateNormal];
+            break;
+        case 2:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_2"] forState:UIControlStateNormal];
+            break;
+        case 3:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_3"] forState:UIControlStateNormal];
+            break;
+        case 4:
+        case 5:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_4"] forState:UIControlStateNormal];
+            break;
+            
+        default:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_1"] forState:UIControlStateNormal];
+            break;
+    }
     
 }
 
@@ -77,7 +281,10 @@
 {
     switch (ecConfEvent) {
         case CONF_E_ATTENDEE_UPDATE_INFO:
+        {
             [self confAttendeeUpdateAction];
+            
+        }
             break;
             
         case CONF_E_END_RESULT:
@@ -88,6 +295,31 @@
             
         }
             break;
+        case CONF_E_CONNECT:
+            
+            break;
+        
+        case CONF_E_SVC_WATCH_INFO_IND:
+        {
+            NSString *name = [ManagerService confService].currentBigViewAttendee.name;
+            if (name.length == 0) {
+                name = [ManagerService confService].currentBigViewAttendee.number;
+            }
+            
+            CGRect rect = [name boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width - 20, MAXFLOAT)
+                                                  options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                                               attributes:@{NSFontAttributeName:_bigViewNameLabel.font}
+                                                  context:nil];
+            _currentNameWith = rect.size.width + 20;
+            _currentNameHeight = rect.size.height + 20;
+            
+            [self updateBtnViewFrame];
+            
+            _bigViewNameLabel.text = name;
+        }
+            
+            break;
+            
         default:
             break;
     }
@@ -95,6 +327,7 @@
 
 - (void)confAttendeeUpdateAction
 {
+    _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
     
     if ([self isNeedAddDataBtn]) {
         if (_confDataShareBtn == nil) {
@@ -110,6 +343,146 @@
     }else{
         [self.muteBtn setImage:[UIImage imageNamed:@"conf_tab_mute"] forState:UIControlStateNormal];
     }
+    
+    if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+        NSArray *watchAttendees = [ManagerService confService].watchAttendeesArray;
+        
+        _localNameLabel.text = @"Local";
+        
+        if (watchAttendees.count == 0) {
+            self.localBigView.hidden = NO;
+            self.remoteView.hidden = YES;
+//            _backSVCView.hidden = YES;
+            
+            _firstSVCViewShower.hidden = YES;
+            _secondSVCViewShower.hidden = YES;
+            _thirdSVCViewShower.hidden = YES;
+            _localViewShower.hidden = YES;
+            _previousPageBtn.hidden = YES;
+            _nextPageBtn.hidden = YES;
+            
+            _firstSVCView.currentAttendee = nil;
+            _firstSVCView.currentlabel = 0;
+            
+            _secondSVCView.currentAttendee = nil;
+            _secondSVCView.currentlabel = 0;
+            
+            _thirdSVCView.currentAttendee = nil;
+            _thirdSVCView.currentlabel = 0;
+            
+        }else{
+            self.localBigView.hidden = YES;
+            self.remoteView.hidden = NO;
+            if ( _backSVCView.hidden ==  NO) {
+                _localViewShower.hidden = NO;
+                _firstSVCViewShower.hidden = NO;
+                _secondSVCViewShower.hidden = NO;
+                _thirdSVCViewShower.hidden = NO;
+                _previousPageBtn.hidden = YES;
+                _nextPageBtn.hidden = YES;
+            }
+
+            NSString *firstName = _firstSVCView.currentAttendee.name;
+            NSString *secondName = _secondSVCView.currentAttendee.name;
+            NSString *thirdName = _thirdSVCView.currentAttendee.name;
+            
+            NSString *firstNumber = _firstSVCView.currentAttendee.number;
+            NSString *secondNumber = _secondSVCView.currentAttendee.number;
+            NSString *thirdNumber = _thirdSVCView.currentAttendee.number;
+            
+            if (firstName.length != 0) {
+                _firstNameLabel.text = firstName;
+            }else{
+                _firstNameLabel.text = firstNumber;
+            }
+            
+            if (watchAttendees.count == 1) {
+                _secondSVCViewShower.hidden = YES;
+                _thirdSVCViewShower.hidden = YES;
+                
+                BOOL isNeedUpdateWatch1 = YES;
+                for (ConfAttendeeInConf* attendeeInfo in watchAttendees) {
+                    if([attendeeInfo.number isEqualToString:_firstSVCView.currentAttendee.number]){
+                        isNeedUpdateWatch1 = NO;
+                    }
+                }
+                
+                if (isNeedUpdateWatch1) {
+                    [self updateWatchAttendeesWithPage:0 bigViewNumber:@""];
+                }
+                
+                _secondSVCView.currentAttendee = nil;
+                _secondSVCView.currentlabel = 0;
+                
+                _thirdSVCView.currentAttendee = nil;
+                _thirdSVCView.currentlabel = 0;
+                
+            }else if (watchAttendees.count == 2){
+                _thirdSVCViewShower.hidden = YES;
+                
+                BOOL isNeedUpdateWatch1 = YES;
+                BOOL isNeedUpdateWatch2 = YES;
+                for (ConfAttendeeInConf* attendeeInfo in watchAttendees) {
+                    if([attendeeInfo.number isEqualToString:_firstSVCView.currentAttendee.number]){
+                        isNeedUpdateWatch1 = NO;
+                    }
+                    if([attendeeInfo.number isEqualToString:_secondSVCView.currentAttendee.number]){
+                        isNeedUpdateWatch2 = NO;
+                    }
+                }
+                
+                if (isNeedUpdateWatch1 || isNeedUpdateWatch2) {
+                    [self updateWatchAttendeesWithPage:0 bigViewNumber:@""];
+                }
+                
+                _thirdSVCView.currentAttendee = nil;
+                _thirdSVCView.currentlabel = 0;
+                
+                if (secondName.length != 0) {
+                    _secondNameLabel.text = secondName;
+                }else{
+                    _secondNameLabel.text = secondNumber;
+                }
+            }else{
+                if (watchAttendees.count > 3) {
+                    _previousPageBtn.hidden = NO;
+                    _nextPageBtn.hidden = NO;
+                }
+                
+                BOOL isNeedUpdateWatch1 = YES;
+                BOOL isNeedUpdateWatch2 = YES;
+                BOOL isNeedUpdateWatch3 = YES;
+                for (ConfAttendeeInConf* attendeeInfo in watchAttendees) {
+                    if([attendeeInfo.number isEqualToString:_firstSVCView.currentAttendee.number]){
+                        isNeedUpdateWatch1 = NO;
+                    }
+                    if([attendeeInfo.number isEqualToString:_secondSVCView.currentAttendee.number]){
+                        isNeedUpdateWatch2 = NO;
+                    }
+                    if([attendeeInfo.number isEqualToString:_thirdSVCView.currentAttendee.number]){
+                        isNeedUpdateWatch3 = NO;
+                    }
+                }
+                
+                if (isNeedUpdateWatch1 || isNeedUpdateWatch2 || isNeedUpdateWatch3) {
+                    [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+                }
+                
+                if (thirdName.length != 0) {
+                    _thirdNameLabel.text = thirdName;
+                }else{
+                    _thirdNameLabel.text = thirdNumber;
+                }
+                if (secondName.length != 0) {
+                    _secondNameLabel.text = secondName;
+                }else{
+                    _secondNameLabel.text = secondNumber;
+                }
+            }
+        }
+    }
+    
+    
 }
 
 - (NSMutableArray *)localCameraInfos {
@@ -129,28 +502,23 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        if ([self isVideoConf]) {
-            _isCameraOpen = YES;
-        }else {
-            _isCameraOpen = NO;
-        }
         _isEnterBackground = NO;
-        _cameraCaptureIndex = 1;
         _currentConfMode = EC_CONF_MODE_FIXED;
+        _currentWatchPage = 0;
+        _currentNameWith = 0;
+        _currentNameHeight = 0;
         self.confCtrlArray = [[NSMutableArray alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(tupLocalVideoViewRefreshViewWithCallId:)
-                                                     name:TUP_CALL_REFRESH_VIEW_NOTIFY
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(tupRemoteVideoViewDecodeSuccessWithCallId:)
-                                                     name:TUP_CALL_DECODE_SUCCESS_NOTIFY
-                                                   object:nil];
-  
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(deviceMotionOrientationChanged)
-                                                     name:ESPACE_DEVICE_ORIENTATION_CHANGED
-                                                   object:nil];
+        self.currentAttendeeWatchArray = [[NSArray alloc] init];
+        [ECSDKProgressHud shareInstance];
+        
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(tupLocalVideoViewRefreshViewWithCallId:)
+//                                                     name:TUP_CALL_REFRESH_VIEW_NOTIFY
+//                                                   object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(tupRemoteVideoViewDecodeSuccessWithCallId:)
+//                                                     name:TUP_CALL_DECODE_SUCCESS_NOTIFY
+//                                                   object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(receiveConfModeChanged:)
                                                      name:EC_SET_CONF_MODE_NOTIFY
@@ -196,19 +564,30 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [ManagerService confService].delegate = self;
+    [ManagerService callService].delegate = self;
+    
     if ([self isNeedAddDataBtn]) {
         [self.barView addSubview:self.confDataShareBtn];
     }
-    [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
-    if (![self isVideoConf]) {
+    
+    if ([self isVideoConf]) {
+        [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
+//        [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
+    }else{
         [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
     }
+    if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+        [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+        [self confAttendeeUpdateAction];
+    }
+    _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-    [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
+//    [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
 }
 
 - (void)viewDidLoad {
@@ -219,9 +598,21 @@
     
     if ([self isVideoConf]) {
         [self.view insertSubview:self.backImageView belowSubview:self.bottomView];
-        [self.view insertSubview:self.remoteView aboveSubview:self.backImageView];
-        [self.view addSubview:self.localViewShower];
+        
+        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+            [self.view insertSubview:self.localBigView aboveSubview:self.backImageView];
+            [self.view insertSubview:self.remoteView aboveSubview:self.localBigView];
+            [self.view insertSubview:self.backSVCView aboveSubview:_remoteView];
+            [self.view addSubview:self.bigViewNameLabel];
+        }else{
+            [self.view insertSubview:self.remoteView aboveSubview:self.backImageView];
+            [self.view addSubview:self.localViewShower];
+            _localViewShower.frame = CGRectMake(5, 64 + 5, 95, 126);
+            _localView.frame = CGRectMake(0, 0, 95, 126);
+        }
+        
         [self.barView addSubview:self.attendCameraChooseBtn];
+        
     }else{
         [self.view insertSubview:self.audioBackImageView belowSubview:self.bottomView];
     }
@@ -245,9 +636,13 @@
     [backBtn addTarget:self action:@selector(gobackBtnAction) forControlEvents:UIControlEventTouchUpInside];
     [self.barView addSubview:backBtn];
     
-    BOOL isSuccess = [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:[ManagerService confService].currentConfBaseInfo.call_id];
+    [self.view addSubview:self.signalBackView];
+    [self.view addSubview:self.signalBtn];
+    
+    
+    BOOL isSuccess = [[ManagerService callService] switchCameraIndex:[CallWindowController shareInstance].cameraCaptureIndex callId:[ManagerService confService].currentCallId];
     if (isSuccess) {
-        [self deviceMotionOrientationChanged];
+        [[CallWindowController shareInstance] deviceMotionOrientationChanged];
     }
     
 }
@@ -329,6 +724,7 @@
 
 - (void)updateConfCtrlArray
 {
+    _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
     [self.confCtrlArray removeAllObjects];
     if ([self isVideoConf]) {
         [self.confCtrlArray addObject:@"Camera Change"];
@@ -337,16 +733,28 @@
             [self.confCtrlArray addObject:@"Set Conf Mode"];
         }
         
-        if (_isCameraOpen) {
-            [self.confCtrlArray addObject:@"Camera Close"];
-        }else{
+        if ([CallWindowController shareInstance].cameraClose) {
             [self.confCtrlArray addObject:@"Camera Open"];
+        }else{
+            [self.confCtrlArray addObject:@"Camera Close"];
         }
         if (_localViewShower.hidden) {
             [self.confCtrlArray addObject:@"Show LocalView"];
         }else{
             [self.confCtrlArray addObject:@"Hide LocalView"];
         }
+        
+        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+            if (_currentAttendeeWatchArray.count > 0) {
+                if (_backSVCView.hidden) {
+                    [self.confCtrlArray addObject:@"Show SVCView"];
+                }else{
+                    [self.confCtrlArray addObject:@"Hide SVCView"];
+                }
+            }
+        }
+        
+        
     }
     
     if (self.selfConfInfo.role == CONF_ROLE_CHAIRMAN) {
@@ -386,6 +794,59 @@
 {
     ConfRunningViewController *runViewCtrl = [[ConfRunningViewController alloc]init];
     [self.navigationController pushViewController:runViewCtrl animated:YES];
+}
+
+- (SignalDataScrollView *)signalDataScrollView
+{
+    if (nil == _signalDataScrollView) {
+        _signalDataScrollView = [[SignalDataScrollView alloc] initWithFrame:CGRectMake(0, 0, 365, 365)];
+    }
+    return _signalDataScrollView;
+}
+
+- (SignalScrollView *)signalScrollView
+{
+    if (nil == _signalScrollView) {
+        _signalScrollView = [[SignalScrollView alloc] init];
+        _signalScrollView.frame = CGRectMake(0, 0, 365, 365);
+        
+    }
+    return _signalScrollView;
+}
+
+-(UIView *)signalBackView
+{
+    if (nil == _signalBackView) {
+        
+        _signalBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 365, 365)];
+        _signalBackView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HIGHT/2);
+//            _signalBackView.backgroundColor = [UIColor blackColor];
+//            _signalBackView.alpha = 0.5;
+        _signalBackView.hidden = YES;
+//        [_signalBackView addSubview:self.signalScrollView];
+        [_signalBackView addSubview:self.signalDataScrollView];
+        
+        
+    }
+    return _signalBackView;
+}
+
+- (ImageViewBtn *)signalBtn
+{
+    if (nil == _signalBtn) {
+        _signalBtn = [[ImageViewBtn alloc] initWithFrame: CGRectMake(SCREEN_WIDTH - 50, 60, 30 , 30)];
+//        _signalBtn.frame = CGRectMake(SCREEN_WIDTH - 30, 60, 24, 24);
+        _signalBtn.contentMode = UIViewContentModeScaleAspectFill;
+        [_signalBtn setImage:[UIImage imageNamed:@"signal_1"] forState:UIControlStateNormal];
+        [_signalBtn addTarget:self action:@selector(signalBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        
+    }
+    return _signalBtn;
+}
+
+- (void)signalBtnAction
+{
+    _signalBackView.hidden = !_signalBackView.hidden;
 }
 
 - (UIImageView *)audioBackImageView
@@ -430,36 +891,264 @@
     return _backImageView;
 }
 
+- (UILabel *)bigViewNameLabel
+{
+    if (nil == _bigViewNameLabel) {
+        _bigViewNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(SCREEN_WIDTH - 150, 100, 150 , 30)];
+        _localNameLabel.font = [UIFont systemFontOfSize:12.0];
+        _bigViewNameLabel.textColor = [UIColor whiteColor];
+    }
+    return _bigViewNameLabel;
+}
+
+-(UILabel *)localNameLabel
+{
+    if (nil == _localNameLabel) {
+        _localNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 20)];
+        _localNameLabel.font = [UIFont systemFontOfSize:10.0];
+        _localNameLabel.textColor = [UIColor blueColor];
+    }
+    return _localNameLabel;
+}
+
+-(UILabel *)firstNameLabel
+{
+    if (nil == _firstNameLabel) {
+        _firstNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 20)];
+        _firstNameLabel.font = [UIFont systemFontOfSize:10.0];
+        _firstNameLabel.textColor = [UIColor whiteColor];
+    }
+    return _firstNameLabel;
+}
+
+-(UILabel *)secondNameLabel
+{
+    if (nil == _secondNameLabel) {
+        _secondNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 20)];
+        _secondNameLabel.font = [UIFont systemFontOfSize:10.0];
+        _secondNameLabel.textColor = [UIColor whiteColor];
+    }
+    return _secondNameLabel;
+}
+
+-(UILabel *)thirdNameLabel
+{
+    if (nil == _thirdNameLabel) {
+        _thirdNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 20)];
+        _thirdNameLabel.font = [UIFont systemFontOfSize:10.0];
+        _thirdNameLabel.textColor = [UIColor whiteColor];
+    }
+    return _thirdNameLabel;
+}
+
+-(ImageViewBtn *)previousPageBtn
+{
+    if (nil == _previousPageBtn) {
+        _previousPageBtn = [[ImageViewBtn alloc] initWithFrame:CGRectMake(0, 40, 30, 35)];
+        [_previousPageBtn setImage:[UIImage imageNamed:@"image_conf_video_watch_previous_page"] forState:UIControlStateNormal];
+        _previousPageBtn.contentMode = UIViewContentModeScaleAspectFill;
+        [_previousPageBtn addTarget:self action:@selector(previousPageAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _previousPageBtn;
+}
+
+- (void)previousPageAction
+{
+    if (_currentWatchPage == 0) {
+        [[ECSDKProgressHud shareInstance] makeProgressHUD:@"first page" duration:1];
+        return;
+    }
+    if (_currentWatchPage > 0) {
+        _currentWatchPage --;
+    }
+    
+    [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+}
+
+-(ImageViewBtn *)nextPageBtn
+{
+    if (nil == _nextPageBtn) {
+        _nextPageBtn = [[ImageViewBtn alloc] initWithFrame:CGRectMake(SCREEN_WIDTH -30 , 40, 30, 35)];
+        [_nextPageBtn setImage:[UIImage imageNamed:@"image_conf_video_watch_next_page"] forState:UIControlStateNormal];
+        _nextPageBtn.contentMode = UIViewContentModeScaleAspectFill;
+        [_nextPageBtn addTarget:self action:@selector(nextPageAction) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return _nextPageBtn;
+}
+
+- (void)nextPageAction
+{
+    NSInteger maxCurrentpage = [ManagerService confService].watchAttendeesArray.count / 3;
+    if (maxCurrentpage < 1 || maxCurrentpage == _currentWatchPage) {
+        [[ECSDKProgressHud shareInstance] makeProgressHUD:@"last page" duration:1];
+        
+        return;
+    }
+    if (_currentWatchPage < maxCurrentpage) {
+        _currentWatchPage ++;
+    }
+    
+    [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+}
+
 - (UIView *)localViewShower {
     if (nil == _localViewShower) {
-        _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(5, 64 + 5, 126, 95)];
+        _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(30, 5, (SCREEN_WIDTH - 60) / 4, 105)];
+        _localViewShower.backgroundColor = [UIColor blueColor];
 //        _localViewShower.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"image_conf_video_small_video_back"]];
         [_localViewShower addSubview:self.localView];
+        [_localViewShower addSubview:self.localNameLabel];
     }
     return _localViewShower;
 }
 
 -(EAGLView *)localView{
     if (nil == _localView) {
-        if ([self isVideoConf]) {
-            _localView = [EAGLView getLocalView];
-        }else {
-            _localView = [EAGLView getDataLocalView];
-        }
+        _localView = [EAGLView getLocalView];
+        _localView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
     }
     return _localView;
 }
 
+- (UIView *)backSVCView
+{
+    if (nil == _backSVCView) {
+        _backSVCView = [[UIView alloc] initWithFrame:CGRectMake(0, SCREEN_HIGHT - 200, SCREEN_WIDTH, 115)];
+        _backSVCView.hidden = NO;
+//        _backSVCView.backgroundColor = [UIColor whiteColor];
+        [_backSVCView addSubview:self.localViewShower];
+        [_backSVCView addSubview:self.firstSVCViewShower];
+        [_backSVCView addSubview:self.secondSVCViewShower];
+        [_backSVCView addSubview:self.thirdSVCViewShower];
+        
+        [_backSVCView addSubview:self.previousPageBtn];
+        [_backSVCView addSubview:self.nextPageBtn];
+    }
+    return _backSVCView;
+}
+
+- (void)svcAlertActionWithNumber:(NSString *)number name:(NSString *)name
+{
+    NSString *tipString = name.length != 0 ? name : number;
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Tips"
+                                                                             message:[NSString stringWithFormat:@"watch %@'s video?", tipString]
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *sureAction = [UIAlertAction actionWithTitle:@"Sure"
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * _Nonnull action) {
+                                                           [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:number];
+                                                       }];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:nil];
+    [alertController addAction:sureAction];
+    [alertController addAction:cancelAction];
+    [self.navigationController presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)firstSVCViewDoubleTapAction
+{
+    [self svcAlertActionWithNumber:_firstSVCView.currentAttendee.number name:_firstSVCView.currentAttendee.name];
+}
+
+-(UIView *)firstSVCViewShower
+{
+    if (nil == _firstSVCViewShower) {
+        _firstSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 + 30, 5, (SCREEN_WIDTH - 60) / 4, 105)];
+        [_firstSVCViewShower addSubview:self.firstSVCView];
+        [_firstSVCViewShower addSubview:self.firstNameLabel];
+        
+        UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(firstSVCViewDoubleTapAction)];
+        doubleTap.numberOfTapsRequired = 2;
+        [_firstSVCViewShower addGestureRecognizer:doubleTap];
+        
+//        _firstSVCViewShower.backgroundColor = [UIColor greenColor];
+    }
+    return _firstSVCViewShower;
+}
+
+-(EAGLView *)firstSVCView{
+    if (nil == _firstSVCView) {
+        _firstSVCView = [EAGLView getFirstSVCView];
+        _firstSVCView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+    }
+    return _firstSVCView;
+}
+
+- (void)secondSVCViewDoubleTapAction
+{
+    [self svcAlertActionWithNumber:_secondSVCView.currentAttendee.number name:_secondSVCView.currentAttendee.name];
+}
+
+-(UIView *)secondSVCViewShower
+{
+    if (nil == _secondSVCViewShower) {
+        _secondSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 * 2 + 30, 5 , (SCREEN_WIDTH - 60) / 4, 105)];
+        [_secondSVCViewShower addSubview:self.secondSVCView];
+        [_secondSVCViewShower addSubview:self.secondNameLabel];
+        
+        UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(secondSVCViewDoubleTapAction)];
+        doubleTap.numberOfTapsRequired = 2;
+        [_secondSVCViewShower addGestureRecognizer:doubleTap];
+        
+//        _secondSVCViewShower.backgroundColor = [UIColor yellowColor];
+    }
+    return _secondSVCViewShower;
+}
+
+-(EAGLView *)secondSVCView
+{
+    if (nil == _secondSVCView) {
+        _secondSVCView = [EAGLView getSecondSVCView];
+        _secondSVCView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+    }
+    return _secondSVCView;
+}
+
+- (void)thirdSVCViewDoubleTapAction
+{
+    [self svcAlertActionWithNumber:_thirdSVCView.currentAttendee.number name:_thirdSVCView.currentAttendee.name];
+}
+
+-(UIView *)thirdSVCViewShower
+{
+    if (nil == _thirdSVCViewShower) {
+        _thirdSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 * 3 + 30, 5 , (SCREEN_WIDTH - 60) / 4, 105)];
+        [_thirdSVCViewShower addSubview:self.thirdSVCView];
+        [_thirdSVCViewShower addSubview:self.thirdNameLabel];
+        
+        UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(thirdSVCViewDoubleTapAction)];
+        doubleTap.numberOfTapsRequired = 2;
+        [_thirdSVCViewShower addGestureRecognizer:doubleTap];
+        
+//        _thirdSVCViewShower.backgroundColor = [UIColor grayColor];
+    }
+    return _thirdSVCViewShower;
+}
+
+-(EAGLView *)thirdSVCView
+{
+    if (nil == _thirdSVCView) {
+        _thirdSVCView = [EAGLView getThirdSVCView];
+        _thirdSVCView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+    }
+    return _thirdSVCView;
+}
+
 -(EAGLView *)remoteView {
     if (nil == _remoteView) {
-        if ([self isVideoConf]) {
-            _remoteView = [EAGLView getRemoteView];
-        }
-        else {
-            _remoteView = [EAGLView getDataRemoteView];
-        }
+        _remoteView = [EAGLView getRemoteView];
     }
     return _remoteView;
+}
+
+- (EAGLView *)localBigView
+{
+    if (nil == _localBigView) {
+        _localBigView = [EAGLView getLocalBigView];
+    }
+    return _localBigView;
 }
 
 - (void)updateBtnViewFrame
@@ -473,14 +1162,45 @@
         if (interface2 == UIInterfaceOrientationPortrait) {
             width = SCREEN_WIDTH;
             hight = SCREEN_HIGHT;
+
+            _signalBackView.frame = CGRectMake(0, 0, 365, 365);
+            _signalDataScrollView.frame = CGRectMake(0, 0, 365, 365);
+            _signalBackView.center = CGPointMake(width/2, hight/2);
+            _signalBtn.frame = CGRectMake(width - 50, 60, 30, 30);
             
             [self configBottomViewBtnsWithWidth:width];
             if (nil != _remoteView) {
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
-            if (nil != _localViewShower) {
-                _localViewShower.frame = CGRectMake(5, 64 + 5, 126, 95);
-                _localView.frame = CGRectMake(0, 0, 95, 126);
+
+            if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+                
+                if (nil != _localBigView) {
+                    _localBigView.frame = CGRectMake(0, 0, width, hight);
+                }
+                
+                _backSVCView.frame = CGRectMake(0, hight - 200, width, 115);
+                _localViewShower.frame = CGRectMake(30, 5, (width - 60) / 4, 105);
+                _localView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
+                _firstSVCViewShower.frame = CGRectMake((width - 60) / 4 + 30, 5, (width - 60) / 4, 105);
+                _firstSVCView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
+                _secondSVCViewShower.frame = CGRectMake((width - 60) / 4 * 2 + 30, 5 , (width - 60) / 4, 105);
+                _secondSVCView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
+                _thirdSVCViewShower.frame = CGRectMake((width - 60) / 4 * 3 + 30, 5 , (width - 60) / 4, 105);
+                _thirdSVCView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
+                
+                _previousPageBtn.frame = CGRectMake(0, 40, 30, 35);
+                _nextPageBtn.frame = CGRectMake(width - 30 , 40, 30, 35);
+                [_previousPageBtn setImage:[UIImage imageNamed:@"image_conf_video_watch_previous_page"] forState:UIControlStateNormal];
+                [_nextPageBtn setImage:[UIImage imageNamed:@"image_conf_video_watch_next_page"] forState:UIControlStateNormal];
+                
+                _bigViewNameLabel.frame = CGRectMake(width - _currentNameWith, 100, _currentNameWith , _currentNameHeight);
+                
+            }else{
+                if (nil != _localViewShower) {
+                    _localViewShower.frame = CGRectMake(5, 64 + 5, 95, 126);
+                    _localView.frame = CGRectMake(0, 0, 95, 126);
+                }
             }
             
         }else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeRight)
@@ -488,13 +1208,45 @@
             width = SCREEN_HIGHT;
             hight = SCREEN_WIDTH;
             
+            _signalBackView.frame = CGRectMake(0, 0, 365+200, 365);
+            _signalDataScrollView.frame = CGRectMake(0, 0, 365+200, 365);
+            _signalBackView.center = CGPointMake(width/2, hight/2);
+            
+            _signalBtn.frame = CGRectMake(width - 50, 60, 30, 30);
+            
             [self configBottomViewBtnsWithWidth:width];
             if (nil != _remoteView) {
                 _remoteView.frame = CGRectMake(0, 0, width, hight);
             }
-            if (nil != _localViewShower) {
-                _localViewShower.frame = CGRectMake(5, 64 + 5, 126, 95);
-                _localView.frame = CGRectMake(0, 0, 126, 95);
+            
+            if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+                
+                if (nil != _localBigView) {
+                    _localBigView.frame = CGRectMake(0, 0, width, hight);
+                }
+                
+                _backSVCView.frame = CGRectMake(44, 0, 115, hight);
+                _localViewShower.frame = CGRectMake(5, 30, 105, (hight - 60) / 4);
+                _localView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
+                _firstSVCViewShower.frame = CGRectMake(5, (hight - 60) / 4 + 30, 105, (hight - 60) / 4);
+                _firstSVCView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
+                _secondSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 2 + 30, 105, (hight - 60) / 4);
+                _secondSVCView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
+                _thirdSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 3 + 30, 105, (hight - 60) / 4);
+                _thirdSVCView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
+                
+                _previousPageBtn.frame = CGRectMake(40, 0, 30, 35);
+                _nextPageBtn.frame = CGRectMake(40, hight -30, 30, 35);
+                [_previousPageBtn setImage:[UIImage imageNamed:@"image_conf_video_watch_previous_page_up"] forState:UIControlStateNormal];
+                [_nextPageBtn setImage:[UIImage imageNamed:@"image_conf_video_watch_next_page_down"] forState:UIControlStateNormal];
+                
+                _bigViewNameLabel.frame = CGRectMake(width - _currentNameWith, 100, _currentNameWith , _currentNameHeight);
+                
+            }else{
+                if (nil != _localViewShower) {
+                    _localViewShower.frame = CGRectMake(5, 64 + 5, 126, 95);
+                    _localView.frame = CGRectMake(0, 0, 126, 95);
+                }
             }
         }
         
@@ -531,48 +1283,6 @@
     }
 }
 
-- (void)deviceMotionOrientationChanged
-{
-//    [self updateBtnViewFrame];
-    
-    NSUInteger cameraRotation = 0;
-    NSUInteger displayRotation = 0;
-    
-    BOOL needAdjust = [[DeviceMotionManager sharedInstance] adjustCamerRotation:&cameraRotation
-                                                                displayRotation:&displayRotation
-                                                                   byCamerIndex:_cameraCaptureIndex
-                                                           interfaceOrientation:UIInterfaceOrientationPortrait];
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
-    {
-        return ;
-    }
-    
-    if (!needAdjust) {
-        return;
-    }
-    
-//    if (![DeviceMotionManager sharedInstance].motionManager.isDeviceMotionAvailable) {
-//        return;
-//    }
-    
-    [[ManagerService callService] rotationVideoDisplay:displayRotation callId:[ManagerService confService].currentConfBaseInfo.call_id];
-    [[ManagerService callService] rotationCameraCapture:cameraRotation callId:[ManagerService confService].currentConfBaseInfo.call_id];
-}
-
-- (UIButton *)cameraHandleBtn {
-    if (nil == _cameraHandleBtn) {
-        UIImage *normalImage = [UIImage imageNamed:_isCameraOpen ? @"btn_conf_video_camera_close_normal" : @"btn_conf_video_camera_open_normal"];
-        UIImage *clickImage = [UIImage imageNamed:_isCameraOpen ? @"btn_conf_video_camera_close_click" : @"btn_conf_video_camera_open_click"];
-        NSString *title = _isCameraOpen ? @"Close" : @"Open";
-        _cameraHandleBtn = [self createButtonByImage:normalImage
-                                      highlightImage:clickImage
-                                               title:title
-                                              target:self
-                                              action:@selector(cameraHandleBtnClicked:)];
-    }
-    return _cameraHandleBtn;
-}
-
 -(UIButton *)moreBtn
 {
     if (nil == _moreBtn) {
@@ -587,27 +1297,6 @@
         _attendeeListBtn = [self createButtonByImage:[UIImage imageNamed:@"participant_list"] highlightImage:nil title:@"List" target:self action:@selector(attendeeListBtnPressed)];
     }
     return _attendeeListBtn;
-}
-
-- (void)cameraHandleBtnClicked:(id)sender {
-    if ([self isVideoConf]) {
-        [[ManagerService callService] switchCameraOpen:!_isCameraOpen callId:[ManagerService confService].currentConfBaseInfo.call_id];
-        _isCameraOpen = !_isCameraOpen;
-    }
-    
-}
-
-- (void)updateCameraHandleBtn:(BOOL)isSelfCameraOpen {
-    if (isSelfCameraOpen) {
-        [self.cameraHandleBtn setImage:[UIImage imageNamed:@"btn_conf_video_camera_close_normal"] forState:UIControlStateNormal];
-        [self.cameraHandleBtn setImage:[UIImage imageNamed:@"btn_conf_video_camera_close_click"] forState:UIControlStateHighlighted];
-        [self.cameraHandleBtn setTitle:@"Close" forState:UIControlStateNormal];
-    }
-    else {
-        [self.cameraHandleBtn setImage:[UIImage imageNamed:@"btn_conf_video_camera_open_normal"] forState:UIControlStateNormal];
-        [self.cameraHandleBtn setImage:[UIImage imageNamed:@"btn_conf_video_camera_open_click"] forState:UIControlStateHighlighted];
-        [self.cameraHandleBtn setTitle:@"Open" forState:UIControlStateNormal];
-    }
 }
 
 - (UIButton *)setConfModeBtn {
@@ -735,7 +1424,7 @@
 }
 
 - (void)attendCameraChooseBtnClicked:(id)sender {
-    
+    _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
     if (_attendTableViewBackFullScreenView) {
         CGFloat backViewX = SCREEN_HIGHT-5-264;
         if ([self isInterfaceOrientationPortrait]) {
@@ -749,7 +1438,7 @@
         _attendTableViewBackFullScreenView.hidden = ! _attendTableViewBackFullScreenView.hidden;
     }
     else{
-        NSInteger count = [ManagerService confService].haveJoinAttendeeArray.count;
+        NSInteger count = _currentAttendeeWatchArray.count;
         if (count > 0) {
             if ([self isVideoConf]) {
                 [self.view addSubview:self.attendTableViewBackFullScreenView];
@@ -798,7 +1487,8 @@
 }
 
 - (CGFloat)heightOfRealTableView {
-    NSInteger rowNumber = [ManagerService confService].haveJoinAttendeeArray.count + 1;
+    _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
+    NSInteger rowNumber = _currentAttendeeWatchArray.count + 1;
     if (rowNumber <= 4) {
         return rowNumber*44+30;
     }
@@ -865,7 +1555,7 @@
     }
     NSNumber *callidNumber = notify.object;
     unsigned int callid = [callidNumber unsignedIntValue];
-    if (self.currentTupCallInfo.stateInfo.callId != callid) {
+    if ([ManagerService confService].currentCallId != callid) {
         DDLogInfo(@"call id is not equal to mcu conf callid, ignore!");
         return;
     }
@@ -882,7 +1572,7 @@
     }
     NSNumber *callidNumber = notify.object;
     unsigned int callid = [callidNumber unsignedIntValue];
-    if (self.currentTupCallInfo.stateInfo.callId != callid) {
+    if ([ManagerService confService].currentCallId != callid) {
         DDLogInfo(@"call id is not equal to mcu conf callid, ignore!");
         return;
     }
@@ -897,7 +1587,7 @@
     NSInteger count = 0;
     
     if (tableView == _attendTableView) {
-        count = [ManagerService confService].haveJoinAttendeeArray.count + 1;
+        count = _currentAttendeeWatchArray.count + 1;
     }
     if (tableView == _confCtrlTableView) {
         count = self.confCtrlArray.count;
@@ -930,11 +1620,15 @@
         if (indexPath.row == 0) {
             cell.textLabel.text = @"Main Conf Hall";
         }else{
-            ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row - 1];
-            if ([attendee.number isEqualToString:self.selfNumber]) {
-                cell.textLabel.text = [NSString stringWithFormat:@"%@(me)", attendee.number];
+            ConfAttendeeInConf *attendee = _currentAttendeeWatchArray[indexPath.row - 1];
+            NSString *name = attendee.name;
+            if (name.length == 0) {
+                name = attendee.number;
+            }
+            if (attendee.isSelf) {
+                cell.textLabel.text = [NSString stringWithFormat:@"%@(me)", name];
             }else {
-                cell.textLabel.text = [NSString stringWithFormat:@"%@", attendee.number];
+                cell.textLabel.text = [NSString stringWithFormat:@"%@", name];
             }
         }
         cell.textLabel.textColor = [UIColor blackColor];
@@ -953,11 +1647,11 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (tableView == _attendTableView) {
         if (indexPath.row == 0) {
-            [[ManagerService confService] watchAttendeeNumber:@""];
+            [[ManagerService confService] watchAttendeeNumber:@"" label:0];
         }
         else
         {
-            ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row - 1];
+            ConfAttendeeInConf *attendee = _currentAttendeeWatchArray[indexPath.row - 1];
             if ([self isVideoConf]) {
                 //            if ([self isSelfMaster]) {
                 //                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Tips"
@@ -984,7 +1678,7 @@
                                                                      style:UIAlertActionStyleDefault
                                                                    handler:^(UIAlertAction * _Nonnull action) {
                                                                        //watch attendee todo jl
-                                                                       [[ManagerService confService] watchAttendeeNumber:attendee.number];
+                                                                       [[ManagerService confService] watchAttendeeNumber:attendee.number label:0];
                                                                    }];
                 UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
                                                                        style:UIAlertActionStyleDefault
@@ -1000,12 +1694,14 @@
     if (tableView == _confCtrlTableView) {
         NSString *confCtrlAction = self.confCtrlArray[indexPath.row];
         if ([confCtrlAction isEqualToString:@"Camera Change"]) {
-            if (_isCameraOpen) {
+            if (![CallWindowController shareInstance].cameraClose) {
                 if ([self isVideoConf]) {
-                    _cameraCaptureIndex = _cameraCaptureIndex == 1 ? 0 : 1;
-                    BOOL isSuccess = [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:[ManagerService confService].currentConfBaseInfo.call_id];
+                    NSInteger cameraCaptureIndex = [CallWindowController shareInstance].cameraCaptureIndex;
+                    cameraCaptureIndex = cameraCaptureIndex == 1 ? 0 : 1;
+                    BOOL isSuccess = [[ManagerService callService] switchCameraIndex:cameraCaptureIndex callId:[ManagerService confService].currentCallId];
                     if (isSuccess) {
-                        [self deviceMotionOrientationChanged];
+                        [CallWindowController shareInstance].cameraCaptureIndex = cameraCaptureIndex;
+//                        [[CallWindowController shareInstance] deviceMotionOrientationChanged];
                     }
                 }
             }
@@ -1040,8 +1736,9 @@
         }
         if ([confCtrlAction isEqualToString:@"Camera Open"] || [confCtrlAction isEqualToString:@"Camera Close"]) {
             if ([self isVideoConf]) {
-                [[ManagerService callService] switchCameraOpen:!_isCameraOpen callId:[ManagerService confService].currentConfBaseInfo.call_id];
-                _isCameraOpen = !_isCameraOpen;
+                BOOL isCameraClose = [CallWindowController shareInstance].cameraClose;
+                [[ManagerService callService] switchCameraOpen:isCameraClose callId:[ManagerService confService].currentCallId];
+                [CallWindowController shareInstance].cameraClose = !isCameraClose;
             }
         }
         if ([confCtrlAction isEqualToString:@"Set Conf Mode"]) {
@@ -1054,6 +1751,14 @@
         
         if ([confCtrlAction isEqualToString:@"Stop Share"]) {
             [self stopSharingScreen];
+        }
+        
+        if ([confCtrlAction isEqualToString:@"Show SVCView"]) {
+            self.backSVCView.hidden = NO;
+            [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+        }
+        if ([confCtrlAction isEqualToString:@"Hide SVCView"]) {
+            self.backSVCView.hidden = YES;
         }
     }
 }
@@ -1261,47 +1966,78 @@
     
     [[ManagerService confService] confStopReplayKitBroadcast];
     
-    
-//    // 停止replaykit
-//        [self stopReplayKitBroadcast];
-    
-//        // 调用会议组件接口停止屏幕共享
-//        [[WLVideoCallService shareInstance] releaseDataConfAsShare];
-//        [self.OCJSBridge screenSharingIsLive:NO];
 }
 
 
+- (void)updateWatchAttendeesWithPage:(NSInteger)page bigViewNumber:(NSString *)number
+{
+    NSArray *attendeeArray = [ManagerService confService].watchAttendeesArray;
+    NSArray *labelArray1 = [ManagerService confService].currentJoinConfIndInfo.svcLable;
+    
+    NSInteger startIndex = page * 3;
+    if (startIndex + 3 > attendeeArray.count) {
+        startIndex = attendeeArray.count - 3;
+    }
+    
+    if (attendeeArray.count == 1) {
+        _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
+        _firstSVCView.currentlabel = [labelArray1[1] integerValue];;
+        
+        NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+        [numberArray addObject:number];
+        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[0]).number];
+        
+        NSMutableArray *labelArray = [[NSMutableArray alloc] init];
+        [labelArray addObject:labelArray1[0]];
+        [labelArray addObject:labelArray1[1]];
+        
+        [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
+    }
+    if (attendeeArray.count == 2) {
+        _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
+        _firstSVCView.currentlabel = [labelArray1[1] integerValue];
+        _secondSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[1];
+        _secondSVCView.currentlabel = [labelArray1[2] integerValue];
+        
+        
+        NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+        [numberArray addObject:number];
+        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[0]).number];
+        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[1]).number];
+        
+        NSMutableArray *labelArray = [[NSMutableArray alloc] init];
+        [labelArray addObject:labelArray1[0]];
+        [labelArray addObject:labelArray1[1]];
+        [labelArray addObject:labelArray1[2]];
+        
+        [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
+        
+    }
+    if (attendeeArray.count >= 3) {
+        _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex];
+        _firstSVCView.currentlabel = [labelArray1[1] integerValue];
+        _secondSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex + 1];
+        _secondSVCView.currentlabel = [labelArray1[2] integerValue];
+        _thirdSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex + 2];
+        _thirdSVCView.currentlabel = [labelArray1[3] integerValue];
+        
+        
+        NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+        [numberArray addObject:number];
+        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex]).number];
+        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex + 1]).number];
+        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex + 2]).number];
+        
+        NSMutableArray *labelArray = [[NSMutableArray alloc] init];
+        [labelArray addObject:labelArray1[0]];
+        [labelArray addObject:labelArray1[1]];
+        [labelArray addObject:labelArray1[2]];
+        [labelArray addObject:labelArray1[3]];
+        
+        [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
 
-//- (void)startReplayKitBroadcast {
-//    DDLogInfo(@"enter startReplayKitBroadcast ");
-//    if (@available(iOS 12, *)) {
-//        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-//        BOOL isNeedSetpreferredExtension = [userDefaults boolForKey:@"ScreenShareFlag"];
-//        NSString *mainBundleId = [[NSBundle mainBundle]bundleIdentifier];
-//        NSString *extensionId = [mainBundleId stringByAppendingString:@".ScreenShareExtension"];
-//        if (isNeedSetpreferredExtension) {
-//            self.broadcastPickerView.preferredExtension = extensionId;
-//        }
-//        self.broadcastPickerView.showsMicrophoneButton = NO;
-//
-//        for (UIView *view in self.broadcastPickerView.subviews) {
-//            if ([view isKindOfClass:[UIButton class]]) {
-//                [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchDown];
-//            }
-//        }
-//    }
-//}
-
-
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    }
+    
 }
-*/
 
 @end

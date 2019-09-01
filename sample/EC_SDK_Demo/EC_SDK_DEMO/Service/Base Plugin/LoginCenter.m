@@ -107,8 +107,6 @@ static LoginCenter *g_loginCenter = nil;
 
 -(void)configSipRelevantParam
 {
-    NSArray *array = [CommonUtils getUserDefaultValueWithKey:SRTP_TRANSPORT_MODE];
-    
     //config local ip
     TSDK_S_LOCAL_ADDRESS local_ip;
     memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
@@ -116,78 +114,7 @@ static LoginCenter *g_loginCenter = nil;
     strcpy(local_ip.ip_address, [ip UTF8String]);
     TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
     DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
-    
-    //config security param
-    TSDK_E_MEDIA_SRTP_MODE mediaSrtpMode = TSDK_E_MEDIA_SRTP_MODE_DISABLE;
-    SRTP_MODE srtpMode = [array[0] intValue];
-    switch (srtpMode) {
-        case SRTP_MODE_DISABLE:
-            mediaSrtpMode = TSDK_E_MEDIA_SRTP_MODE_DISABLE;
-            break;
-        case SRTP_MODE_OPTION:
-            mediaSrtpMode = TSDK_E_MEDIA_SRTP_MODE_OPTION;
-            break;
-        case SRTP_MODE_FORCE:
-            mediaSrtpMode = TSDK_E_MEDIA_SRTP_MODE_FORCE;
-            break;
-        default:
-            break;
-    }
-    TSDK_E_SIP_TRANSPORT_MODE transportMode = TSDK_E_SIP_TRANSPORT_UDP;
-    TRANSPORT_MODE transmode = [array[1] intValue];
-    switch (transmode) {
-        case TRANSPORT_MODE_UDP:
-            transportMode = TSDK_E_SIP_TRANSPORT_UDP;
-            break;
-        case TRANSPORT_MODE_TLS:
-            transportMode = TSDK_E_SIP_TRANSPORT_TLS;
-            break;
-        case TRANSPORT_MODE_TCP:
-            transportMode = TSDK_E_SIP_TRANSPORT_TCP;
-            break;
-        default:
-            break;
-    }
-    TSDK_E_SECURITY_TUNNEL_MODE securityTunnelMode = TSDK_E_SECURITY_TUNNEL_MODE_DEFAULT;
-    TUNNEL_MODE tunnelMode = [array[6] intValue];
-    switch (tunnelMode) {
-        case TUNNEL_MODE_DEFAULT:
-            securityTunnelMode = TSDK_E_SECURITY_TUNNEL_MODE_DEFAULT;
-            break;
-        case TUNNEL_MODE_DISABLE:
-            securityTunnelMode = TSDK_E_SECURITY_TUNNEL_MODE_DISABLE;
-            break;
-        default:
-            break;
-    }
-    NSString *priorityTypeString = array[2];
-    if (priorityTypeString == nil) {
-        priorityTypeString = @"0";
-    }
-    CONFIG_PRIORITY_TYPE priorityType = [priorityTypeString intValue];
-    TSDK_S_SERVICE_SECURITY_PARAM securityParam;
-    memset(&securityParam, 0, sizeof(TSDK_S_SERVICE_SECURITY_PARAM));
-    securityParam.is_apply_config_priority = (priorityType == CONFIG_PRIORITY_TYPE_APP);
-    securityParam.sip_transport_mode = transportMode;
-    securityParam.media_srtp_mode = mediaSrtpMode;
-    securityParam.security_tunnel_mode = securityTunnelMode;
-    configResult = tsdk_set_config_param(TSDK_E_CONFIG_SECURITY_PARAM, &securityParam);
-    DDLogInfo(@"config security param result: %d", configResult);
-    
-    //config network info
-    TSDK_S_NETWORK_INFO_PARAM networkInfo;
-    memset(&networkInfo, 0, sizeof(TSDK_S_NETWORK_INFO_PARAM));
-    NSString * isApplyConfigPriorityString = array[5];
-    BOOL is_apply_config_priority = [isApplyConfigPriorityString boolValue];
-    if (is_apply_config_priority)
-    {
-        networkInfo.sip_server_udp_port = [array[3] intValue];
-        networkInfo.sip_server_tls_port = [array[4] intValue];
-        networkInfo.sip_server_tcp_port = [array[3] intValue];
-    }
 
-    configResult = tsdk_set_config_param(TSDK_E_CONFIG_NETWORK_INFO, &networkInfo);
-    DDLogInfo(@"config network info result: %d", configResult);
     
 //    TSDK_S_IOS_PUSH_PARAM pushParam;
 //    memset(&pushParam, 0, sizeof(TSDK_S_IOS_PUSH_PARAM));
@@ -313,10 +240,14 @@ static LoginCenter *g_loginCenter = nil;
             TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
             if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
                 DDLogInfo(@"sip have been login");
-            }else if (accountType == TSDK_E_IM_SERVICE_ACCOUNT){
-                DDLogInfo(@"im have been login");
                 [ManagerService loginService].serviceStatus = ECServiceLogin;
-//                [[NSNotificationCenter defaultCenter] postNotificationName:IM_LOGIN_SUCCESSED object:nil];
+                BOOL needAutoLogin = [CommonUtils getUserDefaultBoolValueWithKey:NEED_AUTO_LOGIN];
+                if (!needAutoLogin) {
+                    [CommonUtils userDefaultSaveBoolValue:YES forKey:NEED_AUTO_LOGIN];
+                }
+            }else if (accountType == TSDK_E_IM_SERVICE_ACCOUNT){
+//                DDLogInfo(@"im have been login");
+//                [ManagerService loginService].serviceStatus = ECServiceLogin;
             }else{
                 
             }
@@ -372,6 +303,14 @@ static LoginCenter *g_loginCenter = nil;
         }
         case TSDK_E_LOGIN_EVT_VOIP_ACCOUNT_STATUS:
         {
+            TSDK_S_VOIP_ACCOUNT_INFO* voip_account_info = notify.data;
+            NSString *number = [NSString stringWithUTF8String:voip_account_info->number];
+            NSString *terminal = [NSString stringWithUTF8String:voip_account_info->terminal];
+            if (terminal == nil || terminal.length == 0) {
+                terminal = number;
+            }
+            [[ManagerService callService] configBussinessAccount:terminal terminal:number token:nil];
+            
             break;
         }
         case TSDK_E_LOGIN_EVT_IM_ACCOUNT_STATUS:

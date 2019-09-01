@@ -53,6 +53,7 @@
 
 @property (nonatomic, assign) BOOL isMicMute;
 @property (nonatomic, strong) NSMutableArray *currentSpeakArray;
+@property (nonatomic, strong) NSArray *currentAttendeeArray;
 
 
 @end
@@ -66,8 +67,10 @@
         case CONF_E_ATTENDEE_UPDATE_INFO:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-            
-                if ([ManagerService confService].haveJoinAttendeeArray.count > 0) {
+
+                _currentAttendeeArray = [NSArray arrayWithArray:[ManagerService confService].haveJoinAttendeeArray];
+                if (_currentAttendeeArray.count > 0) {
+                    
                     [self.attendeeListTableView reloadData];
                 }
                 
@@ -75,7 +78,8 @@
                 if ([ManagerService confService].selfJoinNumber) {
                     selfNumber = [ManagerService confService].selfJoinNumber;
                 }
-                for (ConfAttendeeInConf *tempAttendee in [ManagerService confService].haveJoinAttendeeArray)
+//                NSArray *attendeeArray = [NSArray arrayWithArray:[ManagerService confService].haveJoinAttendeeArray];
+                for (ConfAttendeeInConf *tempAttendee in _currentAttendeeArray)
                 {
                     if ([tempAttendee.number isEqualToString:selfNumber] || tempAttendee.isSelf)
                     {
@@ -251,7 +255,8 @@
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.title = [ManagerService confService].currentConfBaseInfo.conf_subject;
     
-    for (ConfAttendeeInConf *tempAttendee in [ManagerService confService].haveJoinAttendeeArray)
+    _currentAttendeeArray = [NSArray arrayWithArray:[ManagerService confService].haveJoinAttendeeArray];
+    for (ConfAttendeeInConf *tempAttendee in _currentAttendeeArray)
     {
         if (tempAttendee.isSelf)
         {
@@ -700,7 +705,7 @@
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if ([self.attendeeListTableView isEqual:tableView]){
-        return [ManagerService confService].haveJoinAttendeeArray.count;
+        return _currentAttendeeArray.count;
     }
     return 0;
 }
@@ -708,7 +713,10 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     AttendeeListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ConfAttendeeCell"];
-    ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
+//    NSArray *attendeeArray = [ManagerService confService].haveJoinAttendeeArray;
+    DDLogInfo(@"jinliang2222222,%d",_currentAttendeeArray.count);
+    ConfAttendeeInConf *attendee = _currentAttendeeArray[indexPath.row];
+    DDLogInfo(@"jinliang3333333,%d",_currentAttendeeArray.count);
     cell.attendee = attendee;
     cell.isSpeaking = NO;
     for (ConfCtrlSpeaker *speaker in _currentSpeakArray) {
@@ -729,7 +737,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (_mineConfInfo.role == CONF_ROLE_CHAIRMAN || _mineConfInfo.isPresent) {
-        ConfAttendeeInConf *attendee = [ManagerService confService].haveJoinAttendeeArray[indexPath.row];
+//        NSArray *attendeeArray = [ManagerService confService].haveJoinAttendeeArray;
+        ConfAttendeeInConf *attendee = _currentAttendeeArray[indexPath.row];
 //        unsigned int userId = [attendee.userID intValue];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:attendee.name
                                                                                  message:@""

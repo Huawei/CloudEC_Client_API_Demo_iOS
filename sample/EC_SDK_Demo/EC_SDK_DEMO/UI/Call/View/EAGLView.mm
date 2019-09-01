@@ -6,7 +6,7 @@
 //  Copyright(C), 2017, Huawei Tech. Co., Ltd. ALL RIGHTS RESERVED.
 //
 
-#import <QuartzCore/QuartzCore.h>
+//#import <QuartzCore/QuartzCore.h>
 #import "EAGLView.h"
 
 #define REMOTE_OPENGL_VIEW_SIZE CGRectMake(215, 100, 594, 437)
@@ -24,9 +24,12 @@
 static EAGLView *openGLPreviewView = nil;
 static EAGLView *openGLRemoteView = nil;
 static EAGLView *openGLLocalView = nil;
-static EAGLView *openGLRemoteCWView = nil;
-static EAGLView *openGLLocalCWView = nil;
-static EAGLView *openGLBFCPView = nil;
+
+static EAGLView *openGLLocalBigView = nil;
+
+static EAGLView *openGLFirstSVCView = nil;
+static EAGLView *openGLSecondSVCView = nil;
+static EAGLView *openGLThirdSVCView = nil;
 
 static EAGLView *openGLTupBFCPView = nil;
 static EAGLView *openGLDataConfView = nil;
@@ -82,10 +85,24 @@ static EAGLView *openGLDataRemoteView = nil;
 {
 	if (openGLLocalView == nil)
     {
-        openGLLocalView = [[self alloc] initWithFrame:LOCAL_OPENGL_VIEW_SIZE];
+        openGLLocalView = [[self alloc] initWithFrame:CGRectMake(0,
+                                                                 0,
+                                                                 78.5,
+                                                                 105)];
         openGLLocalView.backgroundColor = [UIColor blackColor];
 	}
 	return openGLLocalView;
+}
+
++(EAGLView *)getLocalBigView
+{
+    if (openGLLocalBigView == nil)
+    {
+        openGLLocalBigView = [[self alloc] initWithFrame:REMOTE_OPENGL_VIEW_SIZE];
+        openGLLocalBigView.backgroundColor = [UIColor blackColor];
+    }
+    
+    return openGLLocalBigView;
 }
 
 //tup
@@ -112,35 +129,45 @@ static EAGLView *openGLDataRemoteView = nil;
     return openGLDataConfView;
 }
 
-+(EAGLView *)getRemoteCWView
++(EAGLView *)getFirstSVCView
 {
-    if (openGLRemoteCWView == nil)
+    if (openGLFirstSVCView == nil)
     {
-        openGLRemoteCWView = [[self alloc] initWithFrame:REMOTE_OPENGL_VIEW_SIZE];
-        openGLRemoteCWView.backgroundColor = [UIColor blackColor];
+        openGLFirstSVCView = [[self alloc] initWithFrame:CGRectMake(0,
+                                                                    0,
+                                                                    78.5,
+                                                                    105)];
+        openGLFirstSVCView.backgroundColor = [UIColor blackColor];
     }
     
-    return openGLRemoteCWView;
+    return openGLFirstSVCView;
 }
 
 
-+(EAGLView *)getLocalCWView
++(EAGLView *)getSecondSVCView
 {
-    if (openGLLocalCWView == nil)
+    if (openGLSecondSVCView == nil)
     {
-        openGLLocalCWView = [[self alloc] initWithFrame:LOCAL_OPENGL_VIEW_SIZE];
-        openGLLocalCWView.backgroundColor = [UIColor blackColor];
+        openGLSecondSVCView = [[self alloc] initWithFrame:CGRectMake(0,
+                                                                     0,
+                                                                     78.5,
+                                                                     105)];
+        openGLSecondSVCView.backgroundColor = [UIColor blackColor];
     }
-    return openGLLocalCWView;
+    return openGLSecondSVCView;
 }
 
-+ (EAGLView *)getBFCPPassiveView
++ (EAGLView *)getThirdSVCView
 {
-    if (openGLBFCPView == nil)
+    if (openGLThirdSVCView == nil)
     {
-        openGLBFCPView = [[self alloc]initWithFrame:BFCP_PASSIVE_VIEW_SIZE];
+        openGLThirdSVCView = [[self alloc] initWithFrame:CGRectMake(0,
+                                                                    0,
+                                                                    78.5,
+                                                                    105)];
+        openGLThirdSVCView.backgroundColor = [UIColor blackColor];
     }
-    return openGLBFCPView;
+    return openGLThirdSVCView;
 }
 
 
@@ -159,6 +186,15 @@ static EAGLView *openGLDataRemoteView = nil;
     {
         [openGLLocalView removeFromSuperview];
         openGLLocalView = nil;
+    }
+}
+
++ (void)destroyLocalBigView
+{
+    if (openGLLocalBigView)
+    {
+        [openGLLocalBigView removeFromSuperview];
+        openGLLocalBigView = nil;
     }
 }
 
@@ -213,12 +249,60 @@ static EAGLView *openGLDataRemoteView = nil;
     [openGLLocalView deleteBlackSublayer];
 }
 
-+ (void)destroyBFCPView
++ (void)hideFirstSVCView
 {
-    if (openGLBFCPView)
+    [openGLFirstSVCView addBlackSublayer];
+}
+
++ (void)showFirstSVCView
+{
+    [openGLFirstSVCView deleteBlackSublayer];
+}
+
++ (void)hideSecondSVCView
+{
+    [openGLSecondSVCView addBlackSublayer];
+}
+
++ (void)showSecondSVCView
+{
+    [openGLSecondSVCView deleteBlackSublayer];
+}
+
++ (void)hideThirdSVCView
+{
+    [openGLThirdSVCView addBlackSublayer];
+}
+
++ (void)showThirdSVCView
+{
+    [openGLThirdSVCView deleteBlackSublayer];
+}
+
++ (void)destroyFirstSVCView
+{
+    if (openGLFirstSVCView)
     {
-        [openGLBFCPView removeFromSuperview];
-        openGLBFCPView = nil;
+        [openGLFirstSVCView removeFromSuperview];
+        openGLFirstSVCView = nil;
+    }
+}
+
++ (void)destroySecondSVCView
+{
+    if (openGLSecondSVCView)
+    {
+        [openGLSecondSVCView removeFromSuperview];
+        openGLSecondSVCView = nil;
+    }
+}
+
++ (void)destroyThirdSVCView
+{
+    if (openGLThirdSVCView)
+    {
+        [openGLThirdSVCView removeFromSuperview];
+        openGLThirdSVCView = nil;
     }
 }
 

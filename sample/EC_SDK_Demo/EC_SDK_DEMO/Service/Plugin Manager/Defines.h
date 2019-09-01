@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <sys/utsname.h>
 
 #define RETURN_NO_IF_NIL(result)     if(result == nil || !result || result == NULL){return NO;}
 #define RETURN_IF_NSSTRING_NIL(result)     if(result == nil || !result || result == NULL || [result isEqualToString:@""]){return;}
@@ -15,7 +16,18 @@
 #define RETURN_NO_IF_FAIL(result)  do { if (result == TUP_FAIL) { return NO; } } while(0)
 #define SDK_CONFIG_RESULT(result)  (((TUP_SUCCESS) == result)?@"YES":[NSString stringWithFormat:@"NO error =%d",result])
 
+///< 判断设备是否为iPhone X
+#define KISIphoneX \
+({\
+struct utsname systemInfo;\
+uname(&systemInfo);\
+NSString *deviceTypeString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];\
+BOOL isIphone = ([deviceTypeString containsString:@"iPhone10,3"] || [deviceTypeString containsString:@"iPhone10,6"] || [deviceTypeString containsString:@"iPhone11,2"] || [deviceTypeString containsString:@"iPhone11,4"] || [deviceTypeString containsString:@"iPhone11,6"] || [deviceTypeString containsString:@"iPhone11,8"]);\
+isIphone;\
+})
+
 #define EC_SET_CONF_MODE_NOTIFY  @"EC_SET_CONF_MODE_NOTIFY"
+
 #pragma mark - Call
 
 extern NSString *const SIP_STATUS_KEY;                  // current sip register status: CALL_E_REG_STATE
@@ -37,6 +49,8 @@ extern NSString *const TSDK_CALL_RINGBACK_KEY;           // value: BOOL , is pla
 extern NSString *const TUP_CALL_SESSION_MODIFIED_KEY;   // value: NSString , confId
 extern NSString *const AUDIO_ROUTE_KEY;                 // value: NSNumber
 extern NSString *const TSDK_VIEW_REFRESH_KEY;                 // value: NSNumber
+extern NSString *const CALL_STATISTIC_INFO;
+
 //CTD
 extern NSString *const TSDK_CTD_CALL_RESULT_KEY;
 extern NSString *const TSDK_CTD_CALL_STATE_KEY;
@@ -52,14 +66,12 @@ extern NSString *const TUP_CALL_REMOVE_CALL_VIEW_NOTIFY;
 extern NSString *const TUP_CONF_INCOMING_KEY;
 
 extern NSString *const LOGIN_UNREGISTERED_RESULT;
-extern NSString *const SRTP_TRANSPORT_MODE;
 
-//extern NSString *const IM_LOGIN_SUCCESSED;
 
-extern NSString *const USE_IDO_CONFCTRL;
-
+extern NSString *const SERVER_CONFIG;
 extern NSString *const USER_ACCOUNT;
 extern NSString *const USER_PASSWORD;
+extern NSString *const NEED_AUTO_LOGIN;
 
 extern NSString *const LOGIN_GET_TEMP_USER_INFO_FAILD;
 extern NSString *const LOGIN_AUTH_FAILED;
@@ -79,10 +91,11 @@ extern NSString *const APP_START_SYSTEM_SHARE_VIEW;
 
 extern NSString *const CONF_SHARE_REQUEST_ACTION;
 
-extern NSString* const TSDK_COMING_CALL_NOTIFY;              
+extern NSString* const TSDK_COMING_CALL_NOTIFY;
 
 extern NSString* const EC_COMING_CONF_NOTIFY;
 
+extern NSString* const CONF_ATTENDEE_STATUS_UPDATE_NOTIFY;
 
 /**
  * [en]This enumeration is used to describe the call type.
@@ -125,7 +138,8 @@ typedef enum
     CALL_SESSION_MODIFIED,
     CALL_REFER_NOTIFY,
     CALL_OUTGOING,
-    CALL_REFUSE_OPEN_VIDEO
+    CALL_REFUSE_OPEN_VIDEO,
+    CALL_EVT_STATISTIC_INFO
 }TUP_CALL_EVENT_TYPE;
 
 /**
@@ -272,8 +286,11 @@ typedef enum
     OPEN  = 0x01,   //open camera
     CLOSE = 0x02,   //close camera
     START = 0x04,   //start video
-    OPEN_AND_START = 0x05, //open camera and start video
-    STOP  = 0x08    //stop video
+    OPEN_AND_START = 0x05,
+    STOP  = 0x08,    //stop video
+    CLOSE_AND_STOP = 0xa,
+    PAUSE = 0x10,   //paused video
+    RESUME = 0x20   // restarted video
 }EN_VIDEO_OPERATION;
 
 /**
@@ -597,6 +614,7 @@ typedef enum
     DATA_CONF_JOIN_RESOULT,
     DATA_CONF_AS_ON_SCREEN_DATA,
     DATACONF_SHARE_SCREEN_DATA_STOP,
+    CONF_E_SVC_WATCH_INFO_IND,
 }EC_CONF_E_TYPE;
 
 /**
@@ -873,6 +891,22 @@ typedef NS_ENUM(NSInteger, VideoZoomingViewMarkupColor) {
     VideoZoomingViewMarkupColorBlue,
     VideoZoomingViewMarkupColorNotSelected
 };
+
+/**
+ * [en]This enumeration is used to describe the video window type.
+ * [cn]视频窗口类型
+ */
+typedef NS_ENUM(NSInteger, TsdkVideoWindowType) {
+    TsdkVideoWindowRemote = 0,                /**< [en]Indicates remote video window
+                                                 [cn]通话远端窗口 */
+    TsdkVideoWindowlacal,                     /**< [en]Indicates local video window
+                                                 [cn]通话本地窗口 */
+    TsdkVideoWindowPreview,                   /**< [en]Indicates preview window
+                                                 [cn]预览窗口 */
+    TsdkVideoWindowData,                  /**< [en]Indicates auxiliary data window
+                                                 [cn]辅流窗口 */
+};
+
 
 @interface Defines : NSObject
 

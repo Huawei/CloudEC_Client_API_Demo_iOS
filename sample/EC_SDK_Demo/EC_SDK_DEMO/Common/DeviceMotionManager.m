@@ -172,6 +172,137 @@ static DeviceMotionManager *g_deviceManager = nil;
                 if (index == CameraIndexFront)
                 {
                     *cameraRotation = 0;
+                    *displayRotation = 1;
+                }
+                else
+                {
+                    *cameraRotation = 2;
+                    *displayRotation = 1;
+                }
+            }
+            else
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 0;
+                    *displayRotation = 0;
+                }
+                else
+                {
+                    *cameraRotation = 2;
+                    *displayRotation = 0;
+                }
+            }
+        }
+        else if (_lastOrientation == UIDeviceOrientationLandscapeRight)
+        {
+            if (interface == UIInterfaceOrientationPortrait)
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 2;
+                    *displayRotation = 3;
+                }
+                else
+                {
+                    *cameraRotation = 0;
+                    *displayRotation = 3;
+                }
+            }
+            else
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 2;
+                    *displayRotation = 2;
+                }
+                else
+                {
+                    *cameraRotation = 0;
+                    *displayRotation = 2;
+                }
+            }
+            
+        }
+        else if (_lastOrientation == UIDeviceOrientationPortraitUpsideDown)
+        {
+            if (interface == UIInterfaceOrientationPortrait)
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 0;
+                    *displayRotation = 2;
+                }
+                else
+                {
+                    *cameraRotation = 1;
+                    *displayRotation = 2;
+                }
+            }
+            else
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 1;
+                    *displayRotation = 1;
+                }
+                else
+                {
+                    *cameraRotation = 1;
+                    *displayRotation = 1;
+                }
+            }
+        }
+        return YES;
+    }
+    
+    return NO;
+}
+
+- (BOOL)conferenceAdjustCamerRotation:(NSUInteger *)cameraRotation
+                      displayRotation:(NSUInteger *)displayRotation
+                         byCamerIndex:(NSUInteger)index
+                 interfaceOrientation:(UIInterfaceOrientation)interface
+{
+    if (_lastOrientation != UIDeviceOrientationFaceUp && _lastOrientation != UIDeviceOrientationFaceDown)
+    {
+        // 0:0度 ; 1:90度 ；2:180度 ；3:270度
+        if (_lastOrientation == UIDeviceOrientationPortrait)
+        {
+            if (interface == UIInterfaceOrientationPortrait)
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 3;
+                    *displayRotation = 0;
+                }
+                else
+                {
+                    *cameraRotation = 3;
+                    *displayRotation = 0;
+                }
+            }
+            else
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 3;
+                    *displayRotation = 3;
+                }
+                else
+                {
+                    *cameraRotation = 3;
+                    *displayRotation = 3;
+                }
+            }
+        }
+        else if (_lastOrientation == UIDeviceOrientationLandscapeLeft)
+        {
+            if (interface == UIInterfaceOrientationPortrait)
+            {
+                if (index == CameraIndexFront)
+                {
+                    *cameraRotation = 0;
                     *displayRotation = 0;
                 }
                 else
@@ -257,6 +388,62 @@ static DeviceMotionManager *g_deviceManager = nil;
     }
     
     return NO;
+}
+
+- (BOOL)isProtraitLockOn {
+    UIApplication *app = [UIApplication sharedApplication];
+    
+    BOOL isOn = NO;
+    if (KISIphoneX) {
+        NSDictionary *_displayItemStates = [[[app valueForKeyPath:@"statusBar"] valueForKeyPath:@"_statusBar"] valueForKeyPath:@"_displayItemStates"];
+        
+        id value = _displayItemStates[@"_UIStatusBarIndicatorRotationLockItem"];
+        NSLog(@"%@",[value class]);//_UIStatusBarDisplayItemState
+        bool _dataEnabled =[[value valueForKeyPath:@"_dataEnabled"]boolValue];
+        
+        if (@available(iOS 12, *)) {
+            for (id ieentifi in _displayItemStates.allKeys) {
+                NSString *identifier = [NSString stringWithFormat:@"%@",ieentifi];
+                if ([identifier isEqualToString:@"_UIStatusBarIndicatorRotationLockItem"]) {
+                    value = _displayItemStates[ieentifi];
+                    _dataEnabled =[[value valueForKeyPath:@"_dataEnabled"]boolValue];
+                }
+            }
+        }
+        if (_dataEnabled == YES) {
+            isOn =  YES;
+        }
+    }else{
+        UIView *foregroundView = [[app valueForKeyPath:@"statusBar"] valueForKey:@"foregroundView"];
+        for (id child in foregroundView.subviews) {
+//            DDLogInfo(@"jinliang222,%@",child);
+            @try {
+                id item = [child valueForKey:@"item"];
+                int type = [[item valueForKey:@"type"] intValue];
+                /*
+                 UIStatusBarItem.type
+                 0, 时间
+                 3, 信号强度
+                 4, 运营商
+                 6, 网络
+                 8, 电池
+                 9, 电量百分比
+                 12, 蓝牙
+                 14, 闹钟
+                 18, 竖屏锁定
+                 34, 耳机
+                 */
+                DDLogInfo(@"jinliang000,%d",type);
+                if (type == 18) {
+                    isOn = YES;
+                    break;
+                }
+
+            }@catch (NSException *e) {}
+        }
+    }
+    
+    return isOn;
 }
 
 

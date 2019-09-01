@@ -11,8 +11,15 @@
 
 @interface CallWindowController : NSObject
 
+@property (nonatomic,assign)BOOL cameraClose;
+@property (nonatomic,assign)BOOL cameraCaptureIndex;
+
 + (instancetype)shareInstance;
 
 - (void)showStartCallView:(unsigned int)callId;
+
+- (void)deviceMotionOrientationChanged;
+
+- (void)setVideoWindow;
 
 @end

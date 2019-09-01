@@ -28,6 +28,8 @@
 @property (nonatomic, assign) BOOL isSelf; //是否是自己
 @property (nonatomic, assign) BOOL isBroadcast; //是否被广播
 @property (nonatomic, assign) BOOL isShareOwner; //是否是共享者
+@property (nonatomic, assign) BOOL isAnonymous;  //是否是匿名用户
+@property (nonatomic, assign) BOOL isVideo;  //是否视频入会
 
 @end
 

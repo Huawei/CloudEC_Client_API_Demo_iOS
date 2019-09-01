@@ -32,6 +32,11 @@
 #import "tsdk_call_interface.h"
 #import "tsdk_ctd_def.h"
 #import "tsdk_ctd_interface.h"
+#import "tsdk_call_def.h"
+
+#import "CallStatisticInfo.h"
+#import "VideoStreamInfo.h"
+#import "AudioStreamInfo.h"
 
 
 #define CHECKCSTR(str) (((str) == NULL) ? "" : (str))
@@ -297,7 +302,10 @@
                                          };
             [self respondsCallDelegateWithType:CALL_INCOMMING result:resultInfo]; //post incoming call info to UI
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:TSDK_COMING_CALL_NOTIFY object:tsdkCallInfo];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:TSDK_COMING_CALL_NOTIFY object:tsdkCallInfo];
+                
+            });
             
             CallLogMessage *callLogMessage = [[CallLogMessage alloc]init];
             callLogMessage.calleePhoneNumber = tsdkCallInfo.stateInfo.callNum;
@@ -568,6 +576,103 @@
             [CommonUtils userDefaultSaveValue:[NSArray arrayWithArray:mutArray] forKey:@"iptConfig"];
             break;
         }
+        
+        case TSDK_E_CALL_EVT_STATISTIC_INFO:
+        {
+            VideoStreamInfo *dataStreamInfo = [[VideoStreamInfo alloc] init];
+            if ([ManagerService confService].isStartScreenSharing) {
+                dataStreamInfo = [[ManagerService confService] getSignalDataInfo];
+            }
+            
+            TSDK_UINT32 call_id = notify.param1;
+            TSDK_UINT32 signal_strength = notify.param2;
+            TSDK_S_CALL_STATISTIC_INFO* statistic_info = (TSDK_S_CALL_STATISTIC_INFO*)notify.data;
+            
+            TSDK_S_AUDIO_STREAM_INFO audio_stream_info = statistic_info->audio_stream_info;
+            TSDK_S_VIDEO_STREAM_INFO video_stream_info = statistic_info->video_stream_info;
+            
+            TSDK_S_VIDEO_STREAM_INFO *svc_stream_info = statistic_info->svc_stream_info;
+            
+            
+            CallStatisticInfo *callInfo = [[CallStatisticInfo alloc] init];
+            callInfo.callId = call_id;
+            callInfo.signalStrength = signal_strength;
+            callInfo.effectiveBitrate = statistic_info->effective_bitrate;
+            callInfo.isSvcConf = statistic_info->is_svc_conf;
+            
+            AudioStreamInfo *audioStreamInfo = [[AudioStreamInfo alloc] init];
+            audioStreamInfo.isSrtp = audio_stream_info.is_srtp;
+            audioStreamInfo.encodeProtocol = [NSString stringWithUTF8String:audio_stream_info.encode_protocol];
+            audioStreamInfo.sendBitRate = audio_stream_info.send_bit_rate;
+            audioStreamInfo.sendLossFraction = audio_stream_info.send_loss_fraction;
+            audioStreamInfo.sendDelay = audio_stream_info.send_delay;
+            audioStreamInfo.sendJitter = audio_stream_info.send_jitter;
+            audioStreamInfo.decodeProtocol = [NSString stringWithUTF8String:audio_stream_info.decode_protocol];
+            audioStreamInfo.recvBitRate = audio_stream_info.recv_bit_rate;
+            audioStreamInfo.recvLossFraction = audio_stream_info.recv_loss_fraction;
+            audioStreamInfo.recvDelay = audio_stream_info.recv_delay;
+            audioStreamInfo.recvJitter = audio_stream_info.recv_jitter;
+            audioStreamInfo.recvAverageMos = audio_stream_info.recv_average_mos;
+            callInfo.audioStreamInfo = audioStreamInfo;
+            
+            VideoStreamInfo *videoStreamInfo = [[VideoStreamInfo alloc] init];
+            videoStreamInfo.isSrtp = video_stream_info.is_srtp;
+            videoStreamInfo.bandWidth = video_stream_info.bandwidth;
+            videoStreamInfo.encodeProtocol = [NSString stringWithUTF8String:video_stream_info.encode_protocol];
+            videoStreamInfo.sendBitRate = video_stream_info.send_bit_rate;
+            videoStreamInfo.sendFrameSize = [NSString stringWithUTF8String:video_stream_info.send_frame_size];
+            videoStreamInfo.sendFrameRate = video_stream_info.send_frame_rate;
+            videoStreamInfo.sendLossFraction = video_stream_info.send_loss_fraction;
+            videoStreamInfo.sendDelay = video_stream_info.send_delay;
+            videoStreamInfo.sendJitter = video_stream_info.send_jitter;
+            videoStreamInfo.decodeProtocol = [NSString stringWithUTF8String:video_stream_info.decode_protocol];
+            videoStreamInfo.recvBitRate = video_stream_info.recv_bit_rate;
+            videoStreamInfo.recvFrameSize = [NSString stringWithUTF8String:video_stream_info.recv_frame_size];
+            videoStreamInfo.recvLossFraction = video_stream_info.recv_loss_fraction;
+            videoStreamInfo.recvFrameRate = video_stream_info.recv_frame_rate;
+            videoStreamInfo.recvDelay = video_stream_info.recv_delay;
+            videoStreamInfo.recvJitter = video_stream_info.recv_jitter;
+            videoStreamInfo.recvSsrcLabel = video_stream_info.recv_ssrc_label;
+            callInfo.videoStreamInfo = videoStreamInfo;
+            
+            callInfo.svcStreamCount = statistic_info->svc_stream_count;
+            NSMutableArray *svcStreamInfoArray = [[NSMutableArray alloc] init];
+            for (int i = 0; i < callInfo.svcStreamCount; i++) {
+                TSDK_S_VIDEO_STREAM_INFO svcStreamInfo = svc_stream_info[i];
+                VideoStreamInfo *videoStreamInfoM = [[VideoStreamInfo alloc] init];
+                
+                videoStreamInfoM.isSrtp = svcStreamInfo.is_srtp;
+                videoStreamInfoM.bandWidth = svcStreamInfo.bandwidth;
+                videoStreamInfoM.encodeProtocol = [NSString stringWithUTF8String:svcStreamInfo.encode_protocol];
+                videoStreamInfoM.sendBitRate = svcStreamInfo.send_bit_rate;
+                videoStreamInfoM.sendFrameSize = [NSString stringWithUTF8String:svcStreamInfo.send_frame_size];
+                videoStreamInfoM.sendFrameRate = svcStreamInfo.send_frame_rate;
+                videoStreamInfoM.sendLossFraction = svcStreamInfo.send_loss_fraction;
+                videoStreamInfoM.sendDelay = svcStreamInfo.send_delay;
+                videoStreamInfoM.sendJitter = svcStreamInfo.send_jitter;
+                videoStreamInfoM.decodeProtocol = [NSString stringWithUTF8String:svcStreamInfo.decode_protocol];
+                videoStreamInfoM.recvBitRate = svcStreamInfo.recv_bit_rate;
+                videoStreamInfoM.recvFrameSize = [NSString stringWithUTF8String:svcStreamInfo.recv_frame_size];
+                videoStreamInfoM.recvLossFraction = svcStreamInfo.recv_loss_fraction;
+                videoStreamInfoM.recvFrameRate = svcStreamInfo.recv_frame_rate;
+                videoStreamInfoM.recvDelay = svcStreamInfo.recv_delay;
+                videoStreamInfoM.recvJitter = svcStreamInfo.recv_jitter;
+                videoStreamInfoM.recvSsrcLabel = svcStreamInfo.recv_ssrc_label;
+                
+                [svcStreamInfoArray addObject:videoStreamInfoM];
+            }
+            callInfo.svcStreamInfoArray = [NSArray arrayWithArray:svcStreamInfoArray];
+            
+            callInfo.dataStreamInfo = dataStreamInfo;
+            
+            NSDictionary *callInDic = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                    callInfo,CALL_STATISTIC_INFO,
+                                                    nil];
+
+            [self respondsCallDelegateWithType:CALL_EVT_STATISTIC_INFO result:callInDic];
+            
+        }
+            break;
             
         default:
             break;
@@ -852,8 +957,8 @@
     ret = tsdk_set_video_window((TSDK_UINT32)callId, 3, videoInfo);
     DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
     
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:callId];
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:callId];
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:callId];
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:callId];
     return (TSDK_SUCCESS == ret);
 }
 
@@ -1101,7 +1206,7 @@
     {
         _cameraCaptureIndex = cameraCaptureIndex == 1 ? CameraIndexFront : CameraIndexBack;
     }
-    [self updateVideoRenderInfoWithVideoIndex:(CameraIndex)cameraCaptureIndex withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:callId];
+    [self updateVideoRenderInfoWithVideoIndex:(CameraIndex)cameraCaptureIndex withRenderType:TsdkVideoWindowlacal andCallId:callId];
     return result == TSDK_SUCCESS ? YES : NO;
 }
 
@@ -1109,7 +1214,7 @@
  *This method is used to update video  render info with video index
  *根据摄像头序号更新视频渲染
  */
-- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TSDK_E_VIDEO_WND_TYPE)renderType andCallId:(unsigned int)callid
+- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TsdkVideoWindowType)renderType andCallId:(unsigned int)callid
 {
     TSDK_UINT32 mirrorType = 0;
     TSDK_UINT32 displaytype = 0;
@@ -1196,40 +1301,16 @@
 {
     if (openCamera)
     {
-        [self videoControlWithCmd:OPEN_AND_START andModule:LOCAL_AND_CAPTURE andIsSync:NO callId:callId];
-//        [self pauseVideoCapture:NO callId:callId];
+        [self videoControlWithCmd:OPEN_AND_START andModule:LOCAL_AND_REMOTE andIsSync:NO callId:callId];
+        //reopen local camera
         _cameraRotation = 0;
-        TSDK_RESULT ret = tsdk_set_capture_rotation((TSDK_UINT32)callId , (TSDK_UINT32)_cameraCaptureIndex, (TSDK_UINT32)_cameraRotation);
-        DDLogInfo(@"Call_Log: tsdk_set_capture_rotation = %@",(TSDK_SUCCESS == ret)?@"YES":@"NO");
+        [self rotationCameraCapture:_cameraRotation callId:callId];
     }
     else
-    {
-        [self setVideoCaptureFileWithcallId:callId];
-        [self videoControlWithCmd:STOP andModule:LOCAL_AND_CAPTURE andIsSync:YES callId:callId];
-//        [self pauseVideoCapture:YES callId:callId];
-    }
-    return YES;
-}
-
-/**
- *This method is used to control camera close or open
- *控制摄像头的开关
- */
--(BOOL)callVideoControlCameraClose:(BOOL)isCameraClose Module:(EN_VIDEO_OPERATION_MODULE)module callId:(unsigned int)callId
-{
-    if (isCameraClose)
     {
         [self setVideoCaptureFileWithcallId:callId];
         [self videoControlWithCmd:STOP andModule:LOCAL_AND_REMOTE andIsSync:YES callId:callId];
-    }
-    else
-    {
-        //reopen local camera
-        _cameraCaptureIndex = CameraIndexFront;
-        _cameraRotation = 0;
-        [self rotationCameraCapture:_cameraRotation callId:callId];
-        [self videoControlWithCmd:OPEN_AND_START andModule:LOCAL_AND_REMOTE andIsSync:YES callId:callId];
-
+//        [self pauseVideoCapture:YES callId:callId];
     }
     return YES;
 }
@@ -1264,11 +1345,11 @@
 {
     if (active)
     {
-        return [self callVideoControlCameraClose:NO Module:LOCAL_AND_REMOTE callId:callId];
+        return [self switchCameraOpen:YES callId:callId];
     }
     else
     {
-        return [self callVideoControlCameraClose:YES Module:LOCAL_AND_REMOTE callId:callId];
+        return [self switchCameraOpen:NO callId:callId];
     }
 }
 

@@ -27,5 +27,13 @@
                byCamerIndex:(NSUInteger)index
        interfaceOrientation:(UIInterfaceOrientation)interface;
 
+- (BOOL)conferenceAdjustCamerRotation:(NSUInteger *)cameraRotation
+                      displayRotation:(NSUInteger *)displayRotation
+                         byCamerIndex:(NSUInteger)index
+                 interfaceOrientation:(UIInterfaceOrientation)interface;
+
+- (BOOL)isProtraitLockOn;
+
+
 
 @end

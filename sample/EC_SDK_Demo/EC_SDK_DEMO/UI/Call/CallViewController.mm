@@ -157,13 +157,13 @@ typedef enum
     }
     else
     {
-        EAGLView *remoteView = [EAGLView getRemoteView];
-        EAGLView *locationView = [EAGLView getLocalView];
-        EAGLView *bfcpView = [EAGLView getTupBFCPView];
-        [[ManagerService callService] updateVideoWindowWithLocal:locationView
-                                                       andRemote:remoteView
-                                                         andBFCP:bfcpView
-                                                          callId:0];
+//        EAGLView *remoteView = [EAGLView getRemoteView];
+//        EAGLView *locationView = [EAGLView getLocalView];
+//        EAGLView *bfcpView = [EAGLView getTupBFCPView];
+//        [[ManagerService callService] updateVideoWindowWithLocal:locationView
+//                                                       andRemote:remoteView
+//                                                         andBFCP:bfcpView
+//                                                          callId:0];
         unsigned int callId = [[ManagerService callService] startCallWithNumber:self.callNumberTextFiled.text type:callType];
         if (callId != 0)
         {

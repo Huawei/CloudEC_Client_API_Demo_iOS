@@ -61,10 +61,9 @@
 
 - (IBAction)logout:(id)sender
 {
-
     [[ManagerService loginService] logout];
-    
     [self goToLoginViewController];
+    [CommonUtils userDefaultSaveBoolValue:NO forKey:NEED_AUTO_LOGIN];
 }
 
 - (void)goToLoginViewController {

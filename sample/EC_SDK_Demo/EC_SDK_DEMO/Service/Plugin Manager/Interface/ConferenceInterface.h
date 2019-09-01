@@ -14,10 +14,11 @@
 
 @class ChatMsg;
 @class ConfBaseInfo;
+@class JoinConfIndInfo;
 extern NSString *const CONFERENCE_END_NOTIFY;
 extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 
-@class TupCallNotifications,ConfMember,TUPConferenceNotifications;
+@class TupCallNotifications,ConfMember,TUPConferenceNotifications,SVCConfWatchAttendeeInfo,VideoStreamInfo;
 @protocol ConferenceServiceDelegate <NSObject>
 @required
 
@@ -84,11 +85,21 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  */
 @property (nonatomic, strong) NSMutableArray *haveJoinAttendeeArray;     //current conference'attendees
 
+@property (nonatomic, strong) NSMutableArray *watchAttendeesArray;
+
 /**
  *Indicates current base confInfo
  *当前会议信息
  */
 @property (nonatomic, strong) ConfBaseInfo *currentConfBaseInfo;
+
+@property (nonatomic, strong) JoinConfIndInfo *currentJoinConfIndInfo;
+
+@property (nonatomic, strong) SVCConfWatchAttendeeInfo *currentBigViewAttendee;
+
+@property (nonatomic, assign) BOOL isStartScreenSharing;
+
+@property (nonatomic, assign) int currentCallId;                  // current call id
 
 /**
  *Indicates conf type enum
@@ -296,7 +307,9 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  * This method is used to boardcast attendee
  * 选看与会者
  */
--(void)watchAttendeeNumber:(NSString *)attendeeNumber;
+-(void)watchAttendeeNumber:(NSString *)attendeeNumber label:(NSInteger)label;
+
+-(void)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray;
 
 /**
  * This method is used to set presenter (chairman)
@@ -344,6 +357,19 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 - (BOOL)inviteDataShareWithNumber:(NSString *)number;
 
 - (BOOL)cancelDataShareWithNumber:(NSString *)number;
+
+
+- (BOOL)setVideoWindowWithLocal:(id)localVideoView
+                      andRemote:(id)remoteVideoView;
+
+- (BOOL)setSvcVideoWindowWithLocal:(id)localVideoView;
+
+- (BOOL)setSvcVideoWindowWithFirstSVCView:(id)firstSVCView
+                            secondSVCView:(id)SecondSVCView
+                             thirdSVCView:(id)thirdSVCView
+                                   remote:(id)remoteSVCView;
+
+- (VideoStreamInfo *)getSignalDataInfo;
 @end
 
 #endif /* ConferenceInterface_h */

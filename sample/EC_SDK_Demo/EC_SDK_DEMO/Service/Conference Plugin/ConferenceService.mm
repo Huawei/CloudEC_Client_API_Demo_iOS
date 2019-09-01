@@ -10,7 +10,9 @@
 
 #include "tsdk_conference_def.h"
 #include "tsdk_conference_interface.h"
-#import "tsdk_error_def.h"
+#include "tsdk_error_def.h"
+#include "tsdk_call_def.h"
+#include "tsdk_call_interface.h"
 
 #include <arpa/inet.h>
 #import <string.h>
@@ -26,6 +28,11 @@
 #import "ConfBaseInfo.h"
 #import "CommonUtils.h"
 #import <CloudLinkMeetingScreenShare/ScreenShareManager.h>
+
+#import "JoinConfIndInfo.h"
+#import "SVCConfWatchAttendeeInfo.h"
+#import "VideoStreamInfo.h"
+
 #define CG2TCPoint(point) { .x = (int)point.x, .y = (int)point.y }
 
 //数据共享线程
@@ -42,9 +49,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 @property (nonatomic, strong) NSMutableDictionary *confTokenDic;  // update conference token in SMC
 @property (nonatomic, assign) BOOL hasReportMediaxSpeak;          // has reportMediaxSpeak or not in Mediax
 @property (nonatomic, retain) NSTimer *heartBeatTimer;            // NSTime record heart beat
-@property (nonatomic, assign) int currentCallId;                  // current call id
 
-@property (nonatomic, assign) BOOL isStartScreenSharing;
+//@property (nonatomic, assign) BOOL isStartScreenSharing;
 @property (nonatomic, assign) int currentDataShareTypeId;
 @property (nonatomic, assign) BOOL isJoinDataConfSuccess; // 是否加入数据会议
 @property (nonatomic, strong) ScreenShareManager *screenShareManager;
@@ -92,6 +98,16 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 @synthesize mIsScreenSharing;
 
+@synthesize currentJoinConfIndInfo;
+
+@synthesize currentCallId;
+
+@synthesize watchAttendeesArray;
+
+@synthesize currentBigViewAttendee;
+
+@synthesize isStartScreenSharing;
+
 /**
  *This method is used to get sip account from call service
  *从呼叫业务获取sip账号
@@ -133,20 +149,23 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         self.isJoinDataConf = NO;
         _confHandle = 0;
         self.haveJoinAttendeeArray = [[NSMutableArray alloc] init]; //会议与会者列表
+        self.watchAttendeesArray = [[NSMutableArray alloc] init];
         self.uPortalConfType = CONF_TOPOLOGY_UC;
         _confTokenDic = [[NSMutableDictionary alloc]init];
         _confCtrlUrl = nil;
         self.selfJoinNumber = nil;
         _hasReportMediaxSpeak = NO;
-        _currentCallId = 0;
+        self.currentCallId = 0;
         self.isVideoConfInvited = NO;
         self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
-        _isStartScreenSharing = NO;
+        self.isStartScreenSharing = NO;
         self.isJoinDataConfSuccess = NO;
         _currentDataShareTypeId = -1;
         self.isBeginAnnotation = NO;
         self.imageScale = 1.0;
         self.mIsScreenSharing = NO;
+        self.currentJoinConfIndInfo = [[JoinConfIndInfo alloc] init];
+        self.currentBigViewAttendee = [[SVCConfWatchAttendeeInfo alloc] init];
         
         [self initScreenShareManager];
     }
@@ -397,7 +416,25 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             
             _confHandle = notify.param1;
             TSDK_S_JOIN_CONF_IND_INFO *confInfo = (TSDK_S_JOIN_CONF_IND_INFO *)notify.data;
-            _currentCallId = confInfo->call_id;
+            self.currentCallId = confInfo->call_id;
+            
+            if (self.currentJoinConfIndInfo == nil) {
+                self.currentJoinConfIndInfo = [[JoinConfIndInfo alloc] init];
+            }
+            self.currentJoinConfIndInfo.callId = confInfo->call_id;
+            self.currentJoinConfIndInfo.confMediaType = confInfo->conf_media_type;
+            self.currentJoinConfIndInfo.isHdConf = confInfo->is_hd_conf;
+            self.currentJoinConfIndInfo.confEnvType = confInfo->conf_env_type;
+            self.currentJoinConfIndInfo.isSvcConf = confInfo->is_svc_conf;
+            self.currentJoinConfIndInfo.svcLableCount = confInfo->svc_label_count;
+            NSMutableArray *lableArray = [[NSMutableArray alloc] init];
+            TSDK_UINT32 *svc_lable = confInfo->svc_label;
+            for (int i = 0; i <= self.currentJoinConfIndInfo.svcLableCount; i++) {
+                TSDK_UINT32 lable = svc_lable[i];
+                [lableArray addObject:[NSNumber numberWithInt:lable]];
+            }
+            self.currentJoinConfIndInfo.svcLable = [NSArray arrayWithArray:lableArray];
+            
             
             if (confInfo->conf_media_type == TSDK_E_CONF_MEDIA_VIDEO || confInfo->conf_media_type == TSDK_E_CONF_MEDIA_VIDEO_DATA) {
                 self.isVideoConfInvited = YES;
@@ -524,7 +561,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             switch (state) {
                 case TSDK_E_CONF_AS_STATE_NULL:
                 {
-                    _isStartScreenSharing = NO;
+                    self.isStartScreenSharing = NO;
                     isStopSharing = YES;
                 }
                     break;
@@ -536,7 +573,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                     
                     [self beginAnnotation:(Annotation == 512)];
                     
-                    _isStartScreenSharing = YES;
+                    self.isStartScreenSharing = YES;
                     _currentDataShareTypeId = TSDK_E_COMPONENT_AS;
                     [self handleScreenShareDataConfhandle:notify.param1];
                 }
@@ -549,7 +586,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 __weak typeof(self) weakSelf = self;
                 dispatch_async(espace_dataconf_datashare_queue, ^{
                     [weakSelf stopSharedData];
-                    _isStartScreenSharing = NO;
+                    self.isStartScreenSharing = NO;
                 });
             }
         }
@@ -715,7 +752,26 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             
         }
             break;
-        
+        case TSDK_E_CONF_EVT_SVC_WATCH_INFO_IND:
+        {
+            TSDK_S_CONF_SVC_WATCH_INFO* svc_watch_info = (TSDK_S_CONF_SVC_WATCH_INFO*)notify.data;
+            TSDK_S_CONF_SVC_WATCH_ATTENDEE *watch_attendees = svc_watch_info->watch_attendees;
+            NSInteger currentLabel = [self.currentJoinConfIndInfo.svcLable[0] integerValue];
+            for (int i = 0; i < svc_watch_info->watch_attendee_num; i ++) {
+                TSDK_S_CONF_SVC_WATCH_ATTENDEE watchAttendees = (TSDK_S_CONF_SVC_WATCH_ATTENDEE)watch_attendees[i];
+                if (watchAttendees.label == currentLabel) {
+                    self.currentBigViewAttendee = [[SVCConfWatchAttendeeInfo alloc] init];
+                    self.currentBigViewAttendee.name = [NSString stringWithUTF8String:watchAttendees.base_info.display_name];
+                    self.currentBigViewAttendee.number = [NSString stringWithUTF8String:watchAttendees.base_info.number];
+                    self.currentBigViewAttendee.role = (CONFCTRL_CONF_ROLE)watchAttendees.base_info.role;
+                    self.currentBigViewAttendee.label = watchAttendees.label;
+                    
+                    [self respondsECConferenceDelegateWithType:CONF_E_SVC_WATCH_INFO_IND result:nil];
+                }
+            }
+    
+        }
+            break;
         default:
             break;
     }
@@ -753,7 +809,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 -(void)handleScreenShareDataConfhandle:(TSDK_UINT32 )confHandle
 {
-    if (!_isStartScreenSharing) {
+    if (!self.isStartScreenSharing) {
         DDLogInfo(@"[Meeting] COMPT_MSG_AS_ON_SCREEN_DATA:current share type is not screen share!");
         return;
     }
@@ -1136,7 +1192,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     self.currentConfBaseInfo.media_type = (EC_CONF_MEDIATYPE)confStatusStruct->conf_media_type;
     self.currentConfBaseInfo.conf_state = (CONF_E_STATE)confStatusStruct->conf_state;
     self.currentConfBaseInfo.conf_id = [NSString stringWithUTF8String:confStatusStruct->conf_id];
-    self.currentConfBaseInfo.call_id = _currentCallId;
+    self.currentConfBaseInfo.call_id = self.currentCallId;
     self.currentConfBaseInfo.conf_subject = [NSString stringWithUTF8String:confStatusStruct->subject];
     self.currentConfBaseInfo.record_status = confStatusStruct->is_record;
     self.currentConfBaseInfo.lock_state = confStatusStruct->is_lock;
@@ -1162,11 +1218,49 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         addAttendee.isSelf = participant.status_info.is_self;
         addAttendee.isBroadcast = participant.status_info.is_broadcast;
         addAttendee.isShareOwner = participant.status_info.is_share_owner;
+        addAttendee.isAnonymous = participant.status_info.is_anonymous;
+        addAttendee.isVideo = participant.status_info.is_video;
         
         [self.haveJoinAttendeeArray addObject:addAttendee];
         if (!self.selfJoinNumber) {
             self.selfJoinNumber = self.sipAccount;
         }
+        
+        __block BOOL isAttendeeInConf = NO;
+        [self.watchAttendeesArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+            if([addAttendee.number isEqualToString:attendeeInfo.number]){
+                if (addAttendee.state == ATTENDEE_STATUS_IN_CONF) {
+                    attendeeInfo.name = [NSString stringWithUTF8String:participant.base_info.display_name];
+                    attendeeInfo.number = [NSString stringWithUTF8String:participant.base_info.number];
+                    attendeeInfo.participant_id = [NSString stringWithUTF8String:participant.status_info.participant_id];
+                    attendeeInfo.is_mute = (participant.status_info.is_mute == TSDK_TRUE);
+                    attendeeInfo.hand_state = (participant.status_info.is_handup == TSDK_TRUE);
+                    attendeeInfo.role = (CONFCTRL_CONF_ROLE)participant.base_info.role;
+                    attendeeInfo.state = (ATTENDEE_STATUS_TYPE)participant.status_info.state;
+                    attendeeInfo.isJoinDataconf = participant.status_info.is_join_dataconf;
+                    attendeeInfo.isPresent = participant.status_info.is_present;
+                    attendeeInfo.isSelf = participant.status_info.is_self;
+                    attendeeInfo.isBroadcast = participant.status_info.is_broadcast;
+                    attendeeInfo.isShareOwner = participant.status_info.is_share_owner;
+                    attendeeInfo.isAnonymous = participant.status_info.is_anonymous;
+                    attendeeInfo.isVideo = participant.status_info.is_video;
+                }
+                
+                isAttendeeInConf = YES;
+                *stop = YES;
+                if (*stop == YES) {
+                    if (addAttendee.state == ATTENDEE_STATUS_LEAVED) {
+                        [self.watchAttendeesArray removeObject:attendeeInfo];
+                    }
+                }
+            }
+        }];
+        if(isAttendeeInConf == NO){
+            if (addAttendee.state == ATTENDEE_STATUS_IN_CONF && addAttendee.isVideo && !addAttendee.isSelf) {
+                [self.watchAttendeesArray addObject:addAttendee];
+            }
+        }
+        
 //        if ([self.selfJoinNumber isEqualToString:[NSString stringWithUTF8String:participant.base_info.number]]) {
 //            // if conference'uPortalConfType is CONF_TOPOLOGY_MEDIAX and self role is CONFCTRL_E_CONF_ROLE_CHAIRMAN ,need to open report function ,only once time;
 //            if (participant.base_info.role == TSDK_E_CONF_ROLE_CHAIRMAN && [self isUportalMediaXConf] && !_hasReportMediaxSpeak) {
@@ -1177,6 +1271,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     }
         
     dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:CONF_ATTENDEE_STATUS_UPDATE_NOTIFY object:nil];
         [self respondsECConferenceDelegateWithType:CONF_E_ATTENDEE_UPDATE_INFO result:nil];
     });
 }
@@ -1472,7 +1567,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         }
         realNumber = self.selfJoinNumber;
     }
-    
+    if (realNumber == nil || realNumber.length == 0) {
+        return NO;
+    }
     strcpy(join_number, [realNumber UTF8String]);
     
     TSDK_UINT32 call_id;
@@ -1754,7 +1851,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  * This method is used to watch attendee
  * 选看与会者
  */
--(void)watchAttendeeNumber:(NSString *)attendeeNumber
+-(void)watchAttendeeNumber:(NSString *)attendeeNumber label:(NSInteger)label
 {
 //    if (attendeeNumber.length == 0 && attendeeNumber == nil) {
 //        TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, nil);
@@ -1768,11 +1865,62 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     TSDK_S_WATCH_ATTENDEES *attendeeList = (TSDK_S_WATCH_ATTENDEES *)malloc(sizeof(TSDK_S_WATCH_ATTENDEES));
     memset_s(attendeeList, sizeof(TSDK_S_WATCH_ATTENDEES), 0, sizeof(TSDK_S_WATCH_ATTENDEES));
     strcpy(attendeeList[0].number, [attendeeNumber UTF8String]);
+    if (self.currentJoinConfIndInfo.isSvcConf) {
+        if (label == [self.currentJoinConfIndInfo.svcLable[0] integerValue]) {
+            attendeeList[0].label = label;
+            attendeeList[0].width = 640;
+            attendeeList[0].height = 360;
+            
+//            attendeeList[0].width = 960;
+//            attendeeList[0].height = 360;
+        }else{
+            attendeeList[0].label = label;
+//            attendeeList[0].width = 320;
+//            attendeeList[0].height = 180;
+            attendeeList[0].width = 160;
+            attendeeList[0].height = 90;
+        }
+    }
     
     attendeeInfo->watch_attendee_list = attendeeList;
     
     TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, attendeeInfo);
     DDLogInfo(@"ret_watch_attendee: %d", ret_watch_attendee);
+}
+
+-(void)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray
+{
+    
+    TSDK_S_WATCH_ATTENDEES_INFO *attendeeInfo = (TSDK_S_WATCH_ATTENDEES_INFO *)malloc(sizeof(TSDK_S_WATCH_ATTENDEES_INFO));
+    memset_s(attendeeInfo, sizeof(TSDK_S_WATCH_ATTENDEES_INFO), 0, sizeof(TSDK_S_WATCH_ATTENDEES_INFO));
+    attendeeInfo->watch_attendee_num = (TSDK_UINT32)attendeeArray.count;
+    
+    TSDK_S_WATCH_ATTENDEES *attendeeList = (TSDK_S_WATCH_ATTENDEES *)malloc(sizeof(TSDK_S_WATCH_ATTENDEES) * attendeeArray.count);
+    memset_s(attendeeList, sizeof(TSDK_S_WATCH_ATTENDEES) * attendeeArray.count, 0, sizeof(TSDK_S_WATCH_ATTENDEES) * attendeeArray.count);
+    
+    for (int i = 0; i < attendeeArray.count; i++) {
+        NSInteger label = [labelArray[i] integerValue];
+        strcpy(attendeeList[i].number, [attendeeArray[i] UTF8String]);
+        if (self.currentJoinConfIndInfo.isSvcConf) {
+            if (label == [self.currentJoinConfIndInfo.svcLable[0] integerValue]) {
+                attendeeList[i].label = (TSDK_UINT32)label;
+                attendeeList[i].width = 960;
+                attendeeList[i].height = 540;
+                
+            }else{
+                attendeeList[i].label = (TSDK_UINT32)label;
+//                attendeeList[i].width = 320;
+//                attendeeList[i].height = 180;
+                attendeeList[i].width = 160;
+                attendeeList[i].height = 90;
+            }
+        }
+    }
+    
+    attendeeInfo->watch_attendee_list = attendeeList;
+    
+    TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, attendeeInfo);
+//    DDLogInfo(@"ret_watch_attendee: %d", ret_watch_attendee);
 }
 
 /**
@@ -1859,19 +2007,22 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     DDLogInfo(@"restoreConfParamsInitialValue");
     [_confTokenDic removeAllObjects];
     [self.haveJoinAttendeeArray removeAllObjects];
+    [self.watchAttendeesArray removeAllObjects];
     self.isJoinDataConf = NO;
     _dataConfIdWaitConfInfo = nil;
     _confCtrlUrl = nil;
     self.selfJoinNumber = nil;
     _hasReportMediaxSpeak = NO;
     [self stopHeartBeat];
-    _currentCallId = 0;
+    self.currentCallId = 0;
     self.isVideoConfInvited = NO;
     self.currentConfBaseInfo = nil;
     self.lastConfSharedData = nil;
     self.isJoinDataConfSuccess = NO;
     self.isBeginAnnotation = NO;
     self.imageScale = 1.0;
+    self.currentJoinConfIndInfo = nil;
+    self.currentBigViewAttendee = nil;
     
     [self confStopReplay];
 }
@@ -2172,6 +2323,193 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         result = tsdk_annotation_delete_annotation(_confHandle, &delete_info);
         DDLogInfo(@"Annotation eraseAnnotationsInRect: tsdk_annotation_delete_annotation returns: %d", result);
     }
+}
+
+
+/**
+ *This method is used to update video  render info with video index
+ *根据摄像头序号更新视频渲染
+ */
+- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TSDK_E_VIDEO_WND_TYPE)renderType andCallId:(unsigned int)callid
+{
+    TSDK_UINT32 mirrorType = 0;
+    TSDK_UINT32 displaytype = 0;
+    
+    //本端视频，displaytype为1，镜像模式根据前后摄像头进行设置
+    if (TSDK_E_VIDEO_WND_LOCAL == renderType)
+    {
+        //前置镜像模式为2（左右镜像），后置镜像模式为0（不做镜像）
+        switch (index) {
+            case CameraIndexBack:
+            {
+                mirrorType = 0;
+                break;
+            }
+            case CameraIndexFront:
+            {
+                mirrorType = 2;
+                break;
+            }
+            default:
+                break;
+        }
+        
+        displaytype = 2;
+    }
+    //远端视频，镜像模式为0(不做镜像)，显示模式为0（拉伸模式）
+    else if (TSDK_E_VIDEO_WND_REMOTE == renderType)
+    {
+        mirrorType = 0;
+        displaytype = 2;
+        if (self.currentJoinConfIndInfo.isSvcConf) {
+            displaytype = 1;
+        }
+        
+    }
+    else
+    {
+        DDLogInfo(@"rendertype is not remote or local");
+    }
+    TSDK_S_VIDEO_RENDER_INFO renderInfo;
+    renderInfo.render_type = (TSDK_E_VIDEO_WND_TYPE)renderType;
+    renderInfo.display_type = (TSDK_E_VIDEO_WND_DISPLAY_MODE)displaytype;
+    renderInfo.mirror_type = (TSDK_E_VIDEO_WND_MIRROR_TYPE)mirrorType;
+    TSDK_RESULT ret_video_render_info = tsdk_set_video_render(callid, &renderInfo);
+    DDLogInfo(@"tsdk_set_video_render : %d", ret_video_render_info);
+}
+
+
+/**
+ * This method is used to set video window local view
+ * 设置视频本地窗口画面
+ *@param localVideoView     Indicates local video view
+ *                          本地视频视图
+ *@param remoteVideoView    Indicates remote video view
+ *                          远端视频试图
+ *@param bfcpVideoView      Indicates bfcp video view
+ *                          bfcp视频试图
+ *@param callId             Indicates call id
+ *                          呼叫id
+ *@return YES or NO
+ */
+- (BOOL)setVideoWindowWithLocal:(id)localVideoView
+                         andRemote:(id)remoteVideoView
+{
+    
+    TSDK_S_VIDEO_WND_INFO videoInfo[2];
+    memset_s(videoInfo, sizeof(TSDK_S_VIDEO_WND_INFO) * 2, 0, sizeof(TSDK_S_VIDEO_WND_INFO) * 2);
+    videoInfo[0].video_wnd_type = TSDK_E_VIDEO_WND_LOCAL;
+    videoInfo[0].render = (TSDK_UPTR)localVideoView;
+    videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_FULL;
+    
+    
+    videoInfo[1].video_wnd_type = TSDK_E_VIDEO_WND_REMOTE;
+    videoInfo[1].render = (TSDK_UPTR)remoteVideoView;
+    videoInfo[1].display_mode = TSDK_E_VIDEO_WND_DISPLAY_CUT;
+    TSDK_RESULT ret;
+    ret = tsdk_set_video_window((TSDK_UINT32)self.currentCallId, 2, videoInfo);
+    DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
+    
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:self.currentCallId];
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:self.currentCallId];
+    return (TSDK_SUCCESS == ret);
+}
+
+- (BOOL)setSvcVideoWindowWithLocal:(id)localVideoView
+{
+    TSDK_RESULT ret = TSDK_UNKNOWN_ERR;
+    
+    if (localVideoView != nil) {
+        TSDK_S_VIDEO_WND_INFO videoInfo[1];
+        memset_s(videoInfo, sizeof(TSDK_S_VIDEO_WND_INFO) * 1, 0, sizeof(TSDK_S_VIDEO_WND_INFO) * 1);
+        videoInfo[0].video_wnd_type = TSDK_E_VIDEO_WND_LOCAL;
+        videoInfo[0].render = (TSDK_UPTR)localVideoView;
+        videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_FULL;
+        
+        ret = tsdk_set_video_window((TSDK_UINT32)self.currentCallId, 1, videoInfo);
+        DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
+    }
+        
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:self.currentCallId];
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:self.currentCallId];
+    
+    return (TSDK_SUCCESS == ret);
+}
+
+- (BOOL)setSvcVideoWindowWithFirstSVCView:(id)firstSVCView
+                            secondSVCView:(id)SecondSVCView
+                             thirdSVCView:(id)thirdSVCView
+                                   remote:(id)remoteSVCView
+{
+    
+    TSDK_S_SVC_VIDEO_WND_INFO svcWindow[4];
+    memset_s(svcWindow, sizeof(TSDK_S_SVC_VIDEO_WND_INFO) * 4, 0, sizeof(TSDK_S_SVC_VIDEO_WND_INFO) * 4);
+    
+    svcWindow[0].render = (TSDK_UPTR)remoteSVCView;
+    svcWindow[0].label = [self.currentJoinConfIndInfo.svcLable[0] intValue];
+    svcWindow[0].width = 960;
+    svcWindow[0].height = 540;
+    svcWindow[0].max_bandwidth = 1300;
+    
+    svcWindow[1].render = (TSDK_UPTR)firstSVCView;
+    svcWindow[1].label = [self.currentJoinConfIndInfo.svcLable[1] intValue];
+//    svcWindow[1].width = 320;
+//    svcWindow[1].height = 180;
+//    svcWindow[1].max_bandwidth = 195;
+    svcWindow[1].width = 160;
+    svcWindow[1].height = 90;
+    svcWindow[1].max_bandwidth = 100;
+    
+    svcWindow[2].render = (TSDK_UPTR)SecondSVCView;
+    svcWindow[2].label = [self.currentJoinConfIndInfo.svcLable[2] intValue];
+//    svcWindow[2].width = 320;
+//    svcWindow[2].height = 180;
+//    svcWindow[2].max_bandwidth = 195;
+    svcWindow[2].width = 160;
+    svcWindow[2].height = 90;
+    svcWindow[2].max_bandwidth = 100;
+    
+    svcWindow[3].render = (TSDK_UPTR)thirdSVCView;
+    svcWindow[3].label = [self.currentJoinConfIndInfo.svcLable[3] intValue];
+//    svcWindow[3].width = 320;
+//    svcWindow[3].height = 180;
+//    svcWindow[3].max_bandwidth = 195;
+    svcWindow[3].width = 160;
+    svcWindow[3].height = 90;
+    svcWindow[3].max_bandwidth = 100;
+    
+    
+    TSDK_RESULT ret;
+    ret = tsdk_set_svc_video_window((TSDK_UINT32)self.currentCallId, 4, svcWindow);
+    
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:self.currentCallId];
+    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:self.currentCallId];
+    
+    return (TSDK_SUCCESS == ret);
+}
+
+- (VideoStreamInfo *)getSignalDataInfo
+{
+    TSDK_S_SHARE_STATISTIC_INFO share_statistic_info;
+    memset(&share_statistic_info, 0, sizeof(TSDK_S_SHARE_STATISTIC_INFO));
+    tsdk_get_share_statistic_info(_confHandle, &share_statistic_info);
+    
+    VideoStreamInfo *videoStreamInfo = [[VideoStreamInfo alloc] init];
+    videoStreamInfo.sendBitRate = share_statistic_info.send_bit_rate;
+    videoStreamInfo.sendFrameSize = [NSString stringWithFormat:@"%u*%u",share_statistic_info.send_frame_size_width,share_statistic_info.send_frame_size_height];
+    videoStreamInfo.sendFrameRate = share_statistic_info.send_frame_rate;
+    videoStreamInfo.sendLossFraction = share_statistic_info.send_pkt_loss;
+    videoStreamInfo.sendDelay = share_statistic_info.send_rtt;
+    videoStreamInfo.sendJitter = share_statistic_info.send_jitter;
+    videoStreamInfo.recvBitRate = share_statistic_info.recv_bit_rate;
+    videoStreamInfo.recvFrameSize = [NSString stringWithFormat:@"%u*%u",share_statistic_info.recv_frame_size_width,share_statistic_info.recv_frame_size_height];
+    videoStreamInfo.recvLossFraction = share_statistic_info.recv_pkt_loss;
+    videoStreamInfo.recvFrameRate = share_statistic_info.recv_frame_rate;
+    videoStreamInfo.recvDelay = share_statistic_info.recv_rtt;
+    videoStreamInfo.recvJitter = share_statistic_info.recv_jitter;
+    
+    return videoStreamInfo;
+    
 }
 
 @end

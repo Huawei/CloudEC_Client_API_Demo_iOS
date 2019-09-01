@@ -125,17 +125,6 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     configResult = tsdk_set_config_param(TSDK_E_CONFIG_APP_FILE_PATH_INFO, &app_file_path);
     DDLogInfo(@"config app file path info result: %d", configResult);
     
-    NSString *useIDOConfCtrl = [CommonUtils getUserDefaultValueWithKey:USE_IDO_CONFCTRL];
-    if (useIDOConfCtrl == nil) {
-        [CommonUtils userDefaultSaveValue:@"1" forKey:USE_IDO_CONFCTRL];
-        useIDOConfCtrl = @"1";
-    }
-    TSDK_S_CONF_CTRL_PARAM confctrlParam;
-    memset(&confctrlParam, 0, sizeof(TSDK_S_CONF_CTRL_PARAM));
-    confctrlParam.protocol = [useIDOConfCtrl boolValue] ? TSDK_E_CONF_CTRL_PROTOCOL_IDO : TSDK_E_CONF_CTRL_PROTOCOL_REST;
-    configResult = tsdk_set_config_param(TSDK_E_CONFIG_CONF_CTRL_PARAM, &confctrlParam);
-    DDLogInfo(@"config param result: %d", configResult);
-    
     TSDK_S_APP_INFO_PARAM app_info;
     memset(&app_info, 0, sizeof(TSDK_S_APP_INFO_PARAM));
     app_info.client_type = TSDK_E_CLIENT_MOBILE;
@@ -153,6 +142,8 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     app_info.support_im = TSDK_FALSE;
 //    app_info.support_data_conf = TSDK_TRUE;
     app_info.support_rich_media_message = TSDK_TRUE;
+    app_info.support_svc_conf_caps = TSDK_TRUE;
+    
     TSDK_RESULT result = tsdk_init(&app_info ,&onTSDKNotifications);
     return result;
 }

@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#define SERVER_CONFIG   @"SERVER_CONFIG"
-
 @interface SettingViewController : UITableViewController
 
 @end

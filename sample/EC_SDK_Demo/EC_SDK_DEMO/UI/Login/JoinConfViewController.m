@@ -67,6 +67,13 @@
     }
     
 //    [[LoginCenter sharedInstance] configSipRelevantParam];
+    //config local ip
+    TSDK_S_LOCAL_ADDRESS local_ip;
+    memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
+    NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
+    strcpy(local_ip.ip_address, [ip UTF8String]);
+    TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
+    DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
     
     [[ManagerService confService] joinConferenceWithDisPlayName:displayName ConfId:confId PassWord:passWord ServerAdd:serverAdd ServerPort:[serverport intValue]];
 }

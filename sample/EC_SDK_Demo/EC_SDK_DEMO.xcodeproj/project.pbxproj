@@ -11,17 +11,6 @@
 		124214EA1F442B2F00BDC932 /* DataConfChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 124214E21F442B2F00BDC932 /* DataConfChatViewController.m */; };
 		124214EB1F442B2F00BDC932 /* DataShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 124214E41F442B2F00BDC932 /* DataShareViewController.m */; };
 		124214EC1F442B2F00BDC932 /* VideoShareViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 124214E61F442B2F00BDC932 /* VideoShareViewController.m */; };
-		124B28DA1F616A3800DBDD77 /* ECSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28D91F616A3800DBDD77 /* ECSLogger.m */; };
-		124B28F71F616A8100DBDD77 /* ECSCLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28DE1F616A8100DBDD77 /* ECSCLIColor.m */; };
-		124B28F81F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28E11F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.m */; };
-		124B28F91F616A8100DBDD77 /* ECSDDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28E31F616A8100DBDD77 /* ECSDDASLLogCapture.m */; };
-		124B28FA1F616A8100DBDD77 /* ECSDDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28E51F616A8100DBDD77 /* ECSDDASLLogger.m */; };
-		124B28FB1F616A8100DBDD77 /* ECSDDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28E81F616A8100DBDD77 /* ECSDDFileLogger.m */; };
-		124B28FC1F616A8100DBDD77 /* ECSDDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28EC1F616A8100DBDD77 /* ECSDDLog.m */; };
-		124B28FD1F616A8100DBDD77 /* ECSDDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28EF1F616A8100DBDD77 /* ECSDDTTYLogger.m */; };
-		124B28FE1F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28F21F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.m */; };
-		124B28FF1F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28F41F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.m */; };
-		124B29001F616A8100DBDD77 /* ECSDDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B28F61F616A8100DBDD77 /* ECSDDMultiFormatter.m */; };
 		124B83821F3B06A800631769 /* ConfCameraInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B83731F3B06A800631769 /* ConfCameraInfo.m */; };
 		124B83851F3B06A800631769 /* ChatMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = 124B83791F3B06A800631769 /* ChatMsg.m */; };
 		1254C8E91F68E27F002A0802 /* AddressDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1254C8E61F68E27F002A0802 /* AddressDetailViewController.m */; };
@@ -127,10 +116,30 @@
 		D0C5768522A553CC00C6559A /* ECMarkupToolboxView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5767F22A553CC00C6559A /* ECMarkupToolboxView.m */; };
 		D0C5768822A556C500C6559A /* UIButton+VerticalLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5768722A556C500C6559A /* UIButton+VerticalLayout.m */; };
 		DE0D84C822CB3F0900FFB281 /* libtup_conf_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */; };
+		DE248F09230FD98C00395123 /* ECSDKProgressHud.m in Sources */ = {isa = PBXBuildFile; fileRef = DE248F08230FD98C00395123 /* ECSDKProgressHud.m */; };
+		DE48C71A23025F0400413A73 /* tup_call_closeCramea_img.bmp in Resources */ = {isa = PBXBuildFile; fileRef = DE48C71923025F0400413A73 /* tup_call_closeCramea_img.bmp */; };
+		DE586F602313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F5F2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m */; };
+		DE586F632314BFFA00F52C77 /* VideoStreamInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F622314BFFA00F52C77 /* VideoStreamInfo.m */; };
+		DE586F672314D38600F52C77 /* AudioStreamInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F662314D38600F52C77 /* AudioStreamInfo.m */; };
+		DE586F6D2314DCD500F52C77 /* CallStatisticInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F6C2314DCD500F52C77 /* CallStatisticInfo.m */; };
 		DE59FD62215DD0C700724BC1 /* libtup_cwmp_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */; };
 		DE7410EF2119731F00FC9EBC /* JoinConfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */; };
 		DE87F1C3214A89B3006D50DC /* BaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C2214A89B3006D50DC /* BaseNavigationController.m */; };
 		DE87F1C6214B6534006D50DC /* ConfBaseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C5214B6534006D50DC /* ConfBaseInfo.m */; };
+		DE90F10623053B8C0006AD50 /* SignalScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE90F10323053B8C0006AD50 /* SignalScrollView.m */; };
+		DE90F10723053B8C0006AD50 /* SignalScrollView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DE90F10423053B8C0006AD50 /* SignalScrollView.xib */; };
+		DE9B8FF7230D452F00AC7AE7 /* ECSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FD9230D452E00AC7AE7 /* ECSLogger.m */; };
+		DE9B8FF8230D452F00AC7AE7 /* ECSDDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FDD230D452E00AC7AE7 /* ECSDDTTYLogger.m */; };
+		DE9B8FF9230D452F00AC7AE7 /* ECSDDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FDE230D452E00AC7AE7 /* ECSDDFileLogger.m */; };
+		DE9B8FFA230D452F00AC7AE7 /* ECSCLIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FE2230D452E00AC7AE7 /* ECSCLIColor.m */; };
+		DE9B8FFB230D452F00AC7AE7 /* ECSDDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FE5230D452E00AC7AE7 /* ECSDDASLLogger.m */; };
+		DE9B8FFC230D452F00AC7AE7 /* ECSDDContextFilterLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FE8230D452E00AC7AE7 /* ECSDDContextFilterLogFormatter.m */; };
+		DE9B8FFD230D452F00AC7AE7 /* ECSDDDispatchQueueLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FE9230D452E00AC7AE7 /* ECSDDDispatchQueueLogFormatter.m */; };
+		DE9B8FFE230D452F00AC7AE7 /* ECSDDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FED230D452E00AC7AE7 /* ECSDDMultiFormatter.m */; };
+		DE9B8FFF230D452F00AC7AE7 /* ECSDDASLLogCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FEF230D452E00AC7AE7 /* ECSDDASLLogCapture.m */; };
+		DE9B9000230D452F00AC7AE7 /* ECSDDLog.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FF1230D452E00AC7AE7 /* ECSDDLog.m */; };
+		DE9B9001230D452F00AC7AE7 /* ECSDDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FF2230D452E00AC7AE7 /* ECSDDAbstractDatabaseLogger.m */; };
+		DEA2B583230583C0001C6FAA /* ImageViewBtn.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA2B582230583C0001C6FAA /* ImageViewBtn.m */; };
 		DEAB8F20212E5DCF005BC744 /* CommonUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = DEAB8F1F212E5DCE005BC744 /* CommonUtils.mm */; };
 		DEAB8F23212E6309005BC744 /* CallLogMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAB8F22212E6308005BC744 /* CallLogMessage.m */; };
 		DEAB8FD2212E9823005BC744 /* libACE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F32212E9823005BC744 /* libACE.a */; };
@@ -214,9 +223,18 @@
 		DEAB902A212E9824005BC744 /* libvcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F8A212E9823005BC744 /* libvcom.a */; };
 		DEAB902C212E9824005BC744 /* websockets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEAB8F8C212E9823005BC744 /* websockets.framework */; };
 		DEAB9039212E9F41005BC744 /* websockets.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEAB8F8C212E9823005BC744 /* websockets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		DEBA4AA723155688005B771A /* SignalDataScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4AA623155688005B771A /* SignalDataScrollView.m */; };
+		DEBA4AB8231610ED005B771A /* VideoAndDataQualityTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DEBA4AB3231610EC005B771A /* VideoAndDataQualityTableViewCell.xib */; };
+		DEBA4AB9231610ED005B771A /* AudioQualityTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4AB4231610EC005B771A /* AudioQualityTableViewCell.m */; };
+		DEBA4ABA231610ED005B771A /* VideoAndDataQualityTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4AB5231610EC005B771A /* VideoAndDataQualityTableViewCell.m */; };
+		DEBA4ABB231610ED005B771A /* AudioQualityTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DEBA4AB6231610EC005B771A /* AudioQualityTableViewCell.xib */; };
+		DEBA4ABE23161D01005B771A /* StatisticShowInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4ABD23161D01005B771A /* StatisticShowInfo.m */; };
+		DEBA4ACC2316A486005B771A /* DataShareQualityTableViewCel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4ACA2316A486005B771A /* DataShareQualityTableViewCel.m */; };
+		DEBA4ACD2316A486005B771A /* DataShareQualityTableViewCel.xib in Resources */ = {isa = PBXBuildFile; fileRef = DEBA4ACB2316A486005B771A /* DataShareQualityTableViewCel.xib */; };
 		DEBDCCF122E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */; };
 		DEC49B76221CE7940089A88A /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC49B75221CE7940089A88A /* libc++.tbd */; };
-		DEC809C82307A0340024A89B /* LocalNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC809C72307A0330024A89B /* LocalNotificationCenter.m */; };
+		DEC809C1230691F50024A89B /* JoinConfIndInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC809C0230691F50024A89B /* JoinConfIndInfo.m */; };
+		DEC809C42306A9BE0024A89B /* LocalNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC809C32306A9BE0024A89B /* LocalNotificationCenter.m */; };
 		DED4CBD622EECC160035334C /* libtup_service_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED4CBD522EECC160035334C /* libtup_service_base.a */; };
 		DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01690E022A4FB85002B2A27 /* ReplayKit.framework */; };
 		DED4CC1722EF16AF0035334C /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DED4CC1622EF16AF0035334C /* SampleHandler.m */; };
@@ -267,33 +285,6 @@
 		124214E41F442B2F00BDC932 /* DataShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataShareViewController.m; sourceTree = "<group>"; };
 		124214E51F442B2F00BDC932 /* VideoShareViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoShareViewController.h; sourceTree = "<group>"; };
 		124214E61F442B2F00BDC932 /* VideoShareViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoShareViewController.m; sourceTree = "<group>"; };
-		124B28D81F616A3800DBDD77 /* ECSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSLogger.h; sourceTree = "<group>"; };
-		124B28D91F616A3800DBDD77 /* ECSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSLogger.m; sourceTree = "<group>"; };
-		124B28DD1F616A8100DBDD77 /* ECSCLIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSCLIColor.h; sourceTree = "<group>"; };
-		124B28DE1F616A8100DBDD77 /* ECSCLIColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSCLIColor.m; sourceTree = "<group>"; };
-		124B28DF1F616A8100DBDD77 /* ECSCocoaLumberjack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSCocoaLumberjack.h; sourceTree = "<group>"; };
-		124B28E01F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
-		124B28E11F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
-		124B28E21F616A8100DBDD77 /* ECSDDASLLogCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDASLLogCapture.h; sourceTree = "<group>"; };
-		124B28E31F616A8100DBDD77 /* ECSDDASLLogCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDASLLogCapture.m; sourceTree = "<group>"; };
-		124B28E41F616A8100DBDD77 /* ECSDDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDASLLogger.h; sourceTree = "<group>"; };
-		124B28E51F616A8100DBDD77 /* ECSDDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDASLLogger.m; sourceTree = "<group>"; };
-		124B28E61F616A8100DBDD77 /* ECSDDAssertMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDAssertMacros.h; sourceTree = "<group>"; };
-		124B28E71F616A8100DBDD77 /* ECSDDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDFileLogger.h; sourceTree = "<group>"; };
-		124B28E81F616A8100DBDD77 /* ECSDDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDFileLogger.m; sourceTree = "<group>"; };
-		124B28E91F616A8100DBDD77 /* ECSDDLegacyMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDLegacyMacros.h; sourceTree = "<group>"; };
-		124B28EA1F616A8100DBDD77 /* ECSDDLog+LOGV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ECSDDLog+LOGV.h"; sourceTree = "<group>"; };
-		124B28EB1F616A8100DBDD77 /* ECSDDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDLog.h; sourceTree = "<group>"; };
-		124B28EC1F616A8100DBDD77 /* ECSDDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDLog.m; sourceTree = "<group>"; };
-		124B28ED1F616A8100DBDD77 /* ECSDDLogMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDLogMacros.h; sourceTree = "<group>"; };
-		124B28EE1F616A8100DBDD77 /* ECSDDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDTTYLogger.h; sourceTree = "<group>"; };
-		124B28EF1F616A8100DBDD77 /* ECSDDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDTTYLogger.m; sourceTree = "<group>"; };
-		124B28F11F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDContextFilterLogFormatter.h; sourceTree = "<group>"; };
-		124B28F21F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDContextFilterLogFormatter.m; sourceTree = "<group>"; };
-		124B28F31F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDDispatchQueueLogFormatter.h; sourceTree = "<group>"; };
-		124B28F41F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDDispatchQueueLogFormatter.m; sourceTree = "<group>"; };
-		124B28F51F616A8100DBDD77 /* ECSDDMultiFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDMultiFormatter.h; sourceTree = "<group>"; };
-		124B28F61F616A8100DBDD77 /* ECSDDMultiFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDMultiFormatter.m; sourceTree = "<group>"; };
 		124B29011F616EFE00DBDD77 /* PrefixHeader.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrefixHeader.pch; sourceTree = "<group>"; };
 		124B83721F3B06A800631769 /* ConfCameraInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfCameraInfo.h; sourceTree = "<group>"; };
 		124B83731F3B06A800631769 /* ConfCameraInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfCameraInfo.m; sourceTree = "<group>"; };
@@ -487,6 +478,9 @@
 		DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_conf_agent.a; sourceTree = "<group>"; };
 		DE1A16C021C8E7860009E042 /* tsdk_im_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_im_def.h; sourceTree = "<group>"; };
 		DE1A16C121C8E7860009E042 /* tsdk_im_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_im_interface.h; sourceTree = "<group>"; };
+		DE248F07230FD98C00395123 /* ECSDKProgressHud.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECSDKProgressHud.h; sourceTree = "<group>"; };
+		DE248F08230FD98C00395123 /* ECSDKProgressHud.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ECSDKProgressHud.m; sourceTree = "<group>"; };
+		DE48C71923025F0400413A73 /* tup_call_closeCramea_img.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = tup_call_closeCramea_img.bmp; sourceTree = "<group>"; };
 		DE53D7F92138E9D000804D42 /* tsdk_manager_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_interface.h; sourceTree = "<group>"; };
 		DE53D7FA2138E9D000804D42 /* tsdk_conference_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_conference_def.h; sourceTree = "<group>"; };
 		DE53D7FB2138E9D000804D42 /* tsdk_eaddr_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_eaddr_interface.h; sourceTree = "<group>"; };
@@ -502,6 +496,14 @@
 		DE53D8052138E9D200804D42 /* tsdk_call_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_call_def.h; sourceTree = "<group>"; };
 		DE53D8062138E9D200804D42 /* tsdk_eaddr_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_eaddr_def.h; sourceTree = "<group>"; };
 		DE53D8072138E9D200804D42 /* tsdk_login_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_login_interface.h; sourceTree = "<group>"; };
+		DE586F5E2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVCConfWatchAttendeeInfo.h; sourceTree = "<group>"; };
+		DE586F5F2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVCConfWatchAttendeeInfo.m; sourceTree = "<group>"; };
+		DE586F612314BFFA00F52C77 /* VideoStreamInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoStreamInfo.h; sourceTree = "<group>"; };
+		DE586F622314BFFA00F52C77 /* VideoStreamInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoStreamInfo.m; sourceTree = "<group>"; };
+		DE586F652314D38600F52C77 /* AudioStreamInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioStreamInfo.h; sourceTree = "<group>"; };
+		DE586F662314D38600F52C77 /* AudioStreamInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioStreamInfo.m; sourceTree = "<group>"; };
+		DE586F6B2314DCD500F52C77 /* CallStatisticInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallStatisticInfo.h; sourceTree = "<group>"; };
+		DE586F6C2314DCD500F52C77 /* CallStatisticInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallStatisticInfo.m; sourceTree = "<group>"; };
 		DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cwmp_h5.a; sourceTree = "<group>"; };
 		DE7410ED2119731E00FC9EBC /* JoinConfViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoinConfViewController.h; sourceTree = "<group>"; };
 		DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JoinConfViewController.m; sourceTree = "<group>"; };
@@ -509,7 +511,39 @@
 		DE87F1C2214A89B3006D50DC /* BaseNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BaseNavigationController.m; sourceTree = "<group>"; };
 		DE87F1C4214B6534006D50DC /* ConfBaseInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfBaseInfo.h; sourceTree = "<group>"; };
 		DE87F1C5214B6534006D50DC /* ConfBaseInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfBaseInfo.m; sourceTree = "<group>"; };
+		DE90F10323053B8C0006AD50 /* SignalScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalScrollView.m; sourceTree = "<group>"; };
+		DE90F10423053B8C0006AD50 /* SignalScrollView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignalScrollView.xib; sourceTree = "<group>"; };
+		DE90F10523053B8C0006AD50 /* SignalScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalScrollView.h; sourceTree = "<group>"; };
 		DE92157121183A7000843CDE /* libstdc++.6.0.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.6.0.9.tbd"; path = "usr/lib/libstdc++.6.0.9.tbd"; sourceTree = SDKROOT; };
+		DE9B8FD9230D452E00AC7AE7 /* ECSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSLogger.m; sourceTree = "<group>"; };
+		DE9B8FDB230D452E00AC7AE7 /* ECSDDASLLogCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDASLLogCapture.h; sourceTree = "<group>"; };
+		DE9B8FDC230D452E00AC7AE7 /* ECSDDLog+LOGV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ECSDDLog+LOGV.h"; sourceTree = "<group>"; };
+		DE9B8FDD230D452E00AC7AE7 /* ECSDDTTYLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDTTYLogger.m; sourceTree = "<group>"; };
+		DE9B8FDE230D452E00AC7AE7 /* ECSDDFileLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDFileLogger.m; sourceTree = "<group>"; };
+		DE9B8FDF230D452E00AC7AE7 /* ECSDDLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDLog.h; sourceTree = "<group>"; };
+		DE9B8FE0230D452E00AC7AE7 /* ECSDDAssertMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDAssertMacros.h; sourceTree = "<group>"; };
+		DE9B8FE2230D452E00AC7AE7 /* ECSCLIColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSCLIColor.m; sourceTree = "<group>"; };
+		DE9B8FE3230D452E00AC7AE7 /* ECSCLIColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSCLIColor.h; sourceTree = "<group>"; };
+		DE9B8FE4230D452E00AC7AE7 /* ECSDDLogMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDLogMacros.h; sourceTree = "<group>"; };
+		DE9B8FE5230D452E00AC7AE7 /* ECSDDASLLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDASLLogger.m; sourceTree = "<group>"; };
+		DE9B8FE6230D452E00AC7AE7 /* ECSDDAbstractDatabaseLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDAbstractDatabaseLogger.h; sourceTree = "<group>"; };
+		DE9B8FE8230D452E00AC7AE7 /* ECSDDContextFilterLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDContextFilterLogFormatter.m; sourceTree = "<group>"; };
+		DE9B8FE9230D452E00AC7AE7 /* ECSDDDispatchQueueLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDDispatchQueueLogFormatter.m; sourceTree = "<group>"; };
+		DE9B8FEA230D452E00AC7AE7 /* ECSDDMultiFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDMultiFormatter.h; sourceTree = "<group>"; };
+		DE9B8FEB230D452E00AC7AE7 /* ECSDDContextFilterLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDContextFilterLogFormatter.h; sourceTree = "<group>"; };
+		DE9B8FEC230D452E00AC7AE7 /* ECSDDDispatchQueueLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDDispatchQueueLogFormatter.h; sourceTree = "<group>"; };
+		DE9B8FED230D452E00AC7AE7 /* ECSDDMultiFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDMultiFormatter.m; sourceTree = "<group>"; };
+		DE9B8FEE230D452E00AC7AE7 /* ECSDDTTYLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDTTYLogger.h; sourceTree = "<group>"; };
+		DE9B8FEF230D452E00AC7AE7 /* ECSDDASLLogCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDASLLogCapture.m; sourceTree = "<group>"; };
+		DE9B8FF0230D452E00AC7AE7 /* ECSDDFileLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDFileLogger.h; sourceTree = "<group>"; };
+		DE9B8FF1230D452E00AC7AE7 /* ECSDDLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDLog.m; sourceTree = "<group>"; };
+		DE9B8FF2230D452E00AC7AE7 /* ECSDDAbstractDatabaseLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSDDAbstractDatabaseLogger.m; sourceTree = "<group>"; };
+		DE9B8FF3230D452E00AC7AE7 /* ECSDDASLLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDASLLogger.h; sourceTree = "<group>"; };
+		DE9B8FF4230D452E00AC7AE7 /* ECSCocoaLumberjack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSCocoaLumberjack.h; sourceTree = "<group>"; };
+		DE9B8FF5230D452E00AC7AE7 /* ECSDDLegacyMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDLegacyMacros.h; sourceTree = "<group>"; };
+		DE9B8FF6230D452E00AC7AE7 /* ECSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSLogger.h; sourceTree = "<group>"; };
+		DEA2B581230583C0001C6FAA /* ImageViewBtn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageViewBtn.h; sourceTree = "<group>"; };
+		DEA2B582230583C0001C6FAA /* ImageViewBtn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageViewBtn.m; sourceTree = "<group>"; };
 		DEAB43D7229D5A1800615452 /* tsdk_common_macro_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_common_macro_def.h; sourceTree = "<group>"; };
 		DEAB8F1E212E5DCE005BC744 /* CommonUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonUtils.h; sourceTree = "<group>"; };
 		DEAB8F1F212E5DCE005BC744 /* CommonUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CommonUtils.mm; sourceTree = "<group>"; };
@@ -595,10 +629,25 @@
 		DEAB8F89212E9823005BC744 /* libuspsdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libuspsdk.a; sourceTree = "<group>"; };
 		DEAB8F8A212E9823005BC744 /* libvcom.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libvcom.a; sourceTree = "<group>"; };
 		DEAB8F8C212E9823005BC744 /* websockets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = websockets.framework; sourceTree = "<group>"; };
+		DEBA4AA523155688005B771A /* SignalDataScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalDataScrollView.h; sourceTree = "<group>"; };
+		DEBA4AA623155688005B771A /* SignalDataScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SignalDataScrollView.m; sourceTree = "<group>"; };
+		DEBA4AB2231610EC005B771A /* VideoAndDataQualityTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoAndDataQualityTableViewCell.h; sourceTree = "<group>"; };
+		DEBA4AB3231610EC005B771A /* VideoAndDataQualityTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoAndDataQualityTableViewCell.xib; sourceTree = "<group>"; };
+		DEBA4AB4231610EC005B771A /* AudioQualityTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioQualityTableViewCell.m; sourceTree = "<group>"; };
+		DEBA4AB5231610EC005B771A /* VideoAndDataQualityTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoAndDataQualityTableViewCell.m; sourceTree = "<group>"; };
+		DEBA4AB6231610EC005B771A /* AudioQualityTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AudioQualityTableViewCell.xib; sourceTree = "<group>"; };
+		DEBA4AB7231610ED005B771A /* AudioQualityTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioQualityTableViewCell.h; sourceTree = "<group>"; };
+		DEBA4ABC23161D01005B771A /* StatisticShowInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatisticShowInfo.h; sourceTree = "<group>"; };
+		DEBA4ABD23161D01005B771A /* StatisticShowInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatisticShowInfo.m; sourceTree = "<group>"; };
+		DEBA4AC92316A486005B771A /* DataShareQualityTableViewCel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataShareQualityTableViewCel.h; sourceTree = "<group>"; };
+		DEBA4ACA2316A486005B771A /* DataShareQualityTableViewCel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataShareQualityTableViewCel.m; sourceTree = "<group>"; };
+		DEBA4ACB2316A486005B771A /* DataShareQualityTableViewCel.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DataShareQualityTableViewCel.xib; sourceTree = "<group>"; };
 		DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
 		DEC49B75221CE7940089A88A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
-		DEC809C62307A0330024A89B /* LocalNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationCenter.h; sourceTree = "<group>"; };
-		DEC809C72307A0330024A89B /* LocalNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationCenter.m; sourceTree = "<group>"; };
+		DEC809BF230691F50024A89B /* JoinConfIndInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JoinConfIndInfo.h; sourceTree = "<group>"; };
+		DEC809C0230691F50024A89B /* JoinConfIndInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JoinConfIndInfo.m; sourceTree = "<group>"; };
+		DEC809C22306A9BD0024A89B /* LocalNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalNotificationCenter.h; sourceTree = "<group>"; };
+		DEC809C32306A9BE0024A89B /* LocalNotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalNotificationCenter.m; sourceTree = "<group>"; };
 		DED4CBD522EECC160035334C /* libtup_service_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_service_base.a; sourceTree = "<group>"; };
 		DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ECSdkScreenShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DED4CC1522EF16AF0035334C /* SampleHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SampleHandler.h; sourceTree = "<group>"; };
@@ -722,64 +771,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		124B28AA1F6166F400DBDD77 /* logger */ = {
-			isa = PBXGroup;
-			children = (
-				124B28DB1F616A8100DBDD77 /* ECSDDLog */,
-				124B28D81F616A3800DBDD77 /* ECSLogger.h */,
-				124B28D91F616A3800DBDD77 /* ECSLogger.m */,
-			);
-			path = logger;
-			sourceTree = "<group>";
-		};
-		124B28DB1F616A8100DBDD77 /* ECSDDLog */ = {
-			isa = PBXGroup;
-			children = (
-				124B28DC1F616A8100DBDD77 /* CLI */,
-				124B28DF1F616A8100DBDD77 /* ECSCocoaLumberjack.h */,
-				124B28E01F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.h */,
-				124B28E11F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.m */,
-				124B28E21F616A8100DBDD77 /* ECSDDASLLogCapture.h */,
-				124B28E31F616A8100DBDD77 /* ECSDDASLLogCapture.m */,
-				124B28E41F616A8100DBDD77 /* ECSDDASLLogger.h */,
-				124B28E51F616A8100DBDD77 /* ECSDDASLLogger.m */,
-				124B28E61F616A8100DBDD77 /* ECSDDAssertMacros.h */,
-				124B28E71F616A8100DBDD77 /* ECSDDFileLogger.h */,
-				124B28E81F616A8100DBDD77 /* ECSDDFileLogger.m */,
-				124B28E91F616A8100DBDD77 /* ECSDDLegacyMacros.h */,
-				124B28EA1F616A8100DBDD77 /* ECSDDLog+LOGV.h */,
-				124B28EB1F616A8100DBDD77 /* ECSDDLog.h */,
-				124B28EC1F616A8100DBDD77 /* ECSDDLog.m */,
-				124B28ED1F616A8100DBDD77 /* ECSDDLogMacros.h */,
-				124B28EE1F616A8100DBDD77 /* ECSDDTTYLogger.h */,
-				124B28EF1F616A8100DBDD77 /* ECSDDTTYLogger.m */,
-				124B28F01F616A8100DBDD77 /* Extensions */,
-			);
-			path = ECSDDLog;
-			sourceTree = "<group>";
-		};
-		124B28DC1F616A8100DBDD77 /* CLI */ = {
-			isa = PBXGroup;
-			children = (
-				124B28DD1F616A8100DBDD77 /* ECSCLIColor.h */,
-				124B28DE1F616A8100DBDD77 /* ECSCLIColor.m */,
-			);
-			path = CLI;
-			sourceTree = "<group>";
-		};
-		124B28F01F616A8100DBDD77 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				124B28F11F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.h */,
-				124B28F21F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.m */,
-				124B28F31F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.h */,
-				124B28F41F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.m */,
-				124B28F51F616A8100DBDD77 /* ECSDDMultiFormatter.h */,
-				124B28F61F616A8100DBDD77 /* ECSDDMultiFormatter.m */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		124B83701F3B06A800631769 /* Data Conference Plugin */ = {
 			isa = PBXGroup;
 			children = (
@@ -997,6 +988,14 @@
 				126C63C21F386A0700048A9F /* IPTConfig.m */,
 				DEAB8F21212E6308005BC744 /* CallLogMessage.h */,
 				DEAB8F22212E6308005BC744 /* CallLogMessage.m */,
+				DE586F612314BFFA00F52C77 /* VideoStreamInfo.h */,
+				DE586F622314BFFA00F52C77 /* VideoStreamInfo.m */,
+				DE586F652314D38600F52C77 /* AudioStreamInfo.h */,
+				DE586F662314D38600F52C77 /* AudioStreamInfo.m */,
+				DE586F6B2314DCD500F52C77 /* CallStatisticInfo.h */,
+				DE586F6C2314DCD500F52C77 /* CallStatisticInfo.m */,
+				DEBA4ABC23161D01005B771A /* StatisticShowInfo.h */,
+				DEBA4ABD23161D01005B771A /* StatisticShowInfo.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1031,6 +1030,22 @@
 				124214E41F442B2F00BDC932 /* DataShareViewController.m */,
 				124214E51F442B2F00BDC932 /* VideoShareViewController.h */,
 				124214E61F442B2F00BDC932 /* VideoShareViewController.m */,
+				DEA2B581230583C0001C6FAA /* ImageViewBtn.h */,
+				DEA2B582230583C0001C6FAA /* ImageViewBtn.m */,
+				DEBA4AA523155688005B771A /* SignalDataScrollView.h */,
+				DEBA4AA623155688005B771A /* SignalDataScrollView.m */,
+				DEBA4AB7231610ED005B771A /* AudioQualityTableViewCell.h */,
+				DEBA4AB4231610EC005B771A /* AudioQualityTableViewCell.m */,
+				DEBA4AB6231610EC005B771A /* AudioQualityTableViewCell.xib */,
+				DEBA4AB2231610EC005B771A /* VideoAndDataQualityTableViewCell.h */,
+				DEBA4AB5231610EC005B771A /* VideoAndDataQualityTableViewCell.m */,
+				DEBA4AB3231610EC005B771A /* VideoAndDataQualityTableViewCell.xib */,
+				DEBA4AC92316A486005B771A /* DataShareQualityTableViewCel.h */,
+				DEBA4ACA2316A486005B771A /* DataShareQualityTableViewCel.m */,
+				DEBA4ACB2316A486005B771A /* DataShareQualityTableViewCel.xib */,
+				DE90F10523053B8C0006AD50 /* SignalScrollView.h */,
+				DE90F10323053B8C0006AD50 /* SignalScrollView.m */,
+				DE90F10423053B8C0006AD50 /* SignalScrollView.xib */,
 				12E8EE3C1F56740D00C3F953 /* ConfChatViewController.h */,
 				12E8EE3D1F56740D00C3F953 /* ConfChatViewController.m */,
 				12E8EE3E1F56740D00C3F953 /* ConfChatViewController.xib */,
@@ -1093,7 +1108,7 @@
 			children = (
 				410CEF911FA9A024002CB4EC /* Depand */,
 				12F4BC161F6F819A001426E4 /* EC_SDK_DEMO.entitlements */,
-				124B28AA1F6166F400DBDD77 /* logger */,
+				DE9B8FD8230D452E00AC7AE7 /* logger */,
 				126C63901F3867A400048A9F /* Service */,
 				126C635E1F3866B800048A9F /* UI */,
 				12C241FE1F31CAF100C21D91 /* Common */,
@@ -1103,6 +1118,7 @@
 				12C23FC21F31C06D00C21D91 /* Main.storyboard */,
 				12C23FC71F31C06D00C21D91 /* LaunchScreen.storyboard */,
 				12C23FCA1F31C06D00C21D91 /* Info.plist */,
+				DE48C71923025F0400413A73 /* tup_call_closeCramea_img.bmp */,
 				12C23FB91F31C06D00C21D91 /* Supporting Files */,
 			);
 			path = EC_SDK_DEMO;
@@ -1150,8 +1166,10 @@
 				12C242061F31CEB600C21D91 /* NetworkUtils.mm */,
 				12C242071F31CEB600C21D91 /* Reachability.h */,
 				12C242081F31CEB600C21D91 /* Reachability.m */,
-				DEC809C62307A0330024A89B /* LocalNotificationCenter.h */,
-				DEC809C72307A0330024A89B /* LocalNotificationCenter.m */,
+				DEC809C22306A9BD0024A89B /* LocalNotificationCenter.h */,
+				DEC809C32306A9BE0024A89B /* LocalNotificationCenter.m */,
+				DE248F07230FD98C00395123 /* ECSDKProgressHud.h */,
+				DE248F08230FD98C00395123 /* ECSDKProgressHud.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1207,6 +1225,10 @@
 				8DDC27CB1F3AEFDA00DE5353 /* ConfData.mm */,
 				DE87F1C4214B6534006D50DC /* ConfBaseInfo.h */,
 				DE87F1C5214B6534006D50DC /* ConfBaseInfo.m */,
+				DEC809BF230691F50024A89B /* JoinConfIndInfo.h */,
+				DEC809C0230691F50024A89B /* JoinConfIndInfo.m */,
+				DE586F5E2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.h */,
+				DE586F5F2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1242,6 +1264,64 @@
 				8D9FCCDC1F45357B00A8216F /* AttendeeTableView.m */,
 			);
 			path = Conference;
+			sourceTree = "<group>";
+		};
+		DE9B8FD8230D452E00AC7AE7 /* logger */ = {
+			isa = PBXGroup;
+			children = (
+				DE9B8FD9230D452E00AC7AE7 /* ECSLogger.m */,
+				DE9B8FDA230D452E00AC7AE7 /* ECSDDLog */,
+				DE9B8FF6230D452E00AC7AE7 /* ECSLogger.h */,
+			);
+			path = logger;
+			sourceTree = "<group>";
+		};
+		DE9B8FDA230D452E00AC7AE7 /* ECSDDLog */ = {
+			isa = PBXGroup;
+			children = (
+				DE9B8FDB230D452E00AC7AE7 /* ECSDDASLLogCapture.h */,
+				DE9B8FDC230D452E00AC7AE7 /* ECSDDLog+LOGV.h */,
+				DE9B8FDD230D452E00AC7AE7 /* ECSDDTTYLogger.m */,
+				DE9B8FDE230D452E00AC7AE7 /* ECSDDFileLogger.m */,
+				DE9B8FDF230D452E00AC7AE7 /* ECSDDLog.h */,
+				DE9B8FE0230D452E00AC7AE7 /* ECSDDAssertMacros.h */,
+				DE9B8FE1230D452E00AC7AE7 /* CLI */,
+				DE9B8FE4230D452E00AC7AE7 /* ECSDDLogMacros.h */,
+				DE9B8FE5230D452E00AC7AE7 /* ECSDDASLLogger.m */,
+				DE9B8FE6230D452E00AC7AE7 /* ECSDDAbstractDatabaseLogger.h */,
+				DE9B8FE7230D452E00AC7AE7 /* Extensions */,
+				DE9B8FEE230D452E00AC7AE7 /* ECSDDTTYLogger.h */,
+				DE9B8FEF230D452E00AC7AE7 /* ECSDDASLLogCapture.m */,
+				DE9B8FF0230D452E00AC7AE7 /* ECSDDFileLogger.h */,
+				DE9B8FF1230D452E00AC7AE7 /* ECSDDLog.m */,
+				DE9B8FF2230D452E00AC7AE7 /* ECSDDAbstractDatabaseLogger.m */,
+				DE9B8FF3230D452E00AC7AE7 /* ECSDDASLLogger.h */,
+				DE9B8FF4230D452E00AC7AE7 /* ECSCocoaLumberjack.h */,
+				DE9B8FF5230D452E00AC7AE7 /* ECSDDLegacyMacros.h */,
+			);
+			path = ECSDDLog;
+			sourceTree = "<group>";
+		};
+		DE9B8FE1230D452E00AC7AE7 /* CLI */ = {
+			isa = PBXGroup;
+			children = (
+				DE9B8FE2230D452E00AC7AE7 /* ECSCLIColor.m */,
+				DE9B8FE3230D452E00AC7AE7 /* ECSCLIColor.h */,
+			);
+			path = CLI;
+			sourceTree = "<group>";
+		};
+		DE9B8FE7230D452E00AC7AE7 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				DE9B8FE8230D452E00AC7AE7 /* ECSDDContextFilterLogFormatter.m */,
+				DE9B8FE9230D452E00AC7AE7 /* ECSDDDispatchQueueLogFormatter.m */,
+				DE9B8FEA230D452E00AC7AE7 /* ECSDDMultiFormatter.h */,
+				DE9B8FEB230D452E00AC7AE7 /* ECSDDContextFilterLogFormatter.h */,
+				DE9B8FEC230D452E00AC7AE7 /* ECSDDDispatchQueueLogFormatter.h */,
+				DE9B8FED230D452E00AC7AE7 /* ECSDDMultiFormatter.m */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		DEAB8F26212E9823005BC744 /* lib */ = {
@@ -1480,15 +1560,20 @@
 				419522621FBC3FFD00CA3429 /* CallHistoryCell.xib in Resources */,
 				126C637F1F38675800048A9F /* ConfigIPTViewController.xib in Resources */,
 				12627B081F4A742600B5E4F3 /* ConfRunningViewController.xib in Resources */,
+				DEBA4ABB231610ED005B771A /* AudioQualityTableViewCell.xib in Resources */,
 				126C638B1F38675800048A9F /* TransferView.xib in Resources */,
+				DEBA4ACD2316A486005B771A /* DataShareQualityTableViewCel.xib in Resources */,
 				D0C5767B22A5209100C6559A /* Assets.xcassets in Resources */,
+				DEBA4AB8231610ED005B771A /* VideoAndDataQualityTableViewCell.xib in Resources */,
 				1254C8F21F68E28C002A0802 /* TupHeadViewCell.xib in Resources */,
 				1254C8F41F68E28C002A0802 /* TupPersonDetailCell.xib in Resources */,
 				126C63861F38675800048A9F /* CallView.xib in Resources */,
 				126C63881F38675800048A9F /* DialSecondPlate.xib in Resources */,
 				419522681FBC400700CA3429 /* CallHistoryViewController.xib in Resources */,
 				1298B3FB1F666AD800910855 /* DeptListCell.xib in Resources */,
+				DE48C71A23025F0400413A73 /* tup_call_closeCramea_img.bmp in Resources */,
 				12C23FC41F31C06D00C21D91 /* Main.storyboard in Resources */,
+				DE90F10723053B8C0006AD50 /* SignalScrollView.xib in Resources */,
 				126C63821F38675800048A9F /* CallEndView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1509,47 +1594,55 @@
 			files = (
 				411ED0B7210AEE68001B33ED /* LoginCenter.m in Sources */,
 				12627AFD1F42EE8900B5E4F3 /* MeViewController.m in Sources */,
+				DE9B8FFD230D452F00AC7AE7 /* ECSDDDispatchQueueLogFormatter.m in Sources */,
 				8DDC27DB1F3AEFDA00DE5353 /* ConfAttendeeInConf.m in Sources */,
 				415C3437206C7AAB0015499B /* Initializer.h in Sources */,
 				126C63AD1F38698E00048A9F /* Defines.mm in Sources */,
 				DE87F1C6214B6534006D50DC /* ConfBaseInfo.m in Sources */,
+				DE9B8FFC230D452F00AC7AE7 /* ECSDDContextFilterLogFormatter.m in Sources */,
 				8DF8381C1F43EA86009BA0C1 /* NSString+SizeWithFont.m in Sources */,
 				1298B3F01F66282B00910855 /* DeptInfo.m in Sources */,
 				DE7410EF2119731F00FC9EBC /* JoinConfViewController.m in Sources */,
-				124B28FA1F616A8100DBDD77 /* ECSDDASLLogger.m in Sources */,
 				D0C5768322A553CC00C6559A /* ECMarkupView.m in Sources */,
+				DE586F6D2314DCD500F52C77 /* CallStatisticInfo.m in Sources */,
 				126C63CA1F386A0700048A9F /* CallSessionModifyInfo.m in Sources */,
 				126C63851F38675800048A9F /* CallView.m in Sources */,
+				DE9B8FFA230D452F00AC7AE7 /* ECSCLIColor.m in Sources */,
+				DEBA4ABE23161D01005B771A /* StatisticShowInfo.m in Sources */,
 				124214EB1F442B2F00BDC932 /* DataShareViewController.m in Sources */,
 				DEAB8F23212E6309005BC744 /* CallLogMessage.m in Sources */,
+				DEBA4ACC2316A486005B771A /* DataShareQualityTableViewCel.m in Sources */,
 				124B83821F3B06A800631769 /* ConfCameraInfo.m in Sources */,
 				D0C5767922A51E0600C6559A /* Utils.m in Sources */,
 				DEAB8F20212E5DCF005BC744 /* CommonUtils.mm in Sources */,
-				124B28F81F616A8100DBDD77 /* ECSDDAbstractDatabaseLogger.m in Sources */,
+				DE9B8FFF230D452F00AC7AE7 /* ECSDDASLLogCapture.m in Sources */,
 				126C63A91F38698E00048A9F /* CallInfo.mm in Sources */,
 				8D9FCCDD1F45357B00A8216F /* AttendeeTableView.m in Sources */,
 				8DF8381A1F43EA86009BA0C1 /* EmptyDataView.m in Sources */,
+				DE9B9001230D452F00AC7AE7 /* ECSDDAbstractDatabaseLogger.m in Sources */,
 				12627B001F42F7D700B5E4F3 /* SettingViewController.m in Sources */,
 				126C63811F38675800048A9F /* CallEndView.m in Sources */,
 				12627B061F43EF7400B5E4F3 /* CallTakingViewController.m in Sources */,
 				124214E91F442B2F00BDC932 /* DataConfBaseViewController.m in Sources */,
 				D0C5768822A556C500C6559A /* UIButton+VerticalLayout.m in Sources */,
+				DEC809C42306A9BE0024A89B /* LocalNotificationCenter.m in Sources */,
 				1258C1DD1F395B4B00654D80 /* Initializer.m in Sources */,
 				419522671FBC400700CA3429 /* CallHistoryViewController.m in Sources */,
 				8DF838171F43EA86009BA0C1 /* ConfRunningViewController.m in Sources */,
-				124B28F71F616A8100DBDD77 /* ECSCLIColor.m in Sources */,
+				DE586F672314D38600F52C77 /* AudioStreamInfo.m in Sources */,
 				D0C5768422A553CC00C6559A /* ECMarkupToolboxPopoverView.m in Sources */,
 				1298B3FA1F666AD800910855 /* DeptListCell.m in Sources */,
 				8DF838461F44019A009BA0C1 /* ConfDetailViewController.m in Sources */,
+				DE248F09230FD98C00395123 /* ECSDKProgressHud.m in Sources */,
 				124214EA1F442B2F00BDC932 /* DataConfChatViewController.m in Sources */,
-				124B28F91F616A8100DBDD77 /* ECSDDASLLogCapture.m in Sources */,
+				DEBA4AB9231610ED005B771A /* AudioQualityTableViewCell.m in Sources */,
+				DEA2B583230583C0001C6FAA /* ImageViewBtn.m in Sources */,
 				419522611FBC3FFD00CA3429 /* CallHistoryCell.m in Sources */,
 				8DF838151F43EA86009BA0C1 /* ConfListCell.m in Sources */,
 				1258C1F11F3AA01800654D80 /* LoginServerInfo.m in Sources */,
 				1298B3F61F662FAF00910855 /* SearchResultInfo.m in Sources */,
 				12627AFA1F42D6AF00B5E4F3 /* VidePreviewController.m in Sources */,
 				8DF838181F43EA86009BA0C1 /* CreateConfTypeChooseViewController.m in Sources */,
-				124B28FC1F616A8100DBDD77 /* ECSDDLog.m in Sources */,
 				126C63CB1F386A0700048A9F /* IPTConfig.m in Sources */,
 				1298B3E91F66219200910855 /* NetworkAddressBookController.m in Sources */,
 				126C63AA1F38698E00048A9F /* LoginInfo.mm in Sources */,
@@ -1557,55 +1650,60 @@
 				12C242091F31CEB600C21D91 /* NetworkUtils.mm in Sources */,
 				8DDC27DC1F3AEFDA00DE5353 /* ConfData.mm in Sources */,
 				1254C8F11F68E28C002A0802 /* TupHeadViewCell.m in Sources */,
-				124B29001F616A8100DBDD77 /* ECSDDMultiFormatter.m in Sources */,
 				126C63CD1F386A0700048A9F /* CallService.mm in Sources */,
 				8DDC27DA1F3AEFDA00DE5353 /* ConfAttendee.m in Sources */,
 				126C638C1F38675800048A9F /* LoginViewController.mm in Sources */,
 				126C63C91F386A0700048A9F /* CallInfo+StructParase.m in Sources */,
+				DE9B8FFE230D452F00AC7AE7 /* ECSDDMultiFormatter.m in Sources */,
 				126C638A1F38675800048A9F /* TransferView.m in Sources */,
 				1258C1F71F3C828000654D80 /* DeviceMotionManager.m in Sources */,
+				DE586F602313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m in Sources */,
+				DE9B8FF7230D452F00AC7AE7 /* ECSLogger.m in Sources */,
 				8DF838141F43EA86009BA0C1 /* AttendeeListCell.m in Sources */,
 				8DF8381D1F43EA86009BA0C1 /* UIImage+Stretchable.m in Sources */,
 				8DF838191F43EA86009BA0C1 /* CreateConfViewController.m in Sources */,
-				124B28DA1F616A3800DBDD77 /* ECSLogger.m in Sources */,
+				DE9B8FF9230D452F00AC7AE7 /* ECSDDFileLogger.m in Sources */,
+				DE90F10623053B8C0006AD50 /* SignalScrollView.m in Sources */,
 				126C63AE1F38698E00048A9F /* ManagerService.m in Sources */,
-				124B28FF1F616A8100DBDD77 /* ECSDDDispatchQueueLogFormatter.m in Sources */,
 				12C2420A1F31CEB600C21D91 /* Reachability.m in Sources */,
 				1254C8E91F68E27F002A0802 /* AddressDetailViewController.m in Sources */,
 				12C23FBE1F31C06D00C21D91 /* AppDelegate.m in Sources */,
-				124B28FB1F616A8100DBDD77 /* ECSDDFileLogger.m in Sources */,
 				1254C8F31F68E28C002A0802 /* TupPersonDetailCell.m in Sources */,
 				126C63C81F386A0700048A9F /* CallData.mm in Sources */,
 				1298B3ED1F6627BA00910855 /* ContactInfo.m in Sources */,
 				1258C1E61F399CF500654D80 /* ServiceManager.m in Sources */,
 				124B83851F3B06A800631769 /* ChatMsg.m in Sources */,
-				DEC809C82307A0340024A89B /* LocalNotificationCenter.m in Sources */,
 				12C23FBB1F31C06D00C21D91 /* main.m in Sources */,
 				41281125211181EC00A7C765 /* NoDisturbViewController.m in Sources */,
 				D0C5767322A51C2900C6559A /* ScreenShareView.m in Sources */,
 				D0C5768522A553CC00C6559A /* ECMarkupToolboxView.m in Sources */,
 				126C638F1F38676C00048A9F /* ViewController.m in Sources */,
 				126C637E1F38675800048A9F /* ConfigIPTViewController.m in Sources */,
+				DE9B9000230D452F00AC7AE7 /* ECSDDLog.m in Sources */,
 				1254C8EA1F68E27F002A0802 /* AddressMemberListController.m in Sources */,
 				127170DB1F616946007B0EF5 /* ContactService.m in Sources */,
 				12E8EE3F1F56740D00C3F953 /* ConfChatViewController.m in Sources */,
+				DEBA4ABA231610ED005B771A /* VideoAndDataQualityTableViewCell.m in Sources */,
+				DE9B8FFB230D452F00AC7AE7 /* ECSDDASLLogger.m in Sources */,
 				8DDC27D91F3AEFDA00DE5353 /* ConfAttendee+StructParase.m in Sources */,
 				DE87F1C3214A89B3006D50DC /* BaseNavigationController.m in Sources */,
+				DE586F632314BFFA00F52C77 /* VideoStreamInfo.m in Sources */,
+				DEC809C1230691F50024A89B /* JoinConfIndInfo.m in Sources */,
 				411ED0B5210AEE61001B33ED /* LoginService.mm in Sources */,
 				1298B4031F667BF300910855 /* AddressSearchResultController.m in Sources */,
 				1258C1E31F39617A00654D80 /* Notification.m in Sources */,
 				8DDC27E11F3AEFDA00DE5353 /* ConferenceService.mm in Sources */,
-				124B28FD1F616A8100DBDD77 /* ECSDDTTYLogger.m in Sources */,
 				8D60FC191F594CF500DE9654 /* ParseConfXMLInfo.mm in Sources */,
 				1298B3F31F662C5500910855 /* SearchParam.m in Sources */,
 				12627B031F43E6D100B5E4F3 /* CallWindowController.m in Sources */,
 				126C63831F38675800048A9F /* CallTipView.m in Sources */,
 				126C637D1F38675800048A9F /* CallViewController.mm in Sources */,
 				126C63871F38675800048A9F /* DialSecondPlate.m in Sources */,
+				DE9B8FF8230D452F00AC7AE7 /* ECSDDTTYLogger.m in Sources */,
 				126C63891F38675800048A9F /* EAGLView.mm in Sources */,
 				8DF838161F43EA86009BA0C1 /* ConfListViewController.m in Sources */,
 				8DF8381B1F43EA86009BA0C1 /* MeetingDatePickViewController.m in Sources */,
-				124B28FE1F616A8100DBDD77 /* ECSDDContextFilterLogFormatter.m in Sources */,
+				DEBA4AA723155688005B771A /* SignalDataScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

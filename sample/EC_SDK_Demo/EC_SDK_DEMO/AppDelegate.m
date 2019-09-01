@@ -62,42 +62,27 @@
     
     // DDLog init (write log to file)
 //    [[ECSLogger shareInstance] addFileLogger];
-    [NetworkUtils shareInstance];
     
-    // Config TUPIOSSDK log path
-//    NSString *logPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingString:@"/TUPC60log"];
-//    [ECSSandboxHelper shareInstance].logFileSuperPath = logPath;
-//
-    // init TUPIOSSDK (module: Contact/IM/Group/MAALogin)
-//    [ECSAppConfig sharedInstance].appLogLevel = kECSLogDebug;
-//    [ECSAppConfig sharedInstance].isLogEnabled = YES;
-//    [ECSAppConfig sharedInstance].version = @"V3.0.4.5";
-
-//    [TUPIOSSDKService start];
 
     // start up tup module.(module: Call/Conference/SipLogin)
     [ServiceManager startup];
     
-    
     // other UI Things
     [CallWindowController shareInstance];
+    [NetworkUtils shareInstance];
+    
     [[LocalNotificationCenter sharedInstance] start];
-
+    
     [self gotoNormalFlow];
     
-//    [[LoginCenter sharedInstance] configSipRelevantParam];
     
     return YES;
 }
 
 - (void)gotoNormalFlow {
     
-    //[self prepareForAutoLogin];
-    
-
-//        // check is auto login
+        // check is auto login
         BOOL bNeedAutoLogin = [self shouldStartAutoLogin];
-//        BOOL bNeedAutoLogin = YES;
         if (bNeedAutoLogin) {
             [self startAutoLogin];
             [AppDelegate gotoRecentChatSessionView];
@@ -110,7 +95,6 @@
     
     NSArray *array = [CommonUtils getUserDefaultValueWithKey:SERVER_CONFIG];
 
-    
     LoginInfo *user = [[LoginInfo alloc] init];
     user.regServerAddress = array[0];
     user.regServerPort = array[1];
@@ -126,9 +110,8 @@
 
 - (BOOL)shouldStartAutoLogin
 {
-
-        return NO;
-
+    BOOL needAutoLogin = [CommonUtils getUserDefaultBoolValueWithKey:NEED_AUTO_LOGIN];
+    return needAutoLogin;
 }
 
 + (void)gotoRecentChatSessionView
@@ -247,6 +230,19 @@
 //
 //    [[UIApplication sharedApplication] scheduleLocalNotification:localNTF];
     
+}
+
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED < 90000
+- (NSUInteger)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
+#else //CB-12098.  Defaults to UIInterfaceOrientationMask for iOS 9+
+- (UIInterfaceOrientationMask)application:(UIApplication*)application supportedInterfaceOrientationsForWindow:(UIWindow*)window
+#endif
+{
+    // iPhone doesn't support upside down by default, while the iPad does.  Override to allow all orientations always, and let the root view controller decide what's allowed (the supported orientations mask gets intersected).
+    NSUInteger supportedInterfaceOrientations = (1 << UIInterfaceOrientationPortrait) | (1 << UIInterfaceOrientationLandscapeLeft) | (1 << UIInterfaceOrientationLandscapeRight) | (1 << UIInterfaceOrientationPortraitUpsideDown);
+    
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 /**

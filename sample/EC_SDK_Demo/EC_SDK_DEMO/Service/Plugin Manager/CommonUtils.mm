@@ -97,6 +97,20 @@
     return anyValue;
 }
 
++(void)userDefaultSaveBoolValue:(BOOL)anyValue forKey:(NSString *)key
+{
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    [userDefault setBool:anyValue forKey:key];
+    [userDefault synchronize];
+}
+
++(BOOL)getUserDefaultBoolValueWithKey:(NSString *)key
+{
+    NSUserDefaults *userDefault = [NSUserDefaults standardUserDefaults];
+    BOOL anyValue = [userDefault boolForKey:key];
+    return anyValue;
+}
+
 /**
  *This method is used to decode string from base64
  *对base64编码的字符串进行解码
@@ -296,16 +310,16 @@
  */
 + (void)setToOrientation:(UIDeviceOrientation)toOrientation
 {
-    //旋转到toOrientation方向之前，需要先将系统的orientation方向设置成当前界面的方向,确保触发旋转动作
-    if (toOrientation == [[UIDevice currentDevice] orientation] && toOrientation == UIDeviceOrientationPortrait)
-    {
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationLandscapeLeft] forKey:@"orientation"];
-    }
-    else if (toOrientation == [[UIDevice currentDevice] orientation]
-             && (toOrientation == UIDeviceOrientationLandscapeLeft || toOrientation == UIDeviceOrientationLandscapeRight))
-    {
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationPortrait] forKey:@"orientation"];
-    }
+//    //旋转到toOrientation方向之前，需要先将系统的orientation方向设置成当前界面的方向,确保触发旋转动作
+//    if (toOrientation == [[UIDevice currentDevice] orientation] && toOrientation == UIDeviceOrientationPortrait)
+//    {
+//        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationLandscapeLeft] forKey:@"orientation"];
+//    }
+//    else if (toOrientation == [[UIDevice currentDevice] orientation]
+//             && (toOrientation == UIDeviceOrientationLandscapeLeft || toOrientation == UIDeviceOrientationLandscapeRight))
+//    {
+//        [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationPortrait] forKey:@"orientation"];
+//    }
     
     [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:toOrientation] forKey:@"orientation"];
 }

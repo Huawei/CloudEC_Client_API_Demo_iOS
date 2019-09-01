@@ -8,21 +8,28 @@
 
 #import <UIKit/UIKit.h>
 
-#import <OpenGLES/ES1/gl.h>
-#import <OpenGLES/ES1/glext.h>
-#import <OpenGLES/ES2/gl.h>
-#import <OpenGLES/ES2/glext.h>
+//#import <OpenGLES/ES1/gl.h>
+//#import <OpenGLES/ES1/glext.h>
+//#import <OpenGLES/ES2/gl.h>
+//#import <OpenGLES/ES2/glext.h>
+
+#import "ConfAttendeeInConf.h"
 
 // This class wraps the CAEAGLLayer from CoreAnimation into a convenient UIView subclass.
 // The view content is basically an EAGL surface you render your OpenGL scene into.
 // Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
 @interface EAGLView : UIView
 
+@property (nonatomic, strong) ConfAttendeeInConf *currentAttendee;
+@property (nonatomic, assign) NSInteger currentlabel;
+
 +(EAGLView *)getPreviewView;
 
 + (EAGLView *)getRemoteView;
 
 + (EAGLView *)getLocalView;
+
++ (EAGLView *)getLocalBigView;
 
 + (EAGLView *)getDataLocalView;
 
@@ -38,19 +45,25 @@
 //
 //+ (void)destoryDataConfBFCPView;
 
-+ (EAGLView *)getRemoteCWView;
++ (EAGLView *)getFirstSVCView;
 
-+ (EAGLView *)getLocalCWView;
++ (EAGLView *)getSecondSVCView;
 
-+ (EAGLView *)getBFCPPassiveView;
++ (EAGLView *)getThirdSVCView;
 
 + (void)destroyPreviewView;
 
 + (void)destroyLocalView;
 
++ (void)destroyLocalBigView;
+
 + (void)destroyRemoteView;
 
-+ (void)destroyBFCPView;
++ (void)destroyFirstSVCView;
+
++ (void)destroySecondSVCView;
+
++ (void)destroyThirdSVCView;
 
 + (void)hideDataRemoteView;
 

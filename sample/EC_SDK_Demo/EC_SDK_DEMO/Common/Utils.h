@@ -1,19 +1,9 @@
 #import <UIKit/UIKit.h>
-#import <sys/utsname.h>
 #import <AVFoundation/AVFoundation.h>
 
 #define UIViewGetHeight(view)   CGRectGetHeight(view.bounds)
 #define UIViewGetWidth(view)    CGRectGetWidth(view.bounds)
 #define RGBACOLOR(r,g,b,a) [UIColor colorWithRed:(r)/255.0f green:(g)/255.0f blue:(b)/255.0f alpha:(a)]
-///< 判断设备是否为iPhone X
-#define KISIphoneX \
-({\
-struct utsname systemInfo;\
-uname(&systemInfo);\
-NSString *deviceTypeString = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];\
-BOOL isIphone = ([deviceTypeString containsString:@"iPhone10,3"] || [deviceTypeString containsString:@"iPhone10,6"] || [deviceTypeString containsString:@"iPhone11,2"] || [deviceTypeString containsString:@"iPhone11,4"] || [deviceTypeString containsString:@"iPhone11,6"] || [deviceTypeString containsString:@"iPhone11,8"]);\
-isIphone;\
-})
 
 #undef kMainScreenHeight
 #define kMainScreenHeight ([UIScreen mainScreen].bounds.size.height)

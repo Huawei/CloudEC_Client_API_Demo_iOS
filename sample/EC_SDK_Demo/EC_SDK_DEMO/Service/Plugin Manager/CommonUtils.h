@@ -52,6 +52,10 @@
  */
 +(id)getUserDefaultValueWithKey:(NSString *)key;
 
++(void)userDefaultSaveBoolValue:(BOOL)anyValue forKey:(NSString *)key;
+
++(BOOL)getUserDefaultBoolValueWithKey:(NSString *)key;
+
 /**
  *This method is used to check is VPN connect or not
  *检查vpn是否连接

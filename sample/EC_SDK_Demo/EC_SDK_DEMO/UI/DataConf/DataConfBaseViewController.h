@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "ConfAttendeeInConf.h"
 
+#define SCREEN_WIDTH MIN(self.view.bounds.size.width, self.view.bounds.size.height)
+#define SCREEN_HIGHT MAX(self.view.bounds.size.height, self.view.bounds.size.width)
+
 @interface DataConfBaseViewController : UIViewController
 
 @property (nonatomic,strong) UIView  *barView;
