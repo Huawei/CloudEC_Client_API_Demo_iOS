@@ -77,13 +77,13 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
  *Indicates call service delegate
  *呼叫业务代理
  */
-@property (nonatomic, assign) id<CallServiceDelegate> delegate;
+@property (nonatomic, weak) id<CallServiceDelegate> delegate;
 
 /**
  *Indicates ipt service delegate
  *ipt业务代理
  */
-@property (nonatomic, assign) id<IptConfigDelegate> iptDelegate;
+@property (nonatomic, weak) id<IptConfigDelegate> iptDelegate;
 
 /**
  *Indicates global sip account

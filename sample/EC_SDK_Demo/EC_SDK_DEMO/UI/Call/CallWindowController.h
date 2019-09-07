@@ -12,7 +12,7 @@
 @interface CallWindowController : NSObject
 
 @property (nonatomic,assign)BOOL cameraClose;
-@property (nonatomic,assign)BOOL cameraCaptureIndex;
+@property (nonatomic,assign)int cameraCaptureIndex;
 
 + (instancetype)shareInstance;
 

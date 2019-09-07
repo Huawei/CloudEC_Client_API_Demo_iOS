@@ -307,7 +307,7 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  * This method is used to boardcast attendee
  * 选看与会者
  */
--(void)watchAttendeeNumber:(NSString *)attendeeNumber label:(NSInteger)label;
+-(void)watchAttendeeNumber:(NSString *)attendeeNumber;
 
 -(void)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray;
 

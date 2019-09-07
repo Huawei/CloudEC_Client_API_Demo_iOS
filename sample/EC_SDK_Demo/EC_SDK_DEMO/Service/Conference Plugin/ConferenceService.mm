@@ -1851,7 +1851,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  * This method is used to watch attendee
  * 选看与会者
  */
--(void)watchAttendeeNumber:(NSString *)attendeeNumber label:(NSInteger)label
+-(void)watchAttendeeNumber:(NSString *)attendeeNumber
 {
 //    if (attendeeNumber.length == 0 && attendeeNumber == nil) {
 //        TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, nil);
@@ -1865,23 +1865,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     TSDK_S_WATCH_ATTENDEES *attendeeList = (TSDK_S_WATCH_ATTENDEES *)malloc(sizeof(TSDK_S_WATCH_ATTENDEES));
     memset_s(attendeeList, sizeof(TSDK_S_WATCH_ATTENDEES), 0, sizeof(TSDK_S_WATCH_ATTENDEES));
     strcpy(attendeeList[0].number, [attendeeNumber UTF8String]);
-    if (self.currentJoinConfIndInfo.isSvcConf) {
-        if (label == [self.currentJoinConfIndInfo.svcLable[0] integerValue]) {
-            attendeeList[0].label = label;
-            attendeeList[0].width = 640;
-            attendeeList[0].height = 360;
-            
-//            attendeeList[0].width = 960;
-//            attendeeList[0].height = 360;
-        }else{
-            attendeeList[0].label = label;
-//            attendeeList[0].width = 320;
-//            attendeeList[0].height = 180;
-            attendeeList[0].width = 160;
-            attendeeList[0].height = 90;
-        }
-    }
-    
+
     attendeeInfo->watch_attendee_list = attendeeList;
     
     TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, attendeeInfo);
@@ -2325,60 +2309,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     }
 }
 
-
-/**
- *This method is used to update video  render info with video index
- *根据摄像头序号更新视频渲染
- */
-- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TSDK_E_VIDEO_WND_TYPE)renderType andCallId:(unsigned int)callid
-{
-    TSDK_UINT32 mirrorType = 0;
-    TSDK_UINT32 displaytype = 0;
-    
-    //本端视频，displaytype为1，镜像模式根据前后摄像头进行设置
-    if (TSDK_E_VIDEO_WND_LOCAL == renderType)
-    {
-        //前置镜像模式为2（左右镜像），后置镜像模式为0（不做镜像）
-        switch (index) {
-            case CameraIndexBack:
-            {
-                mirrorType = 0;
-                break;
-            }
-            case CameraIndexFront:
-            {
-                mirrorType = 2;
-                break;
-            }
-            default:
-                break;
-        }
-        
-        displaytype = 2;
-    }
-    //远端视频，镜像模式为0(不做镜像)，显示模式为0（拉伸模式）
-    else if (TSDK_E_VIDEO_WND_REMOTE == renderType)
-    {
-        mirrorType = 0;
-        displaytype = 2;
-        if (self.currentJoinConfIndInfo.isSvcConf) {
-            displaytype = 1;
-        }
-        
-    }
-    else
-    {
-        DDLogInfo(@"rendertype is not remote or local");
-    }
-    TSDK_S_VIDEO_RENDER_INFO renderInfo;
-    renderInfo.render_type = (TSDK_E_VIDEO_WND_TYPE)renderType;
-    renderInfo.display_type = (TSDK_E_VIDEO_WND_DISPLAY_MODE)displaytype;
-    renderInfo.mirror_type = (TSDK_E_VIDEO_WND_MIRROR_TYPE)mirrorType;
-    TSDK_RESULT ret_video_render_info = tsdk_set_video_render(callid, &renderInfo);
-    DDLogInfo(@"tsdk_set_video_render : %d", ret_video_render_info);
-}
-
-
 /**
  * This method is used to set video window local view
  * 设置视频本地窗口画面
@@ -2410,8 +2340,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     ret = tsdk_set_video_window((TSDK_UINT32)self.currentCallId, 2, videoInfo);
     DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
     
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:self.currentCallId];
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:self.currentCallId];
+    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:self.currentCallId];
+    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:self.currentCallId];
     return (TSDK_SUCCESS == ret);
 }
 
@@ -2430,8 +2360,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
     }
         
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:self.currentCallId];
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:self.currentCallId];
+    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:self.currentCallId];
+    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:self.currentCallId];
     
     return (TSDK_SUCCESS == ret);
 }
@@ -2453,27 +2383,18 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     
     svcWindow[1].render = (TSDK_UPTR)firstSVCView;
     svcWindow[1].label = [self.currentJoinConfIndInfo.svcLable[1] intValue];
-//    svcWindow[1].width = 320;
-//    svcWindow[1].height = 180;
-//    svcWindow[1].max_bandwidth = 195;
     svcWindow[1].width = 160;
     svcWindow[1].height = 90;
     svcWindow[1].max_bandwidth = 100;
     
     svcWindow[2].render = (TSDK_UPTR)SecondSVCView;
     svcWindow[2].label = [self.currentJoinConfIndInfo.svcLable[2] intValue];
-//    svcWindow[2].width = 320;
-//    svcWindow[2].height = 180;
-//    svcWindow[2].max_bandwidth = 195;
     svcWindow[2].width = 160;
     svcWindow[2].height = 90;
     svcWindow[2].max_bandwidth = 100;
     
     svcWindow[3].render = (TSDK_UPTR)thirdSVCView;
     svcWindow[3].label = [self.currentJoinConfIndInfo.svcLable[3] intValue];
-//    svcWindow[3].width = 320;
-//    svcWindow[3].height = 180;
-//    svcWindow[3].max_bandwidth = 195;
     svcWindow[3].width = 160;
     svcWindow[3].height = 90;
     svcWindow[3].max_bandwidth = 100;
@@ -2482,8 +2403,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     TSDK_RESULT ret;
     ret = tsdk_set_svc_video_window((TSDK_UINT32)self.currentCallId, 4, svcWindow);
     
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_LOCAL andCallId:self.currentCallId];
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TSDK_E_VIDEO_WND_REMOTE andCallId:self.currentCallId];
+    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:self.currentCallId];
+    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:self.currentCallId];
     
     return (TSDK_SUCCESS == ret);
 }

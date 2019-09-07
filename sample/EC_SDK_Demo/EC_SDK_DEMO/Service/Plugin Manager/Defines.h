@@ -97,6 +97,8 @@ extern NSString* const EC_COMING_CONF_NOTIFY;
 
 extern NSString* const CONF_ATTENDEE_STATUS_UPDATE_NOTIFY;
 
+extern NSString* const CALL_STATISTIC_INFO_NOTIFY;
+
 /**
  * [en]This enumeration is used to describe the call type.
  * [cn]∫ÙΩ–¿‡–Õ

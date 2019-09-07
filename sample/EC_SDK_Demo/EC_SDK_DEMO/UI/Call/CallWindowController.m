@@ -26,6 +26,14 @@
 
 #import <ReplayKit/ReplayKit.h>
 
+#import "CallStatisticInfo.h"
+#import "SignalDataScrollView.h"
+#import "StatisticShowInfo.h"
+#import "ImageViewBtn.h"
+
+#define SCREEN_WIDTH MIN(self.callWindow.rootViewController.view.bounds.size.width, self.callWindow.rootViewController.view.bounds.size.height)
+#define SCREEN_HIGHT MAX(self.callWindow.rootViewController.view.bounds.size.height, self.callWindow.rootViewController.view.bounds.size.width)
+
 @interface CallWindowController ()<CallServiceDelegate,CallViewDelegate,DialSecondPlateDelegate,CallEndViewDelegate>
 @property (nonatomic, strong)UIWindow *callWindow;
 @property (nonatomic, strong)CallTakingViewController *talkingCtrl;
@@ -53,6 +61,10 @@
 @property (nonatomic ,assign) BOOL isSetSVCWindow;
 @property (nonatomic ,assign) BOOL isSetAVCWindow;
 @property (nonatomic, assign) BOOL isFirstSetWindow;
+
+@property (nonatomic, strong) ImageViewBtn *signalBtn;
+@property (nonatomic, strong) UIView *signalBackView;
+@property (nonatomic, strong) SignalDataScrollView *signalDataScrollView;
 
 @property (nonatomic, strong) RPSystemBroadcastPickerView *broadcastPickerView API_AVAILABLE(ios(12.0));
 
@@ -146,6 +158,8 @@ static CallWindowController *g_windowCtrl = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confShareRequestAction) name:CONF_SHARE_REQUEST_ACTION object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confUserStatusUpdateNotify) name:CONF_ATTENDEE_STATUS_UPDATE_NOTIFY object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCallStatisticInfo:) name:CALL_STATISTIC_INFO_NOTIFY object:nil];
     
 }
 
@@ -378,18 +392,15 @@ static CallWindowController *g_windowCtrl = nil;
             self.cameraClose = NO;
             [self.callWindow setHidden:YES];
             
-//            _isCallTransToConf = NO;
-//            _isCallVideoOpeartionStatus = NO;
-//            _cameraClose = NO;
-//            _cameraCaptureIndex = 1;
-//            _callTimeOut = YES;
-//            _isMuteMic = NO;
-//            _callViewArray = [[NSMutableArray alloc] init];
-//            _callInfoArray = [[NSMutableArray alloc] init];
-//
-//            [EAGLView destroyRemoteView];
-//            [EAGLView destroyLocalView];
-//            [EAGLView destroyLocalBigView];
+            _isCallTransToConf = NO;
+            _isCallVideoOpeartionStatus = NO;
+            _cameraClose = NO;
+            _cameraCaptureIndex = 1;
+            _callTimeOut = YES;
+            _isMuteMic = NO;
+            _callViewArray = [[NSMutableArray alloc] init];
+            _callInfoArray = [[NSMutableArray alloc] init];
+
 //
             [EAGLView destroyFirstSVCView];
             [EAGLView destroySecondSVCView];
@@ -399,6 +410,9 @@ static CallWindowController *g_windowCtrl = nil;
             _isSetSVCWindow = NO;
             _isSetAVCWindow = NO;
             _isFirstSetWindow = YES;
+
+            _currentTupCallInfo = nil;
+            
         }
             break;
         case CALL_VIEW_REFRESH:
@@ -685,6 +699,9 @@ static CallWindowController *g_windowCtrl = nil;
     CallView *callView = [self callViewWithCallId:callId];
     if (callView)
     {
+        [_signalBtn removeFromSuperview];
+        [_signalBackView removeFromSuperview];
+        _signalBackView = nil;
         [_callViewArray removeObject:callView];
         [callView removeFromSuperview];
     }
@@ -717,6 +734,10 @@ static CallWindowController *g_windowCtrl = nil;
             
             
         }
+        
+        [callView addSubview:self.signalBackView];
+        [callView addSubview:self.signalBtn];
+        
     }
 }
 
@@ -734,11 +755,12 @@ static CallWindowController *g_windowCtrl = nil;
     
     _remoteView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height);
     _remoteView.tag = callView.tag+1;
+    _remoteView.hidden = NO;
     
     // video local view
     _locationView.tag = callView.tag +2;
     _locationView.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - 100, 0, 100, 150);;
-    
+    _locationView.hidden = NO;
     
     [_remoteView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
     [_locationView setAutoresizingMask:UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleBottomMargin];
@@ -1010,6 +1032,212 @@ static CallWindowController *g_windowCtrl = nil;
 }
 
 - (void)transferButtonAction {
+    
+}
+
+- (SignalDataScrollView *)signalDataScrollView
+{
+    if (nil == _signalDataScrollView) {
+        _signalDataScrollView = [[SignalDataScrollView alloc] initWithFrame:CGRectMake(0, 0, 365, 365)];
+    }
+    return _signalDataScrollView;
+}
+
+-(UIView *)signalBackView
+{
+    if (nil == _signalBackView) {
+        
+        _signalBackView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 365, 365)];
+        _signalBackView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HIGHT/2);
+        //            _signalBackView.backgroundColor = [UIColor blackColor];
+        //            _signalBackView.alpha = 0.5;
+        _signalBackView.hidden = YES;
+        [_signalBackView addSubview:self.signalDataScrollView];
+        
+        
+    }
+    return _signalBackView;
+}
+
+- (ImageViewBtn *)signalBtn
+{
+    if (nil == _signalBtn) {
+        _signalBtn = [[ImageViewBtn alloc] initWithFrame: CGRectMake(22, 117, 30 , 30)];
+        _signalBtn.contentMode = UIViewContentModeScaleAspectFill;
+        [_signalBtn setImage:[UIImage imageNamed:@"signal_1"] forState:UIControlStateNormal];
+        [_signalBtn addTarget:self action:@selector(signalBtnAction) forControlEvents:UIControlEventTouchUpInside];
+        
+    }
+    return _signalBtn;
+}
+
+- (void)signalBtnAction
+{
+    _signalBackView.hidden = !_signalBackView.hidden;
+}
+
+- (void)updateCallStatisticInfo:(NSNotification *)notification
+{
+    CallStatisticInfo *callInfo = notification.userInfo[CALL_STATISTIC_INFO];
+    [self updatesignalImageWithSignalStrength:callInfo.signalStrength];
+    AudioStreamInfo *audioStreamInfo = callInfo.audioStreamInfo;
+    
+    NSMutableArray *audioInfoArray = [[NSMutableArray alloc] init];
+    
+    StatisticShowInfo *locallSendInfo = [[StatisticShowInfo alloc] init];
+    locallSendInfo.name = @"local send";
+    locallSendInfo.bandWidth = audioStreamInfo.sendBitRate;
+    locallSendInfo.lossFraction = audioStreamInfo.sendLossFraction;
+    locallSendInfo.delay = audioStreamInfo.sendDelay;
+    locallSendInfo.jitter = audioStreamInfo.sendJitter;
+    StatisticShowInfo *localRecvInfo = [[StatisticShowInfo alloc] init];
+    localRecvInfo.name = @"local recv";
+    localRecvInfo.bandWidth = audioStreamInfo.recvBitRate;
+    localRecvInfo.lossFraction = audioStreamInfo.recvLossFraction;
+    localRecvInfo.delay = audioStreamInfo.recvDelay;
+    localRecvInfo.jitter = audioStreamInfo.recvJitter;
+    
+    [audioInfoArray addObject:locallSendInfo];
+    [audioInfoArray addObject:localRecvInfo];
+    self.signalDataScrollView.audioInfoArray = [NSArray arrayWithArray:audioInfoArray];
+    
+    NSMutableArray *videoInfoArray = [[NSMutableArray alloc] init];
+    
+    if (callInfo.isSvcConf) {
+        NSArray *currentMutiStream = [NSArray arrayWithArray:callInfo.svcStreamInfoArray];
+        int localNumber = 1;
+        for (int i = 0 ; i < callInfo.svcStreamCount; i ++) {
+            VideoStreamInfo *videoSingleStream = currentMutiStream[i];
+            if (videoSingleStream.sendBitRate != 0) {
+                StatisticShowInfo *videoLocallSendInfo = [[StatisticShowInfo alloc] init];
+                videoLocallSendInfo.name = [NSString stringWithFormat:@"local send %d",localNumber];
+                videoLocallSendInfo.bandWidth = videoSingleStream.sendBitRate/1000;
+                videoLocallSendInfo.lossFraction = videoSingleStream.sendLossFraction;
+                videoLocallSendInfo.delay = videoSingleStream.sendDelay;
+                videoLocallSendInfo.jitter = videoSingleStream.sendJitter;
+                videoLocallSendInfo.frameRate = videoSingleStream.sendFrameRate;
+                videoLocallSendInfo.frameSize = videoSingleStream.sendFrameSize;
+                
+                [videoInfoArray addObject:videoLocallSendInfo];
+                localNumber ++;
+            }
+        }
+        for (int i = 0 ; i < callInfo.svcStreamCount; i ++) {
+            VideoStreamInfo *videoSingleStream = currentMutiStream[i];
+            if (videoSingleStream.recvBitRate != 0) {
+                StatisticShowInfo *videoRecvInfo = [[StatisticShowInfo alloc] init];
+                
+                videoRecvInfo.bandWidth = videoSingleStream.recvBitRate/1000;
+                videoRecvInfo.lossFraction = videoSingleStream.recvLossFraction;
+                videoRecvInfo.delay = videoSingleStream.recvDelay;
+                videoRecvInfo.jitter = videoSingleStream.recvJitter;
+                videoRecvInfo.frameRate = videoSingleStream.recvFrameRate;
+                videoRecvInfo.frameSize = videoSingleStream.recvFrameSize;
+                
+                EAGLView *firstSvcView = [EAGLView getFirstSVCView];
+                EAGLView *secondSvcView = [EAGLView getSecondSVCView];
+                EAGLView *thirdSvcView = [EAGLView getThirdSVCView];
+                
+                NSString *recvName = @"";
+                if (firstSvcView.currentlabel == videoSingleStream.recvSsrcLabel) {
+                    recvName = firstSvcView.currentAttendee.name;
+                    if (recvName.length == 0) {
+                        recvName = firstSvcView.currentAttendee.number;
+                    }
+                }else if (secondSvcView.currentlabel == videoSingleStream.recvSsrcLabel){
+                    recvName = secondSvcView.currentAttendee.name;
+                    if (recvName.length == 0) {
+                        recvName = secondSvcView.currentAttendee.number;
+                    }
+                }else if (thirdSvcView.currentlabel == videoSingleStream.recvSsrcLabel){
+                    recvName = thirdSvcView.currentAttendee.name;
+                    if (recvName.length == 0) {
+                        recvName = thirdSvcView.currentAttendee.number;
+                    }
+                }else{
+                    
+                }
+                if (recvName.length > 0) {
+                    videoRecvInfo.name = [NSString stringWithFormat:@"%@ recv",recvName];
+                    [videoInfoArray addObject:videoRecvInfo];
+                }
+            }
+        }
+    }else{
+        VideoStreamInfo *singleStream = callInfo.videoStreamInfo;
+        StatisticShowInfo *videoLocallSendInfo = [[StatisticShowInfo alloc] init];
+        videoLocallSendInfo.name = @"local send";
+        videoLocallSendInfo.bandWidth = singleStream.sendBitRate/1000;
+        videoLocallSendInfo.lossFraction = singleStream.sendLossFraction;
+        videoLocallSendInfo.delay = singleStream.sendDelay;
+        videoLocallSendInfo.jitter = singleStream.sendJitter;
+        videoLocallSendInfo.frameRate = singleStream.sendFrameRate;
+        videoLocallSendInfo.frameSize = singleStream.sendFrameSize;
+        
+        StatisticShowInfo *videoLocallRecvInfo = [[StatisticShowInfo alloc] init];
+        videoLocallRecvInfo.name = @"local recv";
+        videoLocallRecvInfo.bandWidth = singleStream.recvBitRate/1000;
+        videoLocallRecvInfo.lossFraction = singleStream.recvLossFraction;
+        videoLocallRecvInfo.delay = singleStream.recvDelay;
+        videoLocallRecvInfo.jitter = singleStream.recvJitter;
+        videoLocallRecvInfo.frameRate = singleStream.recvFrameRate;
+        videoLocallRecvInfo.frameSize = singleStream.recvFrameSize;
+        
+        [videoInfoArray addObject:videoLocallSendInfo];
+        [videoInfoArray addObject:videoLocallRecvInfo];
+        
+    }
+    self.signalDataScrollView.videoInfoArray = [NSArray arrayWithArray:videoInfoArray];
+    
+    NSMutableArray *dataInfoArray = [[NSMutableArray alloc] init];
+    if ([ManagerService confService].isStartScreenSharing) {
+        VideoStreamInfo *dataStream = callInfo.dataStreamInfo;
+        StatisticShowInfo *dataLocallSendInfo = [[StatisticShowInfo alloc] init];
+        dataLocallSendInfo.name = @"local send";
+        dataLocallSendInfo.bandWidth = dataStream.sendBitRate/1000;
+        dataLocallSendInfo.lossFraction = dataStream.sendLossFraction;
+        dataLocallSendInfo.delay = dataStream.sendDelay;
+        dataLocallSendInfo.jitter = dataStream.sendJitter;
+        dataLocallSendInfo.frameRate = dataStream.sendFrameRate;
+        dataLocallSendInfo.frameSize = dataStream.sendFrameSize;
+        
+        StatisticShowInfo *dataLocallRecvInfo = [[StatisticShowInfo alloc] init];
+        dataLocallRecvInfo.name = @"local recv";
+        dataLocallRecvInfo.bandWidth = dataStream.recvBitRate/1000;
+        dataLocallRecvInfo.lossFraction = dataStream.recvLossFraction;
+        dataLocallRecvInfo.delay = dataStream.recvDelay;
+        dataLocallRecvInfo.jitter = dataStream.recvJitter;
+        dataLocallRecvInfo.frameRate = dataStream.recvFrameRate;
+        dataLocallRecvInfo.frameSize = dataStream.recvFrameSize;
+        
+        [dataInfoArray addObject:dataLocallSendInfo];
+        [dataInfoArray addObject:dataLocallRecvInfo];
+        
+        self.signalDataScrollView.dataInfoArray = [NSArray arrayWithArray:dataInfoArray];
+    }
+}
+
+- (void)updatesignalImageWithSignalStrength:(NSInteger)signalStrength
+{
+    switch (signalStrength) {
+        case 1:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_1"] forState:UIControlStateNormal];
+            break;
+        case 2:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_2"] forState:UIControlStateNormal];
+            break;
+        case 3:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_3"] forState:UIControlStateNormal];
+            break;
+        case 4:
+        case 5:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_4"] forState:UIControlStateNormal];
+            break;
+            
+        default:
+            [_signalBtn setImage:[UIImage imageNamed:@"signal_1"] forState:UIControlStateNormal];
+            break;
+    }
     
 }
 

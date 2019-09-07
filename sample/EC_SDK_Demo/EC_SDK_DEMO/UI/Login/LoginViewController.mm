@@ -109,8 +109,8 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
 //        [self showMessage:@"server config can't be empty!"];
 //        return;
         serverAddress = @"bmeeting.huaweicloud.com";
-        serverPort = @"8443";
-        [CommonUtils userDefaultSaveValue:@[@"bmeeting.huaweicloud.com", @"8443"] forKey:SERVER_CONFIG];
+        serverPort = @"443";
+        [CommonUtils userDefaultSaveValue:@[@"bmeeting.huaweicloud.com", @"443"] forKey:SERVER_CONFIG];
         
     }
 

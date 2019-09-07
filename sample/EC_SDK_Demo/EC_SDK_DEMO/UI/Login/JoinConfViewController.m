@@ -31,6 +31,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    
+    NSArray *array = [CommonUtils getUserDefaultValueWithKey:SERVER_CONFIG];
+    NSString *serverAddress = array[0];
+    NSString *serverPort = array[1];
+    if (serverAddress.length == 0 || serverPort.length == 0) {
+        serverAddress = @"bmeeting.huaweicloud.com";
+        serverPort = @"443";
+        [CommonUtils userDefaultSaveValue:@[@"bmeeting.huaweicloud.com", @"443"] forKey:SERVER_CONFIG];
+        
+    }
+    _serverAddTextField.text = serverAddress;
+    _serverPortTextField.text = serverPort;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(getTempUserInfoFaild) name:LOGIN_GET_TEMP_USER_INFO_FAILD object:nil];
     
 }

@@ -69,7 +69,7 @@ typedef enum {
 @property (nonatomic,strong) NSDate             *beginTimeDate;
 @property (nonatomic,assign) NSTimeInterval     lastsTimeInterval;
 @property (nonatomic,assign) BOOL               isNow;
-@property (nonatomic,strong) id<MeetingDatePickerViewControllerDelegate> m_delegate;
+@property (nonatomic,weak) id<MeetingDatePickerViewControllerDelegate> m_delegate;
 //UIDatePicker隐藏显示动画
 - (void) hiddenOrShowDatePicker:(BOOL)toShow picker:(UIDatePicker *)datePicker;
 

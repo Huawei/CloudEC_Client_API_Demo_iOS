@@ -37,6 +37,7 @@
 #import "CallStatisticInfo.h"
 #import "VideoStreamInfo.h"
 #import "AudioStreamInfo.h"
+#import "JoinConfIndInfo.h"
 
 
 #define CHECKCSTR(str) (((str) == NULL) ? "" : (str))
@@ -668,8 +669,12 @@
             NSDictionary *callInDic = [NSDictionary dictionaryWithObjectsAndKeys:
                                                     callInfo,CALL_STATISTIC_INFO,
                                                     nil];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:CALL_STATISTIC_INFO_NOTIFY object:nil userInfo:callInDic];
+            });
 
-            [self respondsCallDelegateWithType:CALL_EVT_STATISTIC_INFO result:callInDic];
+//            [self respondsCallDelegateWithType:CALL_EVT_STATISTIC_INFO result:callInDic];
             
         }
             break;
@@ -1220,7 +1225,7 @@
     TSDK_UINT32 displaytype = 0;
     
     //本端视频，displaytype为1，镜像模式根据前后摄像头进行设置
-    if (TSDK_E_VIDEO_WND_LOCAL == renderType)
+    if (TsdkVideoWindowlacal == renderType)
     {
         //前置镜像模式为2（左右镜像），后置镜像模式为0（不做镜像）
         switch (index) {
@@ -1241,10 +1246,13 @@
         displaytype = 2;
     }
     //远端视频，镜像模式为0(不做镜像)，显示模式为0（拉伸模式）
-    else if (TSDK_E_VIDEO_WND_REMOTE == renderType)
+    else if (TsdkVideoWindowRemote == renderType)
     {
         mirrorType = 0;
         displaytype = 2;
+        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+            displaytype = 1;
+        }
     }
     else
     {

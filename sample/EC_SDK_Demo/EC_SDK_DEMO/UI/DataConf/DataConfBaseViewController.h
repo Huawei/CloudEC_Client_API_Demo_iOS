@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "ConfAttendeeInConf.h"
 
+#import "CallStatisticInfo.h"
+#import "SignalDataScrollView.h"
+#import "StatisticShowInfo.h"
+#import "ImageViewBtn.h"
+#import "EAGLView.h"
+
 #define SCREEN_WIDTH MIN(self.view.bounds.size.width, self.view.bounds.size.height)
 #define SCREEN_HIGHT MAX(self.view.bounds.size.height, self.view.bounds.size.width)
 
@@ -24,6 +30,10 @@
 @property (nonatomic, strong)ConfAttendeeInConf *selfConfInfo;
 
 @property (nonatomic, strong)UITapGestureRecognizer *baseTap;
+
+@property (nonatomic, strong) ImageViewBtn *signalBtn;
+@property (nonatomic, strong) UIView *signalBackView;
+@property (nonatomic, strong) SignalDataScrollView *signalDataScrollView;
 
 - (CGFloat)selfViewWidth;
 - (CGFloat)selfViewHeight;

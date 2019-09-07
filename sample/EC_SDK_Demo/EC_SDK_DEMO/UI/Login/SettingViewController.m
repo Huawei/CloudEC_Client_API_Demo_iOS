@@ -26,8 +26,8 @@
     NSString *serverPort = array[1];
     if (serverAddress.length == 0 || serverPort.length == 0) {
         serverAddress = @"bmeeting.huaweicloud.com";
-        serverPort = @"8443";
-        [CommonUtils userDefaultSaveValue:@[@"bmeeting.huaweicloud.com", @"8443"] forKey:SERVER_CONFIG];
+        serverPort = @"443";
+        [CommonUtils userDefaultSaveValue:@[@"bmeeting.huaweicloud.com", @"443"] forKey:SERVER_CONFIG];
         
     }
     _serverAddressField.text = serverAddress;
