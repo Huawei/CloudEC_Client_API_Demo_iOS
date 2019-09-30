@@ -12,9 +12,12 @@
 
 
 typedef enum : NSInteger {
-	NotReachable = 0,
-	ReachableViaWiFi,
-	ReachableViaWWAN
+	ECSNotReachable = 0,
+    ECSReachableViaWiFi,
+    ECSReachableVia2G,
+    ECSReachableVia3G,
+    ECSReachableVia4G,
+    ECSReachableViaWWAN
 } NetworkStatus;
 
 #pragma mark IPv6 Support
@@ -22,56 +25,52 @@ typedef enum : NSInteger {
 
 
 extern NSString *kReachabilityChangedNotification;
-
+extern NSString *kECSReachabilityParamKey;
 
 @interface Reachability : NSObject
 
-/**
- *This method is used to check the reachability of a given host name.
- *监测该名字的网络的状态
+/*!
+ * Use to check the reachability of a given host name.
  */
 + (instancetype)reachabilityWithHostName:(NSString *)hostName;
 
-/**
- *This method is used to check the reachability of a given IP address.
- *监测该ip地址的网络状态
+/*!
+ * Use to check the reachability of a given IP address.
  */
 + (instancetype)reachabilityWithAddress:(const struct sockaddr *)hostAddress;
 
-/**
- *This method is used to checks whether the default route is available. Should be used by applications that do not connect to a particular host.
- *监测默认的路线网络是否可链接
+/*!
+ * Checks whether the default route is available. Should be used by applications that do not connect to a particular host.
  */
 + (instancetype)reachabilityForInternetConnection;
 
+/*!
+ * Checks whether a local WiFi connection is available.
+ */
++ (instancetype)reachabilityForLocalWiFi;
 
-#pragma mark reachabilityForLocalWiFi
-//reachabilityForLocalWiFi has been removed from the sample.  See ReadMe.md for more information.
-//+ (instancetype)reachabilityForLocalWiFi;
-
-/**
- *This method is used to start listening for reachability notifications on the current run loop.
- *开启监听当前回路网络状态通知
+/*!
+ * Start listening for reachability notifications on the current run loop.
  */
 - (BOOL)startNotifier;
-
-/**
- *This method is used to stop listening for reachability notifications on the current run loop.
- *开启监听当前回路网络状态通知
- */
 - (void)stopNotifier;
+- (void)setHostName:(NSString *)hostName;
 
-/**
- *This method is used to get current network status
- *获取当前网络的状态
- */
-- (NetworkStatus)currentReachabilityStatus;
+@property(readonly, assign, nonatomic) NetworkStatus currentReachabilityStatus;
+@property(readonly, assign, nonatomic) SCNetworkReachabilityFlags networkReachabilityFlags;
 
-/**
- * This method is about WWAN may be available, but not active until a connection has been established. WiFi may require a connection for VPN on Demand.
- *业务进行需要网络已经链接
+/*!
+ * WWAN may be available, but not active until a connection has been established. WiFi may require a connection for VPN on Demand.
  */
 - (BOOL)connectionRequired;
+
+
+/**
+ 获取当前蜂窝网络下的网络类型
+
+ @return 当前蜂窝网络下的网络类型字符串描述
+ */
+- (NSString *)cellularNetType;
 
 @end
 

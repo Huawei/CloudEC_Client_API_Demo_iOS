@@ -16,6 +16,7 @@
 #import "tsdk_manager_interface.h"
 #import "CommonUtils.h"
 #import "ManagerService.h"
+#import "CallWindowController.h"
 
 NSString * const UPortalTokenKey = @"UPortalTokenKey";
 NSString * const CallRegisterStatusKey = @"CallRegisterStatusKey";
@@ -46,6 +47,7 @@ static LoginCenter *g_loginCenter = nil;
     if (self = [super init]) {
         _uportalPushConfigQueue = dispatch_queue_create("com.huawei.tsdk.uportalPushConfig", DISPATCH_QUEUE_SERIAL);
         [Initializer registerLoginCallBack:self];
+        _isResuming = NO;
     }
     return self;
 }
@@ -112,6 +114,7 @@ static LoginCenter *g_loginCenter = nil;
     memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
     NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
     strcpy(local_ip.ip_address, [ip UTF8String]);
+    local_ip.is_try_resume = TSDK_FALSE;
     TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
     DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
 
@@ -215,7 +218,7 @@ static LoginCenter *g_loginCenter = nil;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_AUTH_FAILED object:nil userInfo:nil];
             });
-            
+            _isResuming = NO;
 //            [ManagerService loginService].serviceStatus = ECServiceKickOff;
             DDLogInfo(@"authorize failed, reason code: %d", reasonCode);
             break;
@@ -229,7 +232,10 @@ static LoginCenter *g_loginCenter = nil;
         }
         case TSDK_E_LOGIN_EVT_LOGIN_SUCCESS:
         {
-            
+            if (_isResuming) {
+                _isResuming = NO;
+                return;
+            }
             sipStatus = kCallSipStatusRegistered;
             [self isSipRegistered:sipStatus];
             TSDK_S_LOGIN_SUCCESS_INFO *login_success_info = notify.data;
@@ -239,6 +245,7 @@ static LoginCenter *g_loginCenter = nil;
             }
             TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
             if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
+                
                 DDLogInfo(@"sip have been login");
                 [ManagerService loginService].serviceStatus = ECServiceLogin;
                 BOOL needAutoLogin = [CommonUtils getUserDefaultBoolValueWithKey:NEED_AUTO_LOGIN];
@@ -258,6 +265,10 @@ static LoginCenter *g_loginCenter = nil;
         {
             TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
             if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
+                if (_isResuming) {
+                    _isResuming = NO;
+                    return;
+                }
                 sipStatus = kCallSipStatusUnRegistered;
                 TSDK_UINT32 reasonCode = notify.param2;
                 //            [ManagerService loginService].serviceStatus = ECServiceKickOff;
@@ -335,6 +346,31 @@ static LoginCenter *g_loginCenter = nil;
             }
             break;
         }
+        case TSDK_E_LOGIN_EVT_LOGIN_RESUMING_IND:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_AND_CONF_RESUMING_NOTIFY object:nil];
+            });
+            _isResuming = YES;
+            break;
+        }
+            
+        case TSDK_E_LOGIN_EVT_LOGIN_RESUME_RESULT:
+        {
+            _isResuming = NO;
+            if ([CallWindowController shareInstance].needSetLocalIp) {
+                [CallWindowController shareInstance].needSetLocalIp = NO;
+                //config local ip
+                TSDK_S_LOCAL_ADDRESS local_ip;
+                memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
+                NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
+                strcpy(local_ip.ip_address, [ip UTF8String]);
+                local_ip.is_try_resume = TSDK_TRUE;
+                TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
+                DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
+            }
+        }
+            break;
         default:
             break;
     }

@@ -101,6 +101,8 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 
 @property (nonatomic, assign) int currentCallId;                  // current call id
 
+@property (nonatomic, assign) BOOL hasConfResumedFirstRewatch;
+
 /**
  *Indicates conf type enum
  *会议类型枚举

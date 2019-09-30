@@ -18,6 +18,8 @@ typedef NS_ENUM(NSInteger, CallSipStatus)
 
 @interface LoginCenter : NSObject
 
+@property (nonatomic, assign)BOOL isResuming;
+
 /**
  *This method is used to creat single instance of this class
  *创建该类的单例

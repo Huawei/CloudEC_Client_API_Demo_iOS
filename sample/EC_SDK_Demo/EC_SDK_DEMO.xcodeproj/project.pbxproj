@@ -117,6 +117,7 @@
 		D0C5768822A556C500C6559A /* UIButton+VerticalLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = D0C5768722A556C500C6559A /* UIButton+VerticalLayout.m */; };
 		DE0D84C822CB3F0900FFB281 /* libtup_conf_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */; };
 		DE248F09230FD98C00395123 /* ECSDKProgressHud.m in Sources */ = {isa = PBXBuildFile; fileRef = DE248F08230FD98C00395123 /* ECSDKProgressHud.m */; };
+		DE34C01423321E1B000D6957 /* NSTimer+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = DE34C01323321E1B000D6957 /* NSTimer+Extension.m */; };
 		DE48C71A23025F0400413A73 /* tup_call_closeCramea_img.bmp in Resources */ = {isa = PBXBuildFile; fileRef = DE48C71923025F0400413A73 /* tup_call_closeCramea_img.bmp */; };
 		DE586F602313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F5F2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m */; };
 		DE586F632314BFFA00F52C77 /* VideoStreamInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F622314BFFA00F52C77 /* VideoStreamInfo.m */; };
@@ -480,6 +481,8 @@
 		DE1A16C121C8E7860009E042 /* tsdk_im_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_im_interface.h; sourceTree = "<group>"; };
 		DE248F07230FD98C00395123 /* ECSDKProgressHud.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECSDKProgressHud.h; sourceTree = "<group>"; };
 		DE248F08230FD98C00395123 /* ECSDKProgressHud.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ECSDKProgressHud.m; sourceTree = "<group>"; };
+		DE34C00F233218DC000D6957 /* NSTimer+Extension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Extension.h"; sourceTree = "<group>"; };
+		DE34C01323321E1B000D6957 /* NSTimer+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTimer+Extension.m"; sourceTree = "<group>"; };
 		DE48C71923025F0400413A73 /* tup_call_closeCramea_img.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = tup_call_closeCramea_img.bmp; sourceTree = "<group>"; };
 		DE53D7F92138E9D000804D42 /* tsdk_manager_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_interface.h; sourceTree = "<group>"; };
 		DE53D7FA2138E9D000804D42 /* tsdk_conference_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_conference_def.h; sourceTree = "<group>"; };
@@ -1170,6 +1173,8 @@
 				DEC809C32306A9BE0024A89B /* LocalNotificationCenter.m */,
 				DE248F07230FD98C00395123 /* ECSDKProgressHud.h */,
 				DE248F08230FD98C00395123 /* ECSDKProgressHud.m */,
+				DE34C00F233218DC000D6957 /* NSTimer+Extension.h */,
+				DE34C01323321E1B000D6957 /* NSTimer+Extension.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1533,6 +1538,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 				"zh-Hans",
@@ -1669,6 +1675,7 @@
 				1254C8E91F68E27F002A0802 /* AddressDetailViewController.m in Sources */,
 				12C23FBE1F31C06D00C21D91 /* AppDelegate.m in Sources */,
 				1254C8F31F68E28C002A0802 /* TupPersonDetailCell.m in Sources */,
+				DE34C01423321E1B000D6957 /* NSTimer+Extension.m in Sources */,
 				126C63C81F386A0700048A9F /* CallData.mm in Sources */,
 				1298B3ED1F6627BA00910855 /* ContactInfo.m in Sources */,
 				1258C1E61F399CF500654D80 /* ServiceManager.m in Sources */,
@@ -1847,8 +1854,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = EC_SDK_DEMO/EC_SDK_DEMO.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = T2W92832FD;
@@ -1880,8 +1887,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = EC_SDK_DEMO/EC_SDK_DEMO.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jiegou Yan (Z8LYMNM9SQ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = T2W92832FD;
 				ENABLE_BITCODE = NO;

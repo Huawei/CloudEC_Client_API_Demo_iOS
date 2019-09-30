@@ -84,7 +84,7 @@ static LocalNotificationCenter * g_notificationCenter = nil;
                 content.sound = [UNNotificationSound defaultSound];
                 UNTimeIntervalNotificationTrigger * trigger = [UNTimeIntervalNotificationTrigger
                                                                triggerWithTimeInterval:0.2f repeats:nil];
-
+                
                 UNNotificationRequest * request = [UNNotificationRequest requestWithIdentifier:typeString content:content trigger:trigger];
                 UNUserNotificationCenter * center = [UNUserNotificationCenter currentNotificationCenter];
                 [center addNotificationRequest:request withCompletionHandler:nil];

@@ -30,6 +30,8 @@
 
 #import "StatisticShowInfo.h"
 
+
+
 @interface VideoShareViewController ()<UITableViewDelegate, UITableViewDataSource, ConferenceServiceDelegate>
 
 @property (nonatomic, strong) UIView *localViewShower;
@@ -85,6 +87,7 @@
 @property (nonatomic, assign) CGFloat currentNameHeight;
 
 @property (nonatomic, strong) NSArray *currentAttendeeWatchArray;
+
 
 @end
 
@@ -146,6 +149,7 @@
     }
 }
 
+
 - (void)confAttendeeUpdateAction
 {
     _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
@@ -168,9 +172,19 @@
     if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
         NSArray *watchAttendees = [ManagerService confService].watchAttendeesArray;
         
+        BOOL needResumedRewatch = YES;
+        if ([ManagerService confService].hasConfResumedFirstRewatch) {
+            if ([ManagerService confService].haveJoinAttendeeArray.count == 0) {
+  
+                needResumedRewatch = NO;
+                return;
+            }
+        }
+        
         _localNameLabel.text = @"Local";
         
-        if (watchAttendees.count == 0) {
+        DDLogInfo(@"jinliang000,watchAttendees.count:%lu",(unsigned long)watchAttendees.count);
+        if (watchAttendees.count == 0 && needResumedRewatch) {
             self.localBigView.hidden = NO;
             self.remoteView.hidden = YES;
 //            _backSVCView.hidden = YES;
@@ -228,7 +242,8 @@
                     }
                 }
                 
-                if (isNeedUpdateWatch1) {
+                
+                if (isNeedUpdateWatch1 && needResumedRewatch) {
                     [self updateWatchAttendeesWithPage:0 bigViewNumber:@""];
                 }
                 
@@ -252,7 +267,7 @@
                     }
                 }
                 
-                if (isNeedUpdateWatch1 || isNeedUpdateWatch2) {
+                if ((isNeedUpdateWatch1 || isNeedUpdateWatch2) && needResumedRewatch) {
                     [self updateWatchAttendeesWithPage:0 bigViewNumber:@""];
                 }
                 
@@ -285,7 +300,7 @@
                     }
                 }
                 
-                if (isNeedUpdateWatch1 || isNeedUpdateWatch2 || isNeedUpdateWatch3) {
+                if ((isNeedUpdateWatch1 || isNeedUpdateWatch2 || isNeedUpdateWatch3) && needResumedRewatch) {
                     [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
                 }
                 
@@ -407,7 +422,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-//    [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
+    [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
 }
 
 - (void)viewDidLoad {
@@ -464,13 +479,7 @@
         self.signalBackView.center = CGPointMake(SCREEN_WIDTH/2, SCREEN_HIGHT/2);
         self.signalBtn.frame = CGRectMake(SCREEN_WIDTH - 50, 60, 30, 30);
     }
-    
-    
-    BOOL isSuccess = [[ManagerService callService] switchCameraIndex:[CallWindowController shareInstance].cameraCaptureIndex callId:[ManagerService confService].currentCallId];
-    if (isSuccess) {
-        [[CallWindowController shareInstance] deviceMotionOrientationChanged];
-    }
-    
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {

@@ -90,7 +90,7 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     NSArray *serverConfig = [CommonUtils getUserDefaultValueWithKey:SERVER_CONFIG];
     NSString *serverAddress = serverConfig[0];
     NSString *serverPort = serverConfig[1];
-    if ([[NetworkUtils shareInstance] getCurrentNetworkStatus] == NotReachable)
+    if ([[NetworkUtils shareInstance] getCurrentNetworkStatus] == ECSNotReachable)
     {
         [self showMessage:@"Current network is unavailable"];
         return;

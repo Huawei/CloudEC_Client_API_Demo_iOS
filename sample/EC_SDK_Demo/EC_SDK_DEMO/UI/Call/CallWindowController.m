@@ -31,6 +31,14 @@
 #import "StatisticShowInfo.h"
 #import "ImageViewBtn.h"
 
+#import "tsdk_manager_interface.h"
+#import "tsdk_manager_def.h"
+
+#import "ECSDKProgressHud.h"
+
+#import "NSTimer+Extension.h"
+#import "LoginCenter.h"
+
 #define SCREEN_WIDTH MIN(self.callWindow.rootViewController.view.bounds.size.width, self.callWindow.rootViewController.view.bounds.size.height)
 #define SCREEN_HIGHT MAX(self.callWindow.rootViewController.view.bounds.size.height, self.callWindow.rootViewController.view.bounds.size.width)
 
@@ -67,6 +75,13 @@
 @property (nonatomic, strong) SignalDataScrollView *signalDataScrollView;
 
 @property (nonatomic, strong) RPSystemBroadcastPickerView *broadcastPickerView API_AVAILABLE(ios(12.0));
+
+@property (nonatomic, retain) NSTimer *timeOutTimer;
+@property (nonatomic, assign) BOOL isStartTimer;
+
+
+@property (nonatomic, assign) BOOL needSetActiveLocalIp;
+@property (nonatomic, copy) NSString *currentLocalIp;
 
 @end
 static CallWindowController *g_windowCtrl = nil;
@@ -115,6 +130,12 @@ static CallWindowController *g_windowCtrl = nil;
         _isSetAVCWindow = NO;
         _isFirstSetWindow = YES;
         
+        _needSetLocalIp = NO;
+        _needSetActiveLocalIp = NO;
+        _currentLocalIp = @"0.0.0.0";
+        
+        [ECSDKProgressHud shareInstance];
+        
         if (@available(iOS 12, *)) {
             CGRect broadcastPickerViewFrame = CGRectMake(0, 0, 100.0f, 100.0f);
             self.broadcastPickerView = [[RPSystemBroadcastPickerView alloc] initWithFrame:broadcastPickerViewFrame];
@@ -161,6 +182,66 @@ static CallWindowController *g_windowCtrl = nil;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCallStatisticInfo:) name:CALL_STATISTIC_INFO_NOTIFY object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(releaseConfResources) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confResumeingAction) name:LOGIN_AND_CONF_RESUMING_NOTIFY object:nil];
+    
+}
+
+- (void)confResumeingAction
+{
+    [self showResumeNotify];
+    [self.timeOutTimer fireTimer];
+}
+
+- (void) showResumeNotify
+{
+    if (_isJoinConfCall) {
+        [[ECSDKProgressHud shareInstance] makeProgressHUD:@"Poor network quality. Attempting to join the meeting again..." duration:4.0];
+    }else{
+        [[ECSDKProgressHud shareInstance] makeProgressHUD:@"Poor network quality. Attempting to login again..." duration:4.0];
+    }
+}
+
+-(NSTimer *)timeOutTimer
+{
+    if (nil == _timeOutTimer) {
+        _timeOutTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 count:30 callback:^{
+            [ManagerService confService].hasConfResumedFirstRewatch = NO;
+//            [self confAttendeeUpdateAction];
+        }];
+    }
+    return _timeOutTimer;
+}
+
+
+- (void)releaseConfResources
+{
+    [[CallTipView shareInstance] removeCommingCallTipView];
+    self.cameraClose = NO;
+    [self.callWindow setHidden:YES];
+    
+    _isCallTransToConf = NO;
+    _isCallVideoOpeartionStatus = NO;
+    _cameraClose = NO;
+    _cameraCaptureIndex = 1;
+    _callTimeOut = YES;
+    _isMuteMic = NO;
+    _callViewArray = [[NSMutableArray alloc] init];
+    _callInfoArray = [[NSMutableArray alloc] init];
+    
+//    [EAGLView destroyFirstSVCView];
+//    [EAGLView destroySecondSVCView];
+//    [EAGLView destroyThirdSVCView];
+    
+    
+    //            _hasAddView = NO;
+    _isJoinConfCall = NO;
+    _isSetSVCWindow = NO;
+    _isSetAVCWindow = NO;
+    _isFirstSetWindow = YES;
+    
+    _currentTupCallInfo = nil;
 }
 
 - (void)confUserStatusUpdateNotify
@@ -250,6 +331,15 @@ static CallWindowController *g_windowCtrl = nil;
         _secondSVCView = [EAGLView getSecondSVCView];
         _thirdSVCView = [EAGLView getThirdSVCView];
         
+        _firstSVCView.currentlabel = 0;
+        _firstSVCView.currentAttendee = nil;
+        _secondSVCView.currentlabel = 0;
+        _secondSVCView.currentAttendee = nil;
+        _thirdSVCView.currentlabel = 0;
+        _secondSVCView.currentAttendee = nil;
+        
+        _isFirstSetWindow = YES;
+        
         BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
         BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
         if (iSVideoConf) {
@@ -260,24 +350,68 @@ static CallWindowController *g_windowCtrl = nil;
             }
             
         }
+        if (![ManagerService confService].hasConfResumedFirstRewatch) {
+            [AppDelegate goConference];
+        }
         
-        [AppDelegate goConference];
+        BOOL isSuccess = [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:[self getSelfCurrentConfId]];
+        if (isSuccess) {
+            [self deviceMotionOrientationChanged];
+        }
+        
     });
 }
 
 -(void)networkStatusChangeNotify:(NSNotification *)notify
 {
     NetworkStatus netStatus = (NetworkStatus)[[notify object] integerValue];
-    if (netStatus == NotReachable)
+    
+    if (netStatus == ECSNotReachable)
     {
-        [[ManagerService callService] hangupAllCall];
-        [self showMessage:@"Current network is unavailable"];
-        [[ManagerService loginService] logout];
+        if (!_isJoinConfCall) {
+            [[ManagerService callService] hangupAllCall];
+            [self showMessage:@"Current network is unavailable"];
+        }
+//        [[ManagerService loginService] logout];
     }
+    
+    NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
+    if ([ip isEqualToString:@"0.0.0.0"]) {
+        [[ECSDKProgressHud shareInstance] makeProgressHUD:@"the network is disconnected" duration:2.0];
+    }
+    
+    if (![ip isEqualToString:_currentLocalIp]) {
+        _needSetActiveLocalIp = YES;
+    }
+    _currentLocalIp = ip;
+    
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+        return;
+    }
+    
+    if (![LoginCenter sharedInstance].isResuming) {
+        
+        
+        //config local ip
+        TSDK_S_LOCAL_ADDRESS local_ip;
+        memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
+        
+        strcpy(local_ip.ip_address, [ip UTF8String]);
+        local_ip.is_try_resume = TSDK_TRUE;
+        TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
+        DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
+        
+    }else{
+        _needSetLocalIp = YES;
+    }
+    
+    
+    
 }
 
 - (void) appInactiveNotify:(NSNotification*) notify
 {
+    _needSetActiveLocalIp = NO;
     if ((_currentTupCallInfo.stateInfo.callType == CALL_VIDEO
         && _currentTupCallInfo.stateInfo.callState == CallStateTaking
         && !_cameraClose) || ([self getSelfCurrentConfId] != 0 && !_cameraClose)) {
@@ -289,6 +423,18 @@ static CallWindowController *g_windowCtrl = nil;
 
 - (void) appActiveNotify:(NSNotification*) notify
 {
+    if (_needSetActiveLocalIp) {
+        //config local ip
+        TSDK_S_LOCAL_ADDRESS local_ip;
+        memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
+        NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
+        DDLogInfo(@"tsdk_set_config_param,IP:%@",ip);
+        strcpy(local_ip.ip_address, [ip UTF8String]);
+        local_ip.is_try_resume = TSDK_TRUE;
+        TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
+        DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
+    }
+        
     if (_cameraClose) {
         return;
     }
@@ -344,7 +490,7 @@ static CallWindowController *g_windowCtrl = nil;
 - (int)getSelfCurrentConfId
 {
     int callId = _currentTupCallInfo.stateInfo.callId;
-    if (callId == 0) {
+    if (_isJoinConfCall) {
         callId =  [ManagerService confService].currentCallId;
     }
     return callId;
@@ -388,30 +534,30 @@ static CallWindowController *g_windowCtrl = nil;
         }
         case CALL_DESTROY:
         {
-            [[CallTipView shareInstance] removeCommingCallTipView];
-            self.cameraClose = NO;
-            [self.callWindow setHidden:YES];
-            
-            _isCallTransToConf = NO;
-            _isCallVideoOpeartionStatus = NO;
-            _cameraClose = NO;
-            _cameraCaptureIndex = 1;
-            _callTimeOut = YES;
-            _isMuteMic = NO;
-            _callViewArray = [[NSMutableArray alloc] init];
-            _callInfoArray = [[NSMutableArray alloc] init];
-
+//            [[CallTipView shareInstance] removeCommingCallTipView];
+//            self.cameraClose = NO;
+//            [self.callWindow setHidden:YES];
 //
-            [EAGLView destroyFirstSVCView];
-            [EAGLView destroySecondSVCView];
-            [EAGLView destroyThirdSVCView];
-//            _hasAddView = NO;
-            _isJoinConfCall = NO;
-            _isSetSVCWindow = NO;
-            _isSetAVCWindow = NO;
-            _isFirstSetWindow = YES;
-
-            _currentTupCallInfo = nil;
+//            _isCallTransToConf = NO;
+//            _isCallVideoOpeartionStatus = NO;
+//            _cameraClose = NO;
+//            _cameraCaptureIndex = 1;
+//            _callTimeOut = YES;
+//            _isMuteMic = NO;
+//            _callViewArray = [[NSMutableArray alloc] init];
+//            _callInfoArray = [[NSMutableArray alloc] init];
+//
+////
+//            [EAGLView destroyFirstSVCView];
+//            [EAGLView destroySecondSVCView];
+//            [EAGLView destroyThirdSVCView];
+////            _hasAddView = NO;
+//            _isJoinConfCall = NO;
+//            _isSetSVCWindow = NO;
+//            _isSetAVCWindow = NO;
+//            _isFirstSetWindow = YES;
+//
+//            _currentTupCallInfo = nil;
             
         }
             break;

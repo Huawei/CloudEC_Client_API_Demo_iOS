@@ -109,7 +109,7 @@ TSDK_VOID onTSDKNotifications(TSDK_UINT32 msgid, TSDK_UINT32 param1, TSDK_UINT32
     TSDK_S_LOG_PARAM logParam;
     memset(&logParam, 0, sizeof(TSDK_S_LOG_PARAM));
     NSString *path = [logPath stringByAppendingString:@"/tsdk"];
-    logParam.level = TSDK_E_LOG_INFO;
+    logParam.level = TSDK_E_LOG_DEBUG;
     logParam.file_count = 1;
     logParam.max_size_kb = 4*1024;
     strcpy(logParam.path, [path UTF8String]);

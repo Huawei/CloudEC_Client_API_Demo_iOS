@@ -108,6 +108,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 @synthesize isStartScreenSharing;
 
+@synthesize hasConfResumedFirstRewatch;
+
 /**
  *This method is used to get sip account from call service
  *从呼叫业务获取sip账号
@@ -164,6 +166,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         self.isBeginAnnotation = NO;
         self.imageScale = 1.0;
         self.mIsScreenSharing = NO;
+        self.hasConfResumedFirstRewatch = NO;
         self.currentJoinConfIndInfo = [[JoinConfIndInfo alloc] init];
         self.currentBigViewAttendee = [[SVCConfWatchAttendeeInfo alloc] init];
         
@@ -385,7 +388,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             BOOL result = notify.param1 == TSDK_SUCCESS;
             if (!result) {
                 
-                (@"TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
+                DDLogError(@"TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
                 return;
             }
             
@@ -404,7 +407,66 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             [self handleGetConfInfoResult:notify];
         }
             break;
+        case TSDK_E_CONF_EVT_CONF_RESUMING_IND:
+        {
+            self.hasConfResumedFirstRewatch = YES;
             
+            [self confStopReplay];
+            
+//            [self.watchAttendeesArray removeAllObjects];
+//            [self restoreConfParamsInitialValue];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_AND_CONF_RESUMING_NOTIFY object:nil];
+            });
+        }
+            break;
+        case TSDK_E_CONF_EVT_CONF_RESUME_RESULT:
+    {
+        DDLogInfo(@"TSDK_E_CONF_EVT_CONF_RESUME_RESULT");
+        BOOL result = notify.param2 == TSDK_SUCCESS;
+        if (!result) {
+            DDLogError(@"TSDK_E_CONF_EVT_JOIN_CONF_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
+            [self restoreConfParamsInitialValue];
+            return;
+        }
+
+        _confHandle = notify.param1;
+        TSDK_S_RESUME_CONF_IND_INFO *confResumeInfo = (TSDK_S_RESUME_CONF_IND_INFO *)notify.data;
+        TSDK_S_JOIN_CONF_IND_INFO* confInfo = (TSDK_S_JOIN_CONF_IND_INFO *)&confResumeInfo->join_conf_ind_info;
+        self.currentCallId = confInfo->call_id;
+
+        if (self.currentJoinConfIndInfo == nil) {
+            self.currentJoinConfIndInfo = [[JoinConfIndInfo alloc] init];
+        }
+        self.currentJoinConfIndInfo.callId = confInfo->call_id;
+        self.currentJoinConfIndInfo.confMediaType = confInfo->conf_media_type;
+        self.currentJoinConfIndInfo.isHdConf = confInfo->is_hd_conf;
+        self.currentJoinConfIndInfo.confEnvType = confInfo->conf_env_type;
+        self.currentJoinConfIndInfo.isSvcConf = confInfo->is_svc_conf;
+        self.currentJoinConfIndInfo.svcLableCount = confInfo->svc_label_count;
+        NSMutableArray *lableArray = [[NSMutableArray alloc] init];
+        TSDK_UINT32 *svc_lable = confInfo->svc_label;
+        for (int i = 0; i <= self.currentJoinConfIndInfo.svcLableCount; i++) {
+            TSDK_UINT32 lable = svc_lable[i];
+            [lableArray addObject:[NSNumber numberWithInt:lable]];
+        }
+        self.currentJoinConfIndInfo.svcLable = [NSArray arrayWithArray:lableArray];
+
+
+        if (confInfo->conf_media_type == TSDK_E_CONF_MEDIA_VIDEO || confInfo->conf_media_type == TSDK_E_CONF_MEDIA_VIDEO_DATA) {
+            self.isVideoConfInvited = YES;
+        }
+        [self respondsECConferenceDelegateWithType:CONF_E_CONNECT result:nil];
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // go conference
+            DDLogInfo(@"goConferenceRunView");
+            [[NSNotificationCenter defaultCenter] postNotificationName:TUP_CALL_REMOVE_CALL_VIEW_NOTIFY object:nil];
+
+        });
+    }
+    break;
+    
         case TSDK_E_CONF_EVT_JOIN_CONF_RESULT:
         {
             DDLogInfo(@"TSDK_E_CONF_EVT_JOIN_CONF_RESULT");
@@ -523,9 +585,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         case TSDK_E_CONF_EVT_CONF_END_IND:
         {
             DDLogInfo(@"TSDK_E_CONF_EVT_CONF_END_IND");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
-            });
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+//            });
 //            [self respondsECConferenceDelegateWithType:CONF_E_END_RESULT result:nil];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self confCtrlLeaveConference];
@@ -1200,6 +1262,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     
     TSDK_S_ATTENDEE *participants = confStatusStruct->attendee_list;
     
+    DDLogInfo(@"jinliang111,confStatusStruct->attendee_num:%lu",(unsigned long)confStatusStruct->attendee_num);
     [self.haveJoinAttendeeArray removeAllObjects];
     for (int i = 0; i<confStatusStruct->attendee_num; i++)
     {
@@ -1269,6 +1332,28 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 //            }
 //        }
     }
+    if (self.haveJoinAttendeeArray.count > 0) {
+        [self.watchAttendeesArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+            __block BOOL isAttendeeIArray = NO;
+            
+            [self.haveJoinAttendeeArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* joinAttendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+                if([joinAttendeeInfo.number isEqualToString:attendeeInfo.number]){
+                    
+                    isAttendeeIArray = YES;
+                    *stop = YES;
+                    
+                }
+                
+            }];
+            
+            if (isAttendeeIArray == NO) {
+                [self.watchAttendeesArray removeObject:attendeeInfo];
+            }
+            
+            
+        }];
+    }
+    
         
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:CONF_ATTENDEE_STATUS_UPDATE_NOTIFY object:nil];
@@ -1874,7 +1959,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 -(void)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray
 {
-    
+    if (self.hasConfResumedFirstRewatch == YES) {
+        self.hasConfResumedFirstRewatch = NO;
+    }
     TSDK_S_WATCH_ATTENDEES_INFO *attendeeInfo = (TSDK_S_WATCH_ATTENDEES_INFO *)malloc(sizeof(TSDK_S_WATCH_ATTENDEES_INFO));
     memset_s(attendeeInfo, sizeof(TSDK_S_WATCH_ATTENDEES_INFO), 0, sizeof(TSDK_S_WATCH_ATTENDEES_INFO));
     attendeeInfo->watch_attendee_num = (TSDK_UINT32)attendeeArray.count;
@@ -2007,8 +2094,14 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     self.imageScale = 1.0;
     self.currentJoinConfIndInfo = nil;
     self.currentBigViewAttendee = nil;
-    
+    self.hasConfResumedFirstRewatch = NO;
     [self confStopReplay];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+    });
+    
+    
 }
 
 /**

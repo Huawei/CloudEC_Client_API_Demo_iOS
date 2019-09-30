@@ -85,6 +85,7 @@
     memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
     NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
     strcpy(local_ip.ip_address, [ip UTF8String]);
+    local_ip.is_try_resume = TSDK_FALSE;
     TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
     DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
     

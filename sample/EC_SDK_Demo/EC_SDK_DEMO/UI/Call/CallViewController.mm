@@ -118,7 +118,7 @@ typedef enum
 -(void)startCallWithType:(TUP_CALL_TYPE)callType isCTD:(BOOL)isCTD
 {
     [self.view endEditing:YES];
-    if ([[NetworkUtils shareInstance] getCurrentNetworkStatus] == NotReachable)
+    if ([[NetworkUtils shareInstance] getCurrentNetworkStatus] == ECSNotReachable)
     {
         [self showMessage:@"Current network is unavailable"];
         return;

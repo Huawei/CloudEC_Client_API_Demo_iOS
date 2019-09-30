@@ -13,6 +13,7 @@
 
 @property (nonatomic,assign)BOOL cameraClose;
 @property (nonatomic,assign)int cameraCaptureIndex;
+@property (nonatomic,assign)BOOL needSetLocalIp;
 
 + (instancetype)shareInstance;
 
