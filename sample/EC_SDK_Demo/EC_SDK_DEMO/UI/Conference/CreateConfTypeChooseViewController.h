@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Defines.h"
+#import "ECBaseTableViewController.h"
 
 @protocol CreateConfTypeChooseViewControllerDelegate <NSObject>
  @optional
@@ -15,7 +16,7 @@
 
 @end
 
-@interface CreateConfTypeChooseViewController : UITableViewController
+@interface CreateConfTypeChooseViewController : ECBaseTableViewController
 @property (nonatomic, weak) id<CreateConfTypeChooseViewControllerDelegate> delegate;
 - (instancetype)initWithConfMediaType:(EC_CONF_MEDIATYPE)mediaType andIsSupportVideoConf:(BOOL)isSupportVideoConf;
 @end

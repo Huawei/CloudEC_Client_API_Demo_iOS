@@ -14,11 +14,12 @@
 #import "StatisticShowInfo.h"
 #import "ImageViewBtn.h"
 #import "EAGLView.h"
+#import "ECBaseViewController.h"
 
 #define SCREEN_WIDTH MIN(self.view.bounds.size.width, self.view.bounds.size.height)
 #define SCREEN_HIGHT MAX(self.view.bounds.size.height, self.view.bounds.size.width)
 
-@interface DataConfBaseViewController : UIViewController
+@interface DataConfBaseViewController : ECBaseViewController
 
 @property (nonatomic,strong) UIView  *barView;
 @property (nonatomic,strong) UIButton* endBtn;

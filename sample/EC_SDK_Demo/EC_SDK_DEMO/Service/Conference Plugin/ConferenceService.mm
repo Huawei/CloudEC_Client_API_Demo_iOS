@@ -381,7 +381,39 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             
         }
             break;
-        
+        case TSDK_E_CONF_EVT_CONF_BASE_INFO_IND:
+    {
+        TSDK_S_CONF_BASE_INFO *confListInfo = (TSDK_S_CONF_BASE_INFO *)notify.data;
+        if (confListInfo != NULL)
+        {
+            TSDK_S_CONF_BASE_INFO confInfo = (TSDK_S_CONF_BASE_INFO)confListInfo[0];
+            
+            if (self.currentConfBaseInfo == nil) {
+                self.currentConfBaseInfo = [[ConfBaseInfo alloc]init];
+            }
+            self.currentConfBaseInfo.conf_id = [NSString stringWithUTF8String:confInfo.conf_id];
+            self.currentConfBaseInfo.conf_subject = [NSString stringWithUTF8String:confInfo.subject];
+            self.currentConfBaseInfo.access_number = [NSString stringWithUTF8String:confInfo.access_number];
+            self.currentConfBaseInfo.chairman_pwd = [NSString stringWithUTF8String:confInfo.chairman_pwd];
+            self.currentConfBaseInfo.general_pwd = [NSString stringWithUTF8String:confInfo.guest_pwd];
+            NSString *utcDataStartString = [NSString stringWithUTF8String:confInfo.start_time];
+            self.currentConfBaseInfo.start_time = [CommonUtils getLocalDateFormateUTCDate:utcDataStartString];
+            NSString *utcDataEndString = [NSString stringWithUTF8String:confInfo.end_time];
+            self.currentConfBaseInfo.end_time = [CommonUtils getLocalDateFormateUTCDate:utcDataEndString];
+            self.currentConfBaseInfo.scheduser_number = [NSString stringWithUTF8String:confInfo.scheduser_account];
+            self.currentConfBaseInfo.scheduser_name = [NSString stringWithUTF8String:confInfo.scheduser_name];
+            self.currentConfBaseInfo.media_type = (EC_CONF_MEDIATYPE)confInfo.conf_media_type;
+            self.currentConfBaseInfo.conf_state = (CONF_E_STATE)confInfo.conf_state;
+            self.currentConfBaseInfo.isHdConf = confInfo.is_hd_conf;
+            self.currentConfBaseInfo.token = [NSString stringWithUTF8String:confInfo.token];
+            self.currentConfBaseInfo.chairJoinUri = [NSString stringWithUTF8String:confInfo.chair_join_uri];
+            self.currentConfBaseInfo.guestJoinUri = [NSString stringWithUTF8String:confInfo.guest_join_uri];
+            
+            _dataConfIdWaitConfInfo = self.currentConfBaseInfo.conf_id;
+            
+        }
+    }
+    break;
         case TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT:
         {
             DDLogInfo(@"TSDK_E_CONF_EVT_QUERY_CONF_LIST_RESULT");

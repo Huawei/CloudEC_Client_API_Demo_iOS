@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
-@interface NoDisturbViewController : UIViewController
+@interface NoDisturbViewController : ECBaseViewController
 
 - (id)initWithPushConfig:(BOOL)enablePush noPushStart:(NSString *)beginTime noPushEnd:(NSString *)endTime timeEnable:(BOOL)timeEnable;
 

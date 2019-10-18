@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
 @interface TableViewCellModel : NSObject
 @property (nonatomic, copy) NSString * strKey;
@@ -16,7 +17,7 @@
 - (instancetype)initWithKey:(NSString *)key ConfigureBlock:(SEL)configBlock action:(SEL)action;
 @end
 
-@interface CreateConfViewController : UIViewController
+@interface CreateConfViewController : ECBaseViewController
 
 {
 @protected

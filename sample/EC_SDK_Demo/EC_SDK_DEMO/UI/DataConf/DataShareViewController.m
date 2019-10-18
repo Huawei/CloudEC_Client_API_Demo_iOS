@@ -142,7 +142,7 @@
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskLandscape;
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 - (instancetype)init
@@ -173,30 +173,30 @@
     
     switch (ecConfEvent)
     {
-        case DATA_CONF_AS_ON_SCREEN_DATA:
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                DDLogInfo(@"UILOG: DATACONF_RECEIVE_SHARE_DATA");
-                NSData *shareImage = resultDictionary[DATACONF_SHARE_DATA_KEY];
-                UIImage *image = [[UIImage alloc] initWithData:shareImage];
-                if (image == nil)
-                {
-                    DDLogInfo(@"share image from data fail!");
-                    return;
-                }
-                
-                [self showShareView:image];
-            });
-            break;
-        }
-        case DATACONF_SHARE_SCREEN_DATA_STOP:
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                DDLogInfo(@"UILOG: DATACONF_SHARE_SCREEN_DATA_STOP");
-                [self removeShareView];
-            });
-            break;
-        }
+//        case DATA_CONF_AS_ON_SCREEN_DATA:
+//        {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                DDLogInfo(@"UILOG: DATACONF_RECEIVE_SHARE_DATA");
+//                NSData *shareImage = resultDictionary[DATACONF_SHARE_DATA_KEY];
+//                UIImage *image = [[UIImage alloc] initWithData:shareImage];
+//                if (image == nil)
+//                {
+//                    DDLogInfo(@"share image from data fail!");
+//                    return;
+//                }
+//
+//                [self showShareView:image];
+//            });
+//            break;
+//        }
+//        case DATACONF_SHARE_SCREEN_DATA_STOP:
+//        {
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                DDLogInfo(@"UILOG: DATACONF_SHARE_SCREEN_DATA_STOP");
+//                [self removeShareView];
+//            });
+//            break;
+//        }
         default:
             break;
     }
@@ -246,7 +246,6 @@
     [ManagerService confService].delegate = self;
     [self updateShareImageData:[ManagerService confService].lastConfSharedData];
     [self updateDrawBtnStatus];
-    [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -320,6 +319,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
 }
 
 - (void)quitToListViewCtrl
@@ -348,15 +349,60 @@
     return isVideoConf || isVideoDataConf;
 }
 
+- (void)deviceOrientationDidChange
+{
+    [self configBottomViewBtns];
+}
+
 - (void)configBottomViewBtns {
-    CGFloat width = [self selfViewWidth];
     
-    self.voiceBtn.frame = CGRectMake(width/2-110, 0, 100, 71);
-    self.endBtn.frame = CGRectMake(width/2+10, 0, 100, 71);
-    self.muteBtn.frame = CGRectMake(width/2+130, 0, 100, 71);
+    CGFloat width = 0;
+    CGFloat hight = 0;
+    
+    width = SCREEN_HIGHT;
+    hight = SCREEN_WIDTH;
+    
+    UIInterfaceOrientation interface2 = [UIApplication sharedApplication].statusBarOrientation;
+    
+    if (interface2 == UIInterfaceOrientationPortrait) {
+        width = SCREEN_WIDTH;
+        hight = SCREEN_HIGHT;
+        self.signalBackView.frame = CGRectMake(0, 0, 365, 365);
+        self.signalDataScrollView.frame = CGRectMake(0, 0, 365, 365);
+ 
+    }
+    else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeLeft)
+    {
+        self.signalBackView.frame = CGRectMake(0, 0, 365+200, 365);
+        self.signalDataScrollView.frame = CGRectMake(0, 0, 365+200, 365);
+    }
+    
+    CGFloat x = width - GO_TO_VIDEO_SHARE_BTN_H_DIS_TO_RIGHT - GO_TO_VIDEO_SHARE_BTN_WIDTH;
+    CGFloat tempBarHeight = self.barView.bounds.size.height == 0 ? 64 : self.barView.bounds.size.height;
+    CGFloat y = (tempBarHeight-GO_TO_VIDEO_SHARE_BTN_HEIGHT)/2;
+    _videoShareBtn.frame = CGRectMake(x, y, GO_TO_VIDEO_SHARE_BTN_WIDTH, GO_TO_VIDEO_SHARE_BTN_HEIGHT);
+    
+    CGFloat chatX = x - 54;
+    CGFloat chatY = (tempBarHeight-44)/2;
+    [_chatBtn setFrame:CGRectMake(chatX, chatY, 44, 44)];
+    
+    self.signalBackView.center = CGPointMake(width/2, hight/2);
+    self.signalBtn.frame = CGRectMake(width - 50, 60, 30, 30);
+    
+    _drawButton.frame = CGRectMake(10, hight / 2, 50, 50);
+    _toolboxView.frame = [self toolboxViewFrame];
+    
+    self.zoomViewImageShare.frame = CGRectMake(0.0, 0.0, width, hight);
+    self.shareImageView.frame = CGRectMake(0.0, 0.0, width, hight);
+    
+    self.voiceBtn.frame = CGRectMake(width/2-50, 0, 100, 71);
+    self.endBtn.frame = CGRectMake(20, 0, 100, 71);
+    self.muteBtn.frame = CGRectMake(width - 120, 0, 100, 71);
     [self.bottomView addSubview:self.voiceBtn];
     [self.bottomView addSubview:self.endBtn];
     [self.bottomView addSubview:self.muteBtn];
+    
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -612,7 +658,11 @@
     if (!_toolboxView) {
         _toolboxView = [[ECMarkupToolboxView alloc] initWithFrame:[self toolboxViewFrame]];
         _toolboxView.delegate = self;
+        _toolboxView.hidden = YES;
         [_zoomViewImageShare.superview addSubview:_toolboxView];
+        UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(draggedToolboxView:)];
+        panGestureRecognizer.cancelsTouchesInView = YES;
+        [_toolboxView addGestureRecognizer:panGestureRecognizer];
         
     }
     return _toolboxView;
@@ -630,7 +680,11 @@
         _drawButton.layer.shadowOpacity = 0.9;
         _drawButton.layer.shadowRadius = 15;
         _drawButton.layer.shadowOffset = CGSizeZero;
-        [_drawButton addTarget:self action:@selector(toggleMarkupMode) forControlEvents:UIControlEventTouchDown];
+        //解决拖动事件和button点击事件冲突问题，原因是3DTouch出现后，需要很轻的点击才能实现拖动的同时不实现点击方法，故替换成手势点击事件。
+        //[_drawButton addTarget:self action:@selector(toggleMarkupMode) forControlEvents:UIControlEventTouchDown];
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleMarkupMode)];
+        [_drawButton addGestureRecognizer:tap];
+        
         [_drawButton setImage:buttonImage forState:UIControlStateNormal];
         UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(drawButtonWasDragged:)];
         panGestureRecognizer.cancelsTouchesInView = YES;

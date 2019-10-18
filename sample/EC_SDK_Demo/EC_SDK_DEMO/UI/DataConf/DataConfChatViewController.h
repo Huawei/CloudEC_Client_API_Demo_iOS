@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
-@interface DataConfChatViewController : UIViewController
+@interface DataConfChatViewController : ECBaseViewController
 
 @end

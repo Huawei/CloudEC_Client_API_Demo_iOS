@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
-@interface CallTakingViewController : UIViewController
+@interface CallTakingViewController : ECBaseViewController
 @property (nonatomic, assign)UIInterfaceOrientation orientation;
 
 @end

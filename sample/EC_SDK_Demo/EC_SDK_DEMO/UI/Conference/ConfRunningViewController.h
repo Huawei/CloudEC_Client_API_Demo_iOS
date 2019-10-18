@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-@interface ConfRunningViewController : UIViewController
+#import "ECBaseViewController.h"
+
+@interface ConfRunningViewController : ECBaseViewController
 
 @end

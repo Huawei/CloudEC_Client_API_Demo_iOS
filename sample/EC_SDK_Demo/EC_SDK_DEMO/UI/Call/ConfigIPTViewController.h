@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseTableViewController.h"
 
-@interface ConfigIPTViewController : UITableViewController
+@interface ConfigIPTViewController : ECBaseTableViewController
 
 @end

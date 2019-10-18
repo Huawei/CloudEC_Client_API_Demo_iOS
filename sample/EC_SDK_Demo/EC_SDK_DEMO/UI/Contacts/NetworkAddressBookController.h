@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseTableViewController.h"
 
-@interface NetworkAddressBookController : UITableViewController
+@interface NetworkAddressBookController : ECBaseTableViewController
 
 @end

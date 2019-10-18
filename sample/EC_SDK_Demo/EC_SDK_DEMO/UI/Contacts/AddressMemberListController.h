@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseTableViewController.h"
 
-@interface AddressMemberListController : UITableViewController
+@interface AddressMemberListController : ECBaseTableViewController
 
 - (instancetype)initWithCurrentDept:(DeptInfo *)dept;
 

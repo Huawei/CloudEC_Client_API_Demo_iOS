@@ -15,11 +15,13 @@
 @implementation BaseNavigationController
 
 - (BOOL)shouldAutorotate {
-    return [self.viewControllers lastObject].shouldAutorotate;
+    BOOL shouldAutorotate = [self.viewControllers lastObject].shouldAutorotate;
+    return shouldAutorotate;
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
-    return [self.viewControllers lastObject].supportedInterfaceOrientations;
+    UIInterfaceOrientationMask interfaceOrientations = [self.viewControllers lastObject].supportedInterfaceOrientations;
+    return interfaceOrientations;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {

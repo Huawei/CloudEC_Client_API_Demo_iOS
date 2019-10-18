@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "ManagerService.h"
+#import "ECBaseTableViewController.h"
 
-@interface ConfDetailViewController : UITableViewController
+@interface ConfDetailViewController : ECBaseTableViewController
 @property (nonatomic, strong) NSString *confId;
 @end

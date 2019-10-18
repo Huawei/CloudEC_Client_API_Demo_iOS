@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseTableViewController.h"
 
 @class ContactInfo;
-@interface AddressDetailViewController : UITableViewController
+@interface AddressDetailViewController : ECBaseTableViewController
 
 - (instancetype)initWithTupPerson:(ContactInfo *)tupContact;
 

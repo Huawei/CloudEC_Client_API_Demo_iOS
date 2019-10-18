@@ -59,10 +59,10 @@
     return nil;
 }
 
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskAllButUpsideDown;
-}
+//- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+//{
+//    return UIInterfaceOrientationMaskAllButUpsideDown;
+//}
 
 -(BOOL)prefersStatusBarHidden {
     return YES;

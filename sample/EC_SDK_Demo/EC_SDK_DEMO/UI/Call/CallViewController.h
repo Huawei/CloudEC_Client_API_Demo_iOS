@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
-
-@interface CallViewController : UIViewController
+@interface CallViewController : ECBaseViewController
 @end

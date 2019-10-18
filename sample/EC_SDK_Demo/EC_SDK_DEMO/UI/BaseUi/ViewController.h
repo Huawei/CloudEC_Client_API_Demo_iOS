@@ -1,5 +1,5 @@
 //
-//  CallHistoryViewController.h
+//  ViewController.h
 //  EC_SDK_DEMO
 //
 //  Created by EC Open support team.
@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ECBaseTableViewController.h"
 
-@interface CallHistoryViewController : ECBaseTableViewController
+@interface ViewController : UITabBarController
+
 
 @end
+

@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
-@interface JoinConfViewController : UIViewController
+@interface JoinConfViewController : ECBaseViewController
 
 @end

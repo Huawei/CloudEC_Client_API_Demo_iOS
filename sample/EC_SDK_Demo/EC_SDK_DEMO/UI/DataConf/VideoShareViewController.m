@@ -362,7 +362,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW
                                                    object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIDeviceOrientationDidChangeNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     }
     return self;
 }
@@ -406,7 +406,6 @@
     }
     
     if ([self isVideoConf]) {
-        [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
 //        [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
     }else{
         [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
@@ -421,8 +420,6 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-
-    [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
 }
 
 - (void)viewDidLoad {

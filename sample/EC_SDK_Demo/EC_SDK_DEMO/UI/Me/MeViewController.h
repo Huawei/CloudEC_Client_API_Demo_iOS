@@ -6,7 +6,8 @@
 //  Copyright(C), 2017, Huawei Tech. Co., Ltd. ALL RIGHTS RESERVED.
 //
 #import <UIKit/UIKit.h>
+#import "ECBaseTableViewController.h"
 
-@interface MeViewController : UITableViewController
+@interface MeViewController : ECBaseTableViewController
 
 @end

@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
+
 //#import "ViewController.h"
 @class MeetingDatePickViewController;
 @protocol MeetingDatePickerViewControllerDelegate<NSObject>
@@ -19,7 +21,7 @@
 @end
 
 
-@interface MeetingDatePickViewController : UIViewController <UITableViewDelegate,
+@interface MeetingDatePickViewController : ECBaseViewController <UITableViewDelegate,
                                                              UITableViewDataSource>
 
 + (NSDate *)startDate;

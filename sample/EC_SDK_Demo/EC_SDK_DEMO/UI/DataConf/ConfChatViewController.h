@@ -7,9 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseViewController.h"
 
 @class ConfAttendeeInConf;
-@interface ConfChatViewController : UIViewController
+@interface ConfChatViewController : ECBaseViewController
 @property (nonatomic, strong)NSArray *confAttendees;
 @property (nonatomic, strong)ConfAttendeeInConf *selfInfo;
 

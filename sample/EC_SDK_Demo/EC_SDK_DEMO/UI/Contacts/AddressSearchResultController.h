@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ECBaseTableViewController.h"
 
 @class ContactInfo;
 @protocol AddressSearchResultDelegate <NSObject>
@@ -23,7 +24,7 @@
 
 @end
 
-@interface AddressSearchResultController : UITableViewController
+@interface AddressSearchResultController : ECBaseTableViewController
 
 @property (nonatomic,strong) NSMutableArray *searchArray;                // search person array
 @property (nonatomic, weak) id<AddressSearchResultDelegate> delegate;
