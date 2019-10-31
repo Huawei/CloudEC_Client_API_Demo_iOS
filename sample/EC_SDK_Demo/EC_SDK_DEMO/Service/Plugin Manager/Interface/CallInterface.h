@@ -285,7 +285,7 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
  *                               呼叫id
  *@return YES is success, NO is fail
  */
--(BOOL)rotationVideoDisplay:(NSUInteger)orientation callId:(unsigned int)callId;
+-(BOOL)rotationVideoDisplay:(NSUInteger)orientation callId:(unsigned int)callId isLocalWnd:(BOOL)isLocalWnd;
 
 /**
  * This method is used to switch camera index

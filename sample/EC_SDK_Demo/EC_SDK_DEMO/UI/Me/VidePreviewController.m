@@ -71,7 +71,7 @@
         return;
     }
     
-    [[ManagerService callService] rotationVideoDisplay:displayRotation callId:0];
+    [[ManagerService callService] rotationVideoDisplay:displayRotation callId:0 isLocalWnd:YES];
     [[ManagerService callService] rotationCameraCapture:cameraRotation callId:0];
 }
 

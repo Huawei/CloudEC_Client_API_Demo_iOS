@@ -125,8 +125,8 @@
                  
                  
                  
-                 //搜索自己软终端号码
-                 [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
+//                 //搜索自己软终端号码
+//                 [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
                  
                  if (completionBlock) {
                      completionBlock(YES, nil);

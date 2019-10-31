@@ -127,6 +127,8 @@
 		DE586F672314D38600F52C77 /* AudioStreamInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F662314D38600F52C77 /* AudioStreamInfo.m */; };
 		DE586F6D2314DCD500F52C77 /* CallStatisticInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE586F6C2314DCD500F52C77 /* CallStatisticInfo.m */; };
 		DE59FD62215DD0C700724BC1 /* libtup_cwmp_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */; };
+		DE6BE76323614E29008DCF1E /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6BE76223614E28008DCF1E /* CloudLinkMeetingScreenShare.framework */; };
+		DE6BE76523614E5B008DCF1E /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE6BE76223614E28008DCF1E /* CloudLinkMeetingScreenShare.framework */; };
 		DE7410EF2119731F00FC9EBC /* JoinConfViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */; };
 		DE87F1C3214A89B3006D50DC /* BaseNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C2214A89B3006D50DC /* BaseNavigationController.m */; };
 		DE87F1C6214B6534006D50DC /* ConfBaseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C5214B6534006D50DC /* ConfBaseInfo.m */; };
@@ -235,7 +237,6 @@
 		DEBA4ABE23161D01005B771A /* StatisticShowInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4ABD23161D01005B771A /* StatisticShowInfo.m */; };
 		DEBA4ACC2316A486005B771A /* DataShareQualityTableViewCel.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4ACA2316A486005B771A /* DataShareQualityTableViewCel.m */; };
 		DEBA4ACD2316A486005B771A /* DataShareQualityTableViewCel.xib in Resources */ = {isa = PBXBuildFile; fileRef = DEBA4ACB2316A486005B771A /* DataShareQualityTableViewCel.xib */; };
-		DEBDCCF122E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */; };
 		DEC49B76221CE7940089A88A /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC49B75221CE7940089A88A /* libc++.tbd */; };
 		DEC809C1230691F50024A89B /* JoinConfIndInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC809C0230691F50024A89B /* JoinConfIndInfo.m */; };
 		DEC809C42306A9BE0024A89B /* LocalNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC809C32306A9BE0024A89B /* LocalNotificationCenter.m */; };
@@ -243,7 +244,6 @@
 		DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01690E022A4FB85002B2A27 /* ReplayKit.framework */; };
 		DED4CC1722EF16AF0035334C /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DED4CC1622EF16AF0035334C /* SampleHandler.m */; };
 		DED4CC1B22EF16AF0035334C /* ECSdkScreenShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DED4CC1222EF16AF0035334C /* ECSdkScreenShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		DED4CC2022EF174A0035334C /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -517,6 +517,7 @@
 		DE586F6B2314DCD500F52C77 /* CallStatisticInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallStatisticInfo.h; sourceTree = "<group>"; };
 		DE586F6C2314DCD500F52C77 /* CallStatisticInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallStatisticInfo.m; sourceTree = "<group>"; };
 		DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cwmp_h5.a; sourceTree = "<group>"; };
+		DE6BE76223614E28008DCF1E /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
 		DE7410ED2119731E00FC9EBC /* JoinConfViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JoinConfViewController.h; sourceTree = "<group>"; };
 		DE7410EE2119731E00FC9EBC /* JoinConfViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JoinConfViewController.m; sourceTree = "<group>"; };
 		DE87F1C1214A89B3006D50DC /* BaseNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BaseNavigationController.h; sourceTree = "<group>"; };
@@ -654,7 +655,6 @@
 		DEBA4AC92316A486005B771A /* DataShareQualityTableViewCel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataShareQualityTableViewCel.h; sourceTree = "<group>"; };
 		DEBA4ACA2316A486005B771A /* DataShareQualityTableViewCel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DataShareQualityTableViewCel.m; sourceTree = "<group>"; };
 		DEBA4ACB2316A486005B771A /* DataShareQualityTableViewCel.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DataShareQualityTableViewCel.xib; sourceTree = "<group>"; };
-		DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
 		DEC49B75221CE7940089A88A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		DEC809BF230691F50024A89B /* JoinConfIndInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JoinConfIndInfo.h; sourceTree = "<group>"; };
 		DEC809C0230691F50024A89B /* JoinConfIndInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JoinConfIndInfo.m; sourceTree = "<group>"; };
@@ -730,7 +730,7 @@
 				DEAB8FE4212E9823005BC744 /* libjsoncpp.a in Frameworks */,
 				1258C1DA1F39593100654D80 /* libz.1.dylib in Frameworks */,
 				DEAB8FE2212E9823005BC744 /* libipsi_pse.a in Frameworks */,
-				DEBDCCF122E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework in Frameworks */,
+				DE6BE76323614E29008DCF1E /* CloudLinkMeetingScreenShare.framework in Frameworks */,
 				DEAB8FDF212E9823005BC744 /* libipsi_eap.a in Frameworks */,
 				DEAB9025212E9824005BC744 /* libtup_zip.a in Frameworks */,
 				DEAB9026212E9824005BC744 /* libTupConf.a in Frameworks */,
@@ -775,7 +775,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DED4CC2022EF174A0035334C /* CloudLinkMeetingScreenShare.framework in Frameworks */,
+				DE6BE76523614E5B008DCF1E /* CloudLinkMeetingScreenShare.framework in Frameworks */,
 				DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1355,8 +1355,8 @@
 		DEAB8F26212E9823005BC744 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				DE6BE76223614E28008DCF1E /* CloudLinkMeetingScreenShare.framework */,
 				DED4CBD522EECC160035334C /* libtup_service_base.a */,
-				DEBDCCF022E72F2C005BF07D /* CloudLinkMeetingScreenShare.framework */,
 				DE0D84C722CB3F0900FFB281 /* libtup_conf_agent.a */,
 				DE59FD60215DD0C600724BC1 /* libtup_cwmp_h5.a */,
 				DEAB8F32212E9823005BC744 /* libACE.a */,

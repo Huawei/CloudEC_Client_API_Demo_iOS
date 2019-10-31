@@ -406,7 +406,7 @@
     }
     
     if ([self isVideoConf]) {
-//        [CommonUtils setToOrientation:UIDeviceOrientationLandscapeLeft];
+//        [CommonUtils setToOrientation:[DeviceMotionManager sharedInstance].lastOrientation];
     }else{
         [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
     }
@@ -772,8 +772,8 @@
 
 - (UIView *)localViewShower {
     if (nil == _localViewShower) {
-        _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(30, 5, (SCREEN_WIDTH - 60) / 4, 105)];
-        _localViewShower.backgroundColor = [UIColor blueColor];
+        _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(30, 5, (SCREEN_WIDTH - 60) / 4, (SCREEN_WIDTH - 60) / 4 / 9 * 16)];
+        _localViewShower.backgroundColor = [UIColor blackColor];
 //        _localViewShower.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"image_conf_video_small_video_back"]];
         [_localViewShower addSubview:self.localView];
         [_localViewShower addSubview:self.localNameLabel];
@@ -784,7 +784,7 @@
 -(EAGLView *)localView{
     if (nil == _localView) {
         _localView = [EAGLView getLocalView];
-        _localView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+        _localView.frame = CGRectMake(1, 1, (SCREEN_WIDTH - 60) / 4 - 2, (SCREEN_WIDTH - 60) / 4 / 9 * 16 - 2);
     }
     return _localView;
 }
@@ -834,7 +834,7 @@
 -(UIView *)firstSVCViewShower
 {
     if (nil == _firstSVCViewShower) {
-        _firstSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 + 30, 5, (SCREEN_WIDTH - 60) / 4, 105)];
+        _firstSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 + 30, 5, (SCREEN_WIDTH - 60) / 4, (SCREEN_WIDTH - 60) / 4 / 9 * 16)];
         [_firstSVCViewShower addSubview:self.firstSVCView];
         [_firstSVCViewShower addSubview:self.firstNameLabel];
         
@@ -842,7 +842,7 @@
         doubleTap.numberOfTapsRequired = 2;
         [_firstSVCViewShower addGestureRecognizer:doubleTap];
         
-//        _firstSVCViewShower.backgroundColor = [UIColor greenColor];
+        _firstSVCViewShower.backgroundColor = [UIColor blackColor];
     }
     return _firstSVCViewShower;
 }
@@ -850,7 +850,7 @@
 -(EAGLView *)firstSVCView{
     if (nil == _firstSVCView) {
         _firstSVCView = [EAGLView getFirstSVCView];
-        _firstSVCView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+        _firstSVCView.frame = CGRectMake(1, 1, (SCREEN_WIDTH - 60) / 4 - 2, (SCREEN_WIDTH - 60) / 4 / 9 * 16 - 2);
     }
     return _firstSVCView;
 }
@@ -863,7 +863,7 @@
 -(UIView *)secondSVCViewShower
 {
     if (nil == _secondSVCViewShower) {
-        _secondSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 * 2 + 30, 5 , (SCREEN_WIDTH - 60) / 4, 105)];
+        _secondSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 * 2 + 30, 5 , (SCREEN_WIDTH - 60) / 4, (SCREEN_WIDTH - 60) / 4 / 9 * 16)];
         [_secondSVCViewShower addSubview:self.secondSVCView];
         [_secondSVCViewShower addSubview:self.secondNameLabel];
         
@@ -871,7 +871,7 @@
         doubleTap.numberOfTapsRequired = 2;
         [_secondSVCViewShower addGestureRecognizer:doubleTap];
         
-//        _secondSVCViewShower.backgroundColor = [UIColor yellowColor];
+        _secondSVCViewShower.backgroundColor = [UIColor blackColor];
     }
     return _secondSVCViewShower;
 }
@@ -880,7 +880,7 @@
 {
     if (nil == _secondSVCView) {
         _secondSVCView = [EAGLView getSecondSVCView];
-        _secondSVCView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+        _secondSVCView.frame = CGRectMake(1, 1, (SCREEN_WIDTH - 60) / 4 - 2, (SCREEN_WIDTH - 60) / 4 / 9 * 16 - 2);
     }
     return _secondSVCView;
 }
@@ -893,7 +893,7 @@
 -(UIView *)thirdSVCViewShower
 {
     if (nil == _thirdSVCViewShower) {
-        _thirdSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 * 3 + 30, 5 , (SCREEN_WIDTH - 60) / 4, 105)];
+        _thirdSVCViewShower = [[UIView alloc]initWithFrame:CGRectMake((SCREEN_WIDTH - 60) / 4 * 3 + 30, 5 , (SCREEN_WIDTH - 60) / 4, (SCREEN_WIDTH - 60) / 4 / 9 * 16)];
         [_thirdSVCViewShower addSubview:self.thirdSVCView];
         [_thirdSVCViewShower addSubview:self.thirdNameLabel];
         
@@ -901,7 +901,7 @@
         doubleTap.numberOfTapsRequired = 2;
         [_thirdSVCViewShower addGestureRecognizer:doubleTap];
         
-//        _thirdSVCViewShower.backgroundColor = [UIColor grayColor];
+        _thirdSVCViewShower.backgroundColor = [UIColor blackColor];
     }
     return _thirdSVCViewShower;
 }
@@ -910,7 +910,7 @@
 {
     if (nil == _thirdSVCView) {
         _thirdSVCView = [EAGLView getThirdSVCView];
-        _thirdSVCView.frame = CGRectMake(0, 0, (SCREEN_WIDTH - 60) / 4, 105);
+        _thirdSVCView.frame = CGRectMake(1, 1, (SCREEN_WIDTH - 60) / 4 - 2, (SCREEN_WIDTH - 60) / 4 / 9 * 16 - 2);
     }
     return _thirdSVCView;
 }
@@ -937,8 +937,10 @@
         CGFloat hight = 0;
 
         UIInterfaceOrientation interface2 = [UIApplication sharedApplication].statusBarOrientation;
+        
 
         if (interface2 == UIInterfaceOrientationPortrait) {
+            self.confLastOrientation = UIDeviceOrientationPortrait;
             width = SCREEN_WIDTH;
             hight = SCREEN_HIGHT;
 
@@ -959,14 +961,14 @@
                 }
                 
                 _backSVCView.frame = CGRectMake(0, hight - 200, width, 115);
-                _localViewShower.frame = CGRectMake(30, 5, (width - 60) / 4, 105);
-                _localView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
-                _firstSVCViewShower.frame = CGRectMake((width - 60) / 4 + 30, 5, (width - 60) / 4, 105);
-                _firstSVCView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
-                _secondSVCViewShower.frame = CGRectMake((width - 60) / 4 * 2 + 30, 5 , (width - 60) / 4, 105);
-                _secondSVCView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
-                _thirdSVCViewShower.frame = CGRectMake((width - 60) / 4 * 3 + 30, 5 , (width - 60) / 4, 105);
-                _thirdSVCView.frame = CGRectMake(0, 0, (width - 60) / 4, 105);
+                _localViewShower.frame = CGRectMake(30, 5, (width - 60) / 4, (width - 60) / 4 / 9 * 16);
+                _localView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
+                _firstSVCViewShower.frame = CGRectMake((width - 60) / 4 + 30, 5, (width - 60) / 4, (width - 60) / 4 / 9 * 16);
+                _firstSVCView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
+                _secondSVCViewShower.frame = CGRectMake((width - 60) / 4 * 2 + 30, 5 , (width - 60) / 4, (width - 60) / 4 / 9 * 16);
+                _secondSVCView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
+                _thirdSVCViewShower.frame = CGRectMake((width - 60) / 4 * 3 + 30, 5 , (width - 60) / 4, (width - 60) / 4 / 9 * 16);
+                _thirdSVCView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
                 
                 _previousPageBtn.frame = CGRectMake(0, 40, 30, 35);
                 _nextPageBtn.frame = CGRectMake(width - 30 , 40, 30, 35);
@@ -984,6 +986,10 @@
             
         }else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeRight)
         {
+            self.confLastOrientation = UIDeviceOrientationLandscapeLeft;
+            if (interface2 == UIInterfaceOrientationLandscapeRight) {
+                self.confLastOrientation = UIDeviceOrientationLandscapeRight;
+            }
             width = SCREEN_HIGHT;
             hight = SCREEN_WIDTH;
             
@@ -1005,14 +1011,14 @@
                 }
                 
                 _backSVCView.frame = CGRectMake(44, 0, 115, hight);
-                _localViewShower.frame = CGRectMake(5, 30, 105, (hight - 60) / 4);
-                _localView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
-                _firstSVCViewShower.frame = CGRectMake(5, (hight - 60) / 4 + 30, 105, (hight - 60) / 4);
-                _firstSVCView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
-                _secondSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 2 + 30, 105, (hight - 60) / 4);
-                _secondSVCView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
-                _thirdSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 3 + 30, 105, (hight - 60) / 4);
-                _thirdSVCView.frame = CGRectMake(0, 0, 105, (hight - 60) / 4);
+                _localViewShower.frame = CGRectMake(5, 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
+                _localView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
+                _firstSVCViewShower.frame = CGRectMake(5, (hight - 60) / 4 + 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
+                _firstSVCView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
+                _secondSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 2 + 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
+                _secondSVCView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
+                _thirdSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 3 + 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
+                _thirdSVCView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
                 
                 _previousPageBtn.frame = CGRectMake(40, 0, 30, 35);
                 _nextPageBtn.frame = CGRectMake(40, hight -30, 30, 35);
@@ -1491,7 +1497,7 @@
                     BOOL isSuccess = [[ManagerService callService] switchCameraIndex:cameraCaptureIndex callId:[ManagerService confService].currentCallId];
                     if (isSuccess) {
                         [CallWindowController shareInstance].cameraCaptureIndex = cameraCaptureIndex;
-//                        [[CallWindowController shareInstance] deviceMotionOrientationChanged];
+                        [[CallWindowController shareInstance] deviceMotionOrientationChanged];
                     }
                 }
             }
@@ -1529,6 +1535,7 @@
                 BOOL isCameraClose = [CallWindowController shareInstance].cameraClose;
                 [[ManagerService callService] switchCameraOpen:isCameraClose callId:[ManagerService confService].currentCallId];
                 [CallWindowController shareInstance].cameraClose = !isCameraClose;
+                [[CallWindowController shareInstance] deviceMotionOrientationChanged];
             }
         }
         if ([confCtrlAction isEqualToString:@"Set Conf Mode"]) {

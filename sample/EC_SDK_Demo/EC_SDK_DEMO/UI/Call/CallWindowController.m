@@ -294,7 +294,11 @@ static CallWindowController *g_windowCtrl = nil;
             
             for (UIView *view in self.broadcastPickerView.subviews) {
                 if ([view isKindOfClass:[UIButton class]]) {
-                    [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchDown];
+                    if (@available(iOS 13, *)) {
+                        [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchUpInside];
+                    } else {
+                        [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchDown];
+                    }
                 }
             }
         }
@@ -323,6 +327,8 @@ static CallWindowController *g_windowCtrl = nil;
 -(void)removeCallViewNotify
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+        
         [self removeCallView:[self getSelfCurrentConfId]];
         [self.callWindow setHidden:YES];
         _isJoinConfCall = YES;
@@ -434,6 +440,13 @@ static CallWindowController *g_windowCtrl = nil;
         local_ip.is_try_resume = TSDK_TRUE;
         TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
         DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
+    }else{
+        BOOL needAutoLogin = [CommonUtils getUserDefaultBoolValueWithKey:NEED_AUTO_LOGIN];
+        ECSLoginServiceStatus status = [ManagerService loginService].serviceStatus;
+        if (needAutoLogin && ECServiceLogin != status) {
+            [AppDelegate startAutoLogin];
+            [AppDelegate gotoRecentChatSessionView];
+        }
     }
         
     if (_cameraClose) {
@@ -444,6 +457,8 @@ static CallWindowController *g_windowCtrl = nil;
         && _currentTupCallInfo.stateInfo.callState == CallStateTaking
         && !_cameraClose) || [self getSelfCurrentConfId] != 0) {
         [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
+//        [CommonUtils setToOrientation:[DeviceMotionManager sharedInstance].lastOrientation];
+        [self deviceMotionOrientationChanged];
     }
 }
 
@@ -453,7 +468,10 @@ static CallWindowController *g_windowCtrl = nil;
         NSUInteger cameraRotation = 0;
         NSUInteger displayRotation = 0;
         
-        [CommonUtils setToOrientation:[DeviceMotionManager sharedInstance].lastOrientation];
+        if ([DeviceMotionManager sharedInstance].lastOrientation != UIDeviceOrientationFaceDown && [DeviceMotionManager sharedInstance].lastOrientation != UIDeviceOrientationFaceUp) {
+            [CommonUtils setToOrientation:[DeviceMotionManager sharedInstance].lastOrientation];
+        }
+        
         
         if (_cameraClose) {
             return;
@@ -478,8 +496,16 @@ static CallWindowController *g_windowCtrl = nil;
         //        return;
         //    }
         
-        [[ManagerService callService] rotationVideoDisplay:displayRotation callId:[self getSelfCurrentConfId]];
-        [[ManagerService callService] rotationCameraCapture:cameraRotation callId:[self getSelfCurrentConfId]];
+        NSUInteger newCameraRotation = cameraRotation;
+        NSUInteger newDisplayRotation = displayRotation;
+        
+        [[ManagerService callService] rotationCameraCapture:newCameraRotation callId:[self getSelfCurrentConfId]];
+        
+        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:YES];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[self getSelfCurrentConfId]];
+        
+//        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:NO];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[self getSelfCurrentConfId]];
         
     });
 }
@@ -671,6 +697,9 @@ static CallWindowController *g_windowCtrl = nil;
 -(void)handleCallConnectEventWithResult:(NSDictionary *)resultDictionary
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+        
         CallInfo *callInfo = resultDictionary[TSDK_CALL_INFO_KEY];
         self.currentTupCallInfo = callInfo;
         if (_callInfoArray.count > 0)
@@ -778,6 +807,7 @@ static CallWindowController *g_windowCtrl = nil;
 {
     CallInfo *callInfo = resultDic[TSDK_CALL_INFO_KEY];
     dispatch_async(dispatch_get_main_queue(), ^{
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
         [self performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
         [self removeCallView:callInfo.stateInfo.callId];
         if (_callInfoArray.count > 0)
@@ -881,7 +911,7 @@ static CallWindowController *g_windowCtrl = nil;
             [self addGLViewInCallView:callView];
             [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
             _talkingCtrl.orientation = callView.showOrient;
-            [CommonUtils setToOrientation:(UIDeviceOrientation)callView.showOrient];
+            [self deviceMotionOrientationChanged];
             
             
         }
@@ -1101,6 +1131,7 @@ static CallWindowController *g_windowCtrl = nil;
             _cameraClose = !_cameraClose;
             currentCallView.isCameraClose = _cameraClose;
             [[ManagerService callService] switchCameraOpen:!_cameraClose callId:callInfo.stateInfo.callId];
+            [self deviceMotionOrientationChanged];
             break;
         }
         case MUTE_MIC_BUTTON:

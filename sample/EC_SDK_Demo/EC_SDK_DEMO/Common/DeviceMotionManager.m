@@ -67,7 +67,7 @@ static DeviceMotionManager *g_deviceManager = nil;
     [self stopDeviceMotionManager];
     //开始采集设备方向
     if (_motionManager.isDeviceMotionAvailable) {
-        _lastOrientation = UIDeviceOrientationUnknown;
+//        _lastOrientation = UIDeviceOrientationUnknown;
         [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *data,NSError *error){
             [self performSelectorOnMainThread:@selector(currentDeviceOrientation:) withObject:data waitUntilDone:YES];
         }];
@@ -108,13 +108,14 @@ static DeviceMotionManager *g_deviceManager = nil;
         }
         else if (fabGravityZ > fabGravityX && fabGravityZ > fabGravityY)
         {
-            if (data.gravity.z >= 0) {
-                orientation = UIDeviceOrientationFaceDown;
-            }
-            else
-            {
-                orientation = UIDeviceOrientationFaceUp;
-            }
+            return;
+//            if (data.gravity.z >= 0) {
+//                orientation = UIDeviceOrientationFaceDown;
+//            }
+//            else
+//            {
+//                orientation = UIDeviceOrientationFaceUp;
+//            }
         }
         
     }
@@ -172,6 +173,7 @@ static DeviceMotionManager *g_deviceManager = nil;
                 if (index == CameraIndexFront)
                 {
                     *cameraRotation = 0;
+                    //*displayRotation = 0;
                     *displayRotation = 1;
                 }
                 else
@@ -201,6 +203,7 @@ static DeviceMotionManager *g_deviceManager = nil;
                 if (index == CameraIndexFront)
                 {
                     *cameraRotation = 2;
+                    //*displayRotation = 0;
                     *displayRotation = 3;
                 }
                 else

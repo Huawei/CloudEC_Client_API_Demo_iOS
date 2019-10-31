@@ -64,7 +64,7 @@ static EAGLView *openGLDataRemoteView = nil;
 {
 	if (openGLPreviewView == nil)
     {
-		openGLPreviewView = [[self alloc] initWithFrame:PREVIEW_OPENGL_VIEW_SIZE];
+		openGLPreviewView = [[self alloc] initWithFrame:CGRectZero];
 	}
 	return openGLPreviewView;
 }
@@ -73,7 +73,7 @@ static EAGLView *openGLDataRemoteView = nil;
 {
     if (openGLRemoteView == nil)
     {
-        openGLRemoteView = [[self alloc] initWithFrame:REMOTE_OPENGL_VIEW_SIZE];
+        openGLRemoteView = [[self alloc] initWithFrame:CGRectZero];
         openGLRemoteView.backgroundColor = [UIColor blackColor];
     }
     
@@ -85,10 +85,11 @@ static EAGLView *openGLDataRemoteView = nil;
 {
 	if (openGLLocalView == nil)
     {
-        openGLLocalView = [[self alloc] initWithFrame:CGRectMake(0,
-                                                                 0,
-                                                                 78.5,
-                                                                 105)];
+//        openGLLocalView = [[self alloc] initWithFrame:CGRectMake(0,
+//                                                                 0,
+//                                                                 63,
+//                                                                 112)];
+        openGLLocalView = [[self alloc] initWithFrame:CGRectZero];
         openGLLocalView.backgroundColor = [UIColor blackColor];
 	}
 	return openGLLocalView;
@@ -98,7 +99,7 @@ static EAGLView *openGLDataRemoteView = nil;
 {
     if (openGLLocalBigView == nil)
     {
-        openGLLocalBigView = [[self alloc] initWithFrame:REMOTE_OPENGL_VIEW_SIZE];
+        openGLLocalBigView = [[self alloc] initWithFrame:CGRectZero];
         openGLLocalBigView.backgroundColor = [UIColor blackColor];
     }
     
@@ -108,10 +109,7 @@ static EAGLView *openGLDataRemoteView = nil;
 //tup
 + (EAGLView *)getTupBFCPView {
     if (nil == openGLTupBFCPView) {
-        openGLTupBFCPView = [[EAGLView alloc]initWithFrame:CGRectMake(0,
-                                                                      0,
-                                                                      [UIScreen mainScreen].bounds.size.width,
-                                                                      [UIScreen mainScreen].bounds.size.height)];
+        openGLTupBFCPView = [[EAGLView alloc]initWithFrame:CGRectZero];
         openGLTupBFCPView.backgroundColor = [UIColor clearColor];
     }
     return openGLTupBFCPView;
@@ -120,10 +118,7 @@ static EAGLView *openGLDataRemoteView = nil;
 //data conf
 + (EAGLView *)getDataConfBFCPView {
     if (nil == openGLDataConfView) {
-        openGLDataConfView = [[EAGLView alloc]initWithFrame:CGRectMake(0,
-                                                                      0,
-                                                                      [UIScreen mainScreen].bounds.size.width,
-                                                                      [UIScreen mainScreen].bounds.size.height)];
+        openGLDataConfView = [[EAGLView alloc]initWithFrame:CGRectZero];
         openGLDataConfView.backgroundColor = [UIColor clearColor];
     }
     return openGLDataConfView;
@@ -133,10 +128,7 @@ static EAGLView *openGLDataRemoteView = nil;
 {
     if (openGLFirstSVCView == nil)
     {
-        openGLFirstSVCView = [[self alloc] initWithFrame:CGRectMake(0,
-                                                                    0,
-                                                                    78.5,
-                                                                    105)];
+        openGLFirstSVCView = [[self alloc] initWithFrame:CGRectZero];
         openGLFirstSVCView.backgroundColor = [UIColor blackColor];
     }
     
@@ -148,10 +140,7 @@ static EAGLView *openGLDataRemoteView = nil;
 {
     if (openGLSecondSVCView == nil)
     {
-        openGLSecondSVCView = [[self alloc] initWithFrame:CGRectMake(0,
-                                                                     0,
-                                                                     78.5,
-                                                                     105)];
+        openGLSecondSVCView = [[self alloc] initWithFrame:CGRectZero];
         openGLSecondSVCView.backgroundColor = [UIColor blackColor];
     }
     return openGLSecondSVCView;
@@ -161,10 +150,7 @@ static EAGLView *openGLDataRemoteView = nil;
 {
     if (openGLThirdSVCView == nil)
     {
-        openGLThirdSVCView = [[self alloc] initWithFrame:CGRectMake(0,
-                                                                    0,
-                                                                    78.5,
-                                                                    105)];
+        openGLThirdSVCView = [[self alloc] initWithFrame:CGRectZero];
         openGLThirdSVCView.backgroundColor = [UIColor blackColor];
     }
     return openGLThirdSVCView;

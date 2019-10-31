@@ -58,7 +58,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 @property (nonatomic, assign) TSDK_UINT32 mHeightPixels;
 @property (nonatomic, assign) TSDK_UINT32 mScreenShareType; // 屏幕共享类型
 @property (nonatomic, assign) BOOL mIsStartScreenShareDelayed;
-//@property (nonatomic, assign) BOOL
+@property (nonatomic, assign) BOOL isAnonymousConf;
 
 @end
 
@@ -169,6 +169,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         self.hasConfResumedFirstRewatch = NO;
         self.currentJoinConfIndInfo = [[JoinConfIndInfo alloc] init];
         self.currentBigViewAttendee = [[SVCConfWatchAttendeeInfo alloc] init];
+        _isAnonymousConf = NO;
         
         [self initScreenShareManager];
     }
@@ -505,6 +506,14 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             BOOL result = notify.param2 == TSDK_SUCCESS;
             if (!result) {
                 DDLogError(@"TSDK_E_CONF_EVT_JOIN_CONF_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
+                if (_isAnonymousConf) {
+                    _isAnonymousConf = NO;
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self confCtrlLeaveConference];
+                    });
+                    [self restoreConfParamsInitialValue];
+                }
+                
                 return;
             }
             
@@ -1042,11 +1051,12 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     DDLogInfo(@"charMsgC: %s",charMsgC);
     NSString *msgStr = [NSString stringWithUTF8String:charMsgC];
 
-    DDLogInfo(@"msgStr :%@,chatMsg->lpMsg :%s, chatMsg->sender_display_name :%s，chatMsg->nMsgLen:%d",msgStr,chatMsg->chat_msg,chatMsg->sender_display_name,chatMsg->chat_msg_len);
+    NSString *msg = [msgStr stringByRemovingPercentEncoding];
+    DDLogInfo(@"msgStr :%@,chatMsg->lpMsg :%s, chatMsg->sender_display_name :%s，chatMsg->nMsgLen:%d",msg,chatMsg->chat_msg,chatMsg->sender_display_name,chatMsg->chat_msg_len);
     ChatMsg *tupMsg = [[ChatMsg alloc] init];
     tupMsg.nMsgLen = chatMsg->chat_msg_len;
     tupMsg.time = chatMsg->time;
-    tupMsg.lpMsg = msgStr;
+    tupMsg.lpMsg = msg;
     tupMsg.fromUserName = [NSString stringWithUTF8String:chatMsg->sender_display_name];;
     if (tupMsg.fromUserName.length == 0 || tupMsg.fromUserName == nil) {
         tupMsg.fromUserName = [NSString stringWithUTF8String:chatMsg->sender_number];;
@@ -1075,8 +1085,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     memset(&chat_msg_info, 0, sizeof(TSDK_S_CONF_CHAT_MSG_INFO));
     chat_msg_info.chat_type = TSDK_E_CONF_CHAT_PUBLIC;
     strcpy(chat_msg_info.sender_display_name, (TSDK_CHAR*)username.UTF8String);
-    chat_msg_info.chat_msg = (TSDK_CHAR*)message.UTF8String;
-    chat_msg_info.chat_msg_len = strlen(message.UTF8String);
+    NSString * messageU = [message stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+    chat_msg_info.chat_msg = (TSDK_CHAR*)messageU.UTF8String;
+    chat_msg_info.chat_msg_len = strlen(messageU.UTF8String);
     TSDK_RESULT result = tsdk_send_chat_msg_in_conference(_confHandle, &chat_msg_info);
     return result == TSDK_SUCCESS ? YES : NO;
 }
@@ -1344,7 +1355,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 isAttendeeInConf = YES;
                 *stop = YES;
                 if (*stop == YES) {
-                    if (addAttendee.state == ATTENDEE_STATUS_LEAVED) {
+                    if (addAttendee.state == ATTENDEE_STATUS_LEAVED || !addAttendee.isVideo) {
                         [self.watchAttendeesArray removeObject:attendeeInfo];
                     }
                 }
@@ -1727,6 +1738,10 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  */
 -(BOOL)confCtrlLeaveConference
 {
+    if (_confHandle == 0) {
+        return NO;
+    }
+    
     int result = tsdk_leave_conference(_confHandle);
     DDLogInfo(@"tsdk_leave_conference = %d, _confHandle is :%d",result,_confHandle);
     return result == TSDK_SUCCESS ? YES : NO;
@@ -2107,33 +2122,31 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  */
 -(void)restoreConfParamsInitialValue
 {
-    DDLogInfo(@"restoreConfParamsInitialValue");
-    [_confTokenDic removeAllObjects];
-    [self.haveJoinAttendeeArray removeAllObjects];
-    [self.watchAttendeesArray removeAllObjects];
-    self.isJoinDataConf = NO;
-    _dataConfIdWaitConfInfo = nil;
-    _confCtrlUrl = nil;
-    self.selfJoinNumber = nil;
-    _hasReportMediaxSpeak = NO;
-    [self stopHeartBeat];
-    self.currentCallId = 0;
-    self.isVideoConfInvited = NO;
-    self.currentConfBaseInfo = nil;
-    self.lastConfSharedData = nil;
-    self.isJoinDataConfSuccess = NO;
-    self.isBeginAnnotation = NO;
-    self.imageScale = 1.0;
-    self.currentJoinConfIndInfo = nil;
-    self.currentBigViewAttendee = nil;
-    self.hasConfResumedFirstRewatch = NO;
-    [self confStopReplay];
-    
     dispatch_async(dispatch_get_main_queue(), ^{
+        DDLogInfo(@"restoreConfParamsInitialValue");
+        [_confTokenDic removeAllObjects];
+        [self.haveJoinAttendeeArray removeAllObjects];
+        [self.watchAttendeesArray removeAllObjects];
+        self.isJoinDataConf = NO;
+        _dataConfIdWaitConfInfo = nil;
+        _confCtrlUrl = nil;
+        self.selfJoinNumber = nil;
+        _hasReportMediaxSpeak = NO;
+        [self stopHeartBeat];
+        self.currentCallId = 0;
+        self.isVideoConfInvited = NO;
+        self.currentConfBaseInfo = nil;
+        self.lastConfSharedData = nil;
+        self.isJoinDataConfSuccess = NO;
+        self.isBeginAnnotation = NO;
+        self.imageScale = 1.0;
+        self.currentJoinConfIndInfo = nil;
+        self.currentBigViewAttendee = nil;
+        self.hasConfResumedFirstRewatch = NO;
+        [self confStopReplay];
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
         [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
     });
-    
-    
 }
 
 /**
@@ -2188,6 +2201,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     anonymousParam.server_port = serverPort;
     
     TSDK_RESULT joinConfResult = tsdk_join_conference_by_anonymous(&anonymousParam);
+    
+    _isAnonymousConf = YES;
     
     return joinConfResult == TSDK_SUCCESS;
 }
@@ -2455,7 +2470,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     memset_s(videoInfo, sizeof(TSDK_S_VIDEO_WND_INFO) * 2, 0, sizeof(TSDK_S_VIDEO_WND_INFO) * 2);
     videoInfo[0].video_wnd_type = TSDK_E_VIDEO_WND_LOCAL;
     videoInfo[0].render = (TSDK_UPTR)localVideoView;
-    videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_FULL;
+    videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_CUT;
     
     
     videoInfo[1].video_wnd_type = TSDK_E_VIDEO_WND_REMOTE;
@@ -2479,7 +2494,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         memset_s(videoInfo, sizeof(TSDK_S_VIDEO_WND_INFO) * 1, 0, sizeof(TSDK_S_VIDEO_WND_INFO) * 1);
         videoInfo[0].video_wnd_type = TSDK_E_VIDEO_WND_LOCAL;
         videoInfo[0].render = (TSDK_UPTR)localVideoView;
-        videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_FULL;
+        videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_CUT;
         
         ret = tsdk_set_video_window((TSDK_UINT32)self.currentCallId, 1, videoInfo);
         DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);

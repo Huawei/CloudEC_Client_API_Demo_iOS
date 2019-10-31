@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Utils.h"
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
@@ -19,6 +20,10 @@
 +(void)goConference;
 
 +(void)appConfShareRequestAction;
+
++ (void)startAutoLogin;
+
++ (void)gotoRecentChatSessionView;
 
 @end
 

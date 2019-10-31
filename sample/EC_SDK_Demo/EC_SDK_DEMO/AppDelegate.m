@@ -73,7 +73,10 @@
     
     [[LocalNotificationCenter sharedInstance] start];
     
-    [self gotoNormalFlow];
+    //    [self gotoNormalFlow];
+    
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    }];
     
     
     return YES;
@@ -84,13 +87,13 @@
         // check is auto login
         BOOL bNeedAutoLogin = [self shouldStartAutoLogin];
         if (bNeedAutoLogin) {
-            [self startAutoLogin];
+            [AppDelegate startAutoLogin];
             [AppDelegate gotoRecentChatSessionView];
         }
 }
 
 
-- (void)startAutoLogin
++ (void)startAutoLogin
 {
     
     NSArray *array = [CommonUtils getUserDefaultValueWithKey:SERVER_CONFIG];

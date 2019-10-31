@@ -271,7 +271,10 @@ static LoginCenter *g_loginCenter = nil;
                 }
                 sipStatus = kCallSipStatusUnRegistered;
                 TSDK_UINT32 reasonCode = notify.param2;
-                //            [ManagerService loginService].serviceStatus = ECServiceKickOff;
+                [ManagerService loginService].serviceStatus = ECServiceLogout;
+                [[ManagerService callService] hangupAllCall];
+                [[ManagerService confService] confCtrlLeaveConference];
+                [[ManagerService confService] restoreConfParamsInitialValue];
                 DDLogInfo(@"sip login failed, reason code: %d", reasonCode);
                 [self isSipRegistered:sipStatus];
             }

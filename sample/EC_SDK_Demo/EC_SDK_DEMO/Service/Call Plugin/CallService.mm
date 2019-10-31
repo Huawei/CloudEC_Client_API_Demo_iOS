@@ -950,7 +950,7 @@
     memset_s(videoInfo, sizeof(TSDK_S_VIDEO_WND_INFO) * 2, 0, sizeof(TSDK_S_VIDEO_WND_INFO) * 2);
     videoInfo[0].video_wnd_type = TSDK_E_VIDEO_WND_LOCAL;
     videoInfo[0].render = (TSDK_UPTR)localVideoView;
-    videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_FULL;
+    videoInfo[0].display_mode = TSDK_E_VIDEO_WND_DISPLAY_CUT;
     videoInfo[1].video_wnd_type = TSDK_E_VIDEO_WND_REMOTE;
     videoInfo[1].render = (TSDK_UPTR)remoteVideoView;
     videoInfo[1].display_mode = TSDK_E_VIDEO_WND_DISPLAY_CUT;
@@ -1168,9 +1168,13 @@
  *                               呼叫id
  *@return YES is success, NO is fail
  */
--(BOOL)rotationVideoDisplay:(NSUInteger)orientation callId:(unsigned int)callId
+-(BOOL)rotationVideoDisplay:(NSUInteger)orientation callId:(unsigned int)callId isLocalWnd:(BOOL)isLocalWnd
 {
-    TSDK_RESULT ret_rotation = tsdk_set_display_rotation((TSDK_UINT32)callId, TSDK_E_VIDEO_WND_LOCAL, (TSDK_UINT32)orientation);
+    TSDK_E_VIDEO_WND_TYPE wndType = TSDK_E_VIDEO_WND_LOCAL;
+    if (!isLocalWnd) {
+        wndType = TSDK_E_VIDEO_WND_REMOTE;
+    }
+    TSDK_RESULT ret_rotation = tsdk_set_display_rotation((TSDK_UINT32)callId, wndType, (TSDK_UINT32)orientation);
     DDLogInfo(@"tsdk_set_display_rotation : %d", ret_rotation);
     return (TSDK_SUCCESS == ret_rotation);
     return NO;
@@ -1226,7 +1230,7 @@
     }
     
     TSDK_UINT32 mirrorType = 0;
-    TSDK_UINT32 displaytype = 0;
+    TSDK_UINT32 displaytype = 1;
     
     //本端视频，displaytype为1，镜像模式根据前后摄像头进行设置
     if (TsdkVideoWindowlacal == renderType)
@@ -1248,6 +1252,9 @@
         }
         
         displaytype = 2;
+        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+            displaytype = 1;
+        }
     }
     //远端视频，镜像模式为0(不做镜像)，显示模式为0（拉伸模式）
     else if (TsdkVideoWindowRemote == renderType)

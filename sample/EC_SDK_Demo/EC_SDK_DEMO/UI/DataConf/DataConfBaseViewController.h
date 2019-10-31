@@ -36,6 +36,8 @@
 @property (nonatomic, strong) UIView *signalBackView;
 @property (nonatomic, strong) SignalDataScrollView *signalDataScrollView;
 
+@property (nonatomic, assign) UIDeviceOrientation confLastOrientation;
+
 - (CGFloat)selfViewWidth;
 - (CGFloat)selfViewHeight;
 - (BOOL)isSelfMaster;
