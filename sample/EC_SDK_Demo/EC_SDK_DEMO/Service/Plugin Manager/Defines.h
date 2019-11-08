@@ -101,6 +101,11 @@ extern NSString* const CALL_STATISTIC_INFO_NOTIFY;
 
 extern NSString* const LOGIN_AND_CONF_RESUMING_NOTIFY;
 
+extern NSString* const RECEIVE_SCREEN_SHARE_DATA_NOTIFY;
+
+extern NSString* const RECEIVE_SCREEN_SHARE_DATA_KEY;
+
+
 /**
  * [en]This enumeration is used to describe the call type.
  * [cn]∫ÙΩ–¿‡–Õ

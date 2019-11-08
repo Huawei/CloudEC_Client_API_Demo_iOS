@@ -172,6 +172,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         _isAnonymousConf = NO;
         
         [self initScreenShareManager];
+         
+         [self addObserver:self forKeyPath:@"lastConfSharedData" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -1355,8 +1357,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 isAttendeeInConf = YES;
                 *stop = YES;
                 if (*stop == YES) {
-                    if (addAttendee.state == ATTENDEE_STATUS_LEAVED || !addAttendee.isVideo) {
+                    if (addAttendee.state == ATTENDEE_STATUS_LEAVED || !addAttendee.isVideo || addAttendee.isSelf) {
                         [self.watchAttendeesArray removeObject:attendeeInfo];
+                        DDLogInfo(@"watchAttendeeArray remove attendee,number:%@,isVideo:%d,isSelf:%d,state:%d",addAttendee.number,addAttendee.isVideo,addAttendee.isSelf,addAttendee.state);
                     }
                 }
             }
@@ -1364,6 +1367,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         if(isAttendeeInConf == NO){
             if (addAttendee.state == ATTENDEE_STATUS_IN_CONF && addAttendee.isVideo && !addAttendee.isSelf) {
                 [self.watchAttendeesArray addObject:addAttendee];
+                DDLogInfo(@"watchAttendeeArray add attendee,number:%@,isVideo:%d,isSelf:%d",addAttendee.number,addAttendee.isVideo,addAttendee.isSelf);
             }
         }
         
@@ -2571,6 +2575,20 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     
     return videoStreamInfo;
     
+}
+
+-(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+    //    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    __weak typeof(self) weakSelf = self;
+    if ([keyPath isEqualToString:@"lastConfSharedData"]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:RECEIVE_SCREEN_SHARE_DATA_NOTIFY
+                                                                object:weakSelf.lastConfSharedData
+                                                              userInfo:nil];
+        });
+        
+    }
 }
 
 @end

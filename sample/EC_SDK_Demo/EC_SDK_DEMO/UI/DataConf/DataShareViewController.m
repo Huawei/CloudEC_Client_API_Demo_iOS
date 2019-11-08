@@ -60,59 +60,15 @@
 
 #define UIColorFromHexR(s,r) [UIColor colorWithRed:(((s & 0xFF0000) >> 16))/255.0 green:(((s & 0xFF00) >> 8))/255.0 blue:((s & 0xFF))/255.0  alpha:r]
 
-@interface DataShareZoomView : UIScrollView<UIScrollViewDelegate>
-@property (nonatomic, strong)UIView *zoomView;
-@property (nonatomic, strong)UIView *defaultView;
-@end
-
-@implementation DataShareZoomView
-
-- (instancetype)initWithFrame:(CGRect)frame andZoomView:(UIView *)zoomView anDefaultView:(UIView *)defaultView
-{
-    if (self = [super initWithFrame:frame])
-    {
-        self.minimumZoomScale = MINSCALE;
-        self.maximumZoomScale = MAXSCALE;
-        self.bouncesZoom = YES;
-        self.zoomView = zoomView;
-        self.defaultView = defaultView;
-        [self addSubview:defaultView];
-        [self addSubview:zoomView];
-        self.delegate = self;
-        self.showsHorizontalScrollIndicator = NO;
-        self.showsVerticalScrollIndicator = NO;
-    }
-    return self;
-}
-
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
-{
-    return _zoomView;
-}
-
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView
-{
-    if (scrollView.zoomScale <= 1.0)
-    {
-        //辅流缩小小于最小缩放比例，辅流视图始终位于屏幕中央
-        CGFloat centerX = self.bounds.size.width/2.0;
-        CGFloat centerY = self.bounds.size.height/2.0;
-        [self.zoomView setCenter:CGPointMake(centerX, centerY)];
-    }
-    self.defaultView.center = self.zoomView.center;
-}
-
-
-@end
-
 @interface DataShareViewController ()<UIScrollViewDelegate, ConferenceServiceDelegate, ECMarkupToolboxViewDelegate, ECMarkupToolboxPopoverViewDelegate, ECMarkupViewDelegate>
 
-@property (nonatomic,strong) UIScrollView *contentView;
 @property (nonatomic,strong) UIImageView * shareImageView;
 @property (nonatomic,strong) UIButton* videoShareBtn;
 @property (nonatomic,strong) UIButton* chatBtn;
 @property (nonatomic,strong) UIImageView *videoShareImageView;
-@property (nonatomic,strong) DataShareZoomView *zoomViewImageShare;
+@property (nonatomic,strong) UIScrollView *zoomViewImageShare;
+@property (nonatomic, strong)UIView *defaultView;
+
 @property (nonatomic, assign) BOOL shouldHasAnno;
 @property (nonatomic, strong) UIButton *drawButton;
 
@@ -157,8 +113,10 @@
         self.dataWidth = 0;
         self.dataSVCWidth = 0;
         
-        
-        [((id)[ManagerService confService]) addObserver:self forKeyPath:@"lastConfSharedData" options:NSKeyValueObservingOptionNew context:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(handleReceiveScreenShareAction:)
+                                                     name:RECEIVE_SCREEN_SHARE_DATA_NOTIFY
+                                                   object:nil];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(handleShouldHasAnnotation:)
@@ -202,30 +160,18 @@
     }
 }
 
-- (void)presentToActiveView
-{
-    BOOL hasVideo = NO;
-    BOOL hasShareData = NO;
-    
-    if (hasShareData) {
-        self.contentView.contentSize = CGSizeMake([self selfViewWidth], 0.0);
-    }
-    else{
-        if (hasVideo) {
-            [self gotoVideoShareViewControllerBtnClicked:nil];
-        }else{
-            [self.navigationController popViewControllerAnimated:NO];
-        }
-    }
-}
 
 -(void)showShareView:(UIImage *)shareImage {
-    self.zoomViewImageShare.defaultView.hidden = YES;
+    self.defaultView.hidden = YES;
     self.shareImageView.image = shareImage;
+    
 }
 
 - (void)removeShareView {
-    self.zoomViewImageShare.defaultView.hidden = NO;
+    if ([ManagerService confService].isStartScreenSharing) {
+        return;
+    }
+    self.defaultView.hidden = NO;
     self.shareImageView.image = nil;
     
     if(_toolboxView) {
@@ -233,11 +179,12 @@
         self.popoverView = nil;
         [self.toolboxView removeFromSuperview];
     }
-    self.zoomViewImageShare.pinchGestureRecognizer.enabled = YES;
-    self.zoomViewImageShare.panGestureRecognizer.enabled = YES;
+    self.zoomViewImageShare.pinchGestureRecognizer.enabled = NO;
+    self.zoomViewImageShare.panGestureRecognizer.enabled = NO;
     self.baseTap.enabled = YES;
     self.barView.hidden = NO;
     self.bottomView.hidden = NO;
+    [self.zoomViewImageShare setScrollEnabled:NO];
     
 }
 
@@ -256,24 +203,12 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.automaticallyAdjustsScrollViewInsets = NO;
+    self.defaultView = [self configDefaultTipViewWithImageName:@"shared_data_default" andTitle:@"Data sharing has not started."];
+    [self.view addSubview:self.defaultView];
     
-    self.contentView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    _contentView.backgroundColor = [UIColor clearColor];
-    _contentView.scrollEnabled = YES;
-    _contentView.showsHorizontalScrollIndicator = NO;
-    _contentView.showsVerticalScrollIndicator = NO;
-    _contentView.userInteractionEnabled = YES;
-    _contentView.multipleTouchEnabled = NO;
-    _contentView.delegate = self;
-    _contentView.backgroundColor = [UIColor whiteColor];
+    [self.view addSubview:self.zoomViewImageShare];
     
-    _contentView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _contentView.pagingEnabled = YES;
-    [self.view addSubview:_contentView];
-    
-    [_contentView addSubview:self.zoomViewImageShare];
-    
-    UIView* contentView = self.contentView;
+    UIView* contentView = self.zoomViewImageShare;
     UIView* bottomView = self.bottomView;
     id<UILayoutSupport> top    = self.topLayoutGuide;
     id<UILayoutSupport> bottom = self.bottomLayoutGuide;
@@ -369,12 +304,17 @@
         hight = SCREEN_HIGHT;
         self.signalBackView.frame = CGRectMake(0, 0, 365, 365);
         self.signalDataScrollView.frame = CGRectMake(0, 0, 365, 365);
+        self.zoomViewImageShare.frame = CGRectMake(0.0, 0.0, width, hight);
+        _zoomViewImageShare.contentSize = CGSizeMake(width, hight);
  
     }
-    else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeLeft)
+    else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeRight)
     {
         self.signalBackView.frame = CGRectMake(0, 0, 365+200, 365);
         self.signalDataScrollView.frame = CGRectMake(0, 0, 365+200, 365);
+        self.zoomViewImageShare.frame = CGRectMake(0.0, 0.0, width, hight);
+        _zoomViewImageShare.contentSize = CGSizeMake(width, hight);
+        
     }
     
     CGFloat x = width - GO_TO_VIDEO_SHARE_BTN_H_DIS_TO_RIGHT - GO_TO_VIDEO_SHARE_BTN_WIDTH;
@@ -388,12 +328,14 @@
     
     self.signalBackView.center = CGPointMake(width/2, hight/2);
     self.signalBtn.frame = CGRectMake(width - 50, 60, 30, 30);
-    
+    self.defaultView.center = self.view.center;
     _drawButton.frame = CGRectMake(10, hight / 2, 50, 50);
     _toolboxView.frame = [self toolboxViewFrame];
     
-    self.zoomViewImageShare.frame = CGRectMake(0.0, 0.0, width, hight);
-    self.shareImageView.frame = CGRectMake(0.0, 0.0, width, hight);
+    
+    _zoomViewImageShare.zoomScale = 1.0;
+    NSData *imgData = [ManagerService confService].lastConfSharedData;
+    [self calculateDataViewFrameWith:imgData];
     
     self.voiceBtn.frame = CGRectMake(width/2-50, 0, 100, 71);
     self.endBtn.frame = CGRectMake(20, 0, 100, 71);
@@ -440,17 +382,28 @@
     return defaultTipView;
 }
 
-- (DataShareZoomView *)zoomViewImageShare {
+- (UIScrollView *)zoomViewImageShare {
     if (nil == _zoomViewImageShare) {
         _shareImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0.0, 0.0, [self selfViewWidth], [self selfViewHeight])];
         _shareImageView.contentMode = UIViewContentModeScaleAspectFit;
         _shareImageView.userInteractionEnabled = YES;
         _shareImageView.backgroundColor = [UIColor clearColor];
         
-        UIView *defaultView = [self configDefaultTipViewWithImageName:@"shared_data_default" andTitle:@"Data sharing has not started."];
-        _zoomViewImageShare = [[DataShareZoomView alloc]initWithFrame:CGRectMake(0.0, 0.0, [self selfViewWidth], [self selfViewHeight]) andZoomView:self.shareImageView anDefaultView:defaultView];
         
+        
+        _zoomViewImageShare = [[UIScrollView alloc] initWithFrame:CGRectMake(0.0, 0.0, [self selfViewWidth], [self selfViewHeight])];
+        _zoomViewImageShare.minimumZoomScale = 1;
+        _zoomViewImageShare.maximumZoomScale = 4;
+        _zoomViewImageShare.bouncesZoom = YES;
+
+        
+        
+        [_zoomViewImageShare addSubview:_shareImageView];
         [_zoomViewImageShare addSubview:self.markupView];
+        _zoomViewImageShare.delegate = self;
+        _zoomViewImageShare.showsHorizontalScrollIndicator = NO;
+        _zoomViewImageShare.showsVerticalScrollIndicator = NO;
+        _zoomViewImageShare.contentSize = CGSizeMake(FINAL_HEIGHT, FINAL_WIDTH);
     }
     return _zoomViewImageShare;
 }
@@ -515,36 +468,15 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [((id)[ManagerService confService]) removeObserver:self forKeyPath:@"lastConfSharedData"];
-}
-
--(void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
-{
-//    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    __weak typeof(self) weakSelf = self;
-    if (object == [ManagerService confService]) {
-        if ([keyPath isEqualToString:@"lastConfSharedData"]) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSData *imgData = [ManagerService confService].lastConfSharedData;
-                [weakSelf updateShareImageData:imgData];
-                
-                [weakSelf calculateDataViewFrameWith:imgData];
-            });
-            
-        }
-    }
 }
 
 - (void)updateShareImageData:(NSData *)imgData
 {
     if (imgData == nil) {
-        self.zoomViewImageShare.defaultView.hidden = NO;
-        self.shareImageView.image = nil;
+        [self removeShareView];
     }else{
         UIImage *image = [[UIImage alloc] initWithData:imgData];
-        self.zoomViewImageShare.defaultView.hidden = YES;
-        self.shareImageView.image = image;
+        [self showShareView:image];
     }
 }
 - (UIImage *)imageCustomNamed:(NSString *)name {
@@ -570,6 +502,15 @@
 - (void)updateDrawBtnStatus
 {
     BOOL isBeginAnnotation = [ManagerService confService].isBeginAnnotation;
+    if ([ManagerService confService].isStartScreenSharing) {
+        self.zoomViewImageShare.pinchGestureRecognizer.enabled = YES;
+        self.zoomViewImageShare.panGestureRecognizer.enabled = YES;
+        [self.zoomViewImageShare setScrollEnabled:YES];
+    }else{
+        self.zoomViewImageShare.pinchGestureRecognizer.enabled = NO;
+        self.zoomViewImageShare.panGestureRecognizer.enabled = NO;
+        [self.zoomViewImageShare setScrollEnabled:NO];
+    }
     
     if (self.shouldHasAnno != isBeginAnnotation) {
         self.shouldHasAnno = isBeginAnnotation;
@@ -590,20 +531,10 @@
                 DDLogInfo(@"jinliang,drawBtn,frame:%@",self.drawButton);
                 
             }else{
-//                [_drawButton removeFromSuperview];
-//                if(_toolboxView) {
-//                    [_popoverView removeFromSuperview];
-//                    _popoverView = nil;
-//                    [_toolboxView removeFromSuperview];
-//
-//                }
                 _popoverView.hidden = YES;
                 _toolboxView.hidden = YES;
                 _drawButton.hidden = YES;
-                
-                self.zoomViewImageShare.pinchGestureRecognizer.enabled = YES;
-                self.zoomViewImageShare.panGestureRecognizer.enabled = YES;
-                
+
                 self.baseTap.enabled = YES;
                 self.barView.hidden = NO;
                 self.bottomView.hidden = NO;
@@ -704,6 +635,7 @@
     //disable gesture recognizers and reset the zoom scale when entering the markup mode
     self.zoomViewImageShare.pinchGestureRecognizer.enabled = NO;
     self.zoomViewImageShare.panGestureRecognizer.enabled = NO;
+    [self.zoomViewImageShare setScrollEnabled:NO];
     self.isMarkup =  YES;
     
     self.baseTap.enabled = NO;
@@ -714,9 +646,6 @@
 }
 
 - (void)didToggleMarkupMode:(BOOL)inMarkupMode {
-    self.zoomViewImageShare.panGestureRecognizer.enabled = !inMarkupMode;
-    [self.zoomViewImageShare setScrollEnabled:!inMarkupMode];
-    //    [self.pageFlowView setScrollEnable:!inMarkupMode];
     //layoutSubviews: called on device orientation change. It sets scroll to YES, we do not want it if it's in markupmode before the rotation
     self.inMarkupMode = inMarkupMode; //used to set scroll correspondingly in layoutSubviews:
     
@@ -829,6 +758,7 @@
     //enable gestures when stopping annotating
     self.zoomViewImageShare.pinchGestureRecognizer.enabled = YES;
     self.zoomViewImageShare.panGestureRecognizer.enabled = YES;
+    [self.zoomViewImageShare setScrollEnabled:YES];
     self.isMarkup = NO;
     
     self.baseTap.enabled = YES;
@@ -1119,11 +1049,11 @@
             if (widthScale > heightScale) {
                 float finalWidth = FINALSVC_HEIGHT;
                 float finalHeight = FINALSVC_HEIGHT * pHeight / pWidth;
-                self.markupView.frame = CGRectMake(0, (FINALSVC_WIDTH - finalHeight) / 2, finalWidth, finalHeight);
+                self.shareImageView.frame = CGRectMake(0, (FINALSVC_WIDTH - finalHeight) / 2, finalWidth, finalHeight);
             } else {
                 float finalWidth = pWidth / pHeight * FINALSVC_WIDTH;
                 float finalHeight = FINALSVC_WIDTH;
-                self.markupView.frame = CGRectMake((FINALSVC_HEIGHT - finalWidth) / 2, 0, finalWidth, finalHeight);
+                self.shareImageView.frame = CGRectMake((FINALSVC_HEIGHT - finalWidth) / 2, 0, finalWidth, finalHeight);
             }
         }
         DDLogInfo(@"manageDataViewFrameWith pwidth:%f,pHeight:%f,datawidth:%f",pWidth,pHeight,self.dataWidth);
@@ -1139,35 +1069,44 @@
             if (widthScale > heightScale) {
                 float finalWidth = FINAL_HEIGHT;
                 float finalHeight = FINAL_HEIGHT * pHeight / pWidth;
-                self.markupView.frame = CGRectMake(0, (FINAL_WIDTH - finalHeight) / 2, finalWidth, finalHeight);
+                self.shareImageView.frame = CGRectMake(0, (FINAL_WIDTH - finalHeight) / 2, finalWidth, finalHeight);
             } else {
                 float finalWidth = pWidth / pHeight * FINAL_WIDTH;
                 float finalHeight = FINAL_WIDTH;
-                self.markupView.frame = CGRectMake((FINAL_HEIGHT - finalWidth) / 2, 0, finalWidth, finalHeight);
+                self.shareImageView.frame = CGRectMake((FINAL_HEIGHT - finalWidth) / 2, 0, finalWidth, finalHeight);
             }
         }
         DDLogInfo(@"manageDataViewFrameWith start pwidth:%f,pHeight:%f,datawidth:%f",pWidth,pHeight,self.dataWidth);
     }
+    self.markupView.frame = self.shareImageView.frame;
+    CGFloat scale = pWidth / (self.shareImageView.frame.size.width * [UIScreen mainScreen].scale);
+    [ManagerService confService].imageScale = scale;
+}
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView
+{
+    self.shareImageView.userInteractionEnabled = YES;
+    return _shareImageView;
+}
+
+- (void)scrollViewDidZoom:(UIScrollView *)scrollView
+{
+    CGFloat offsetX = (scrollView.bounds.size.width > scrollView.contentSize.width)?
+    (scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5 : 0.0;
+    CGFloat offsetY = (scrollView.bounds.size.height > scrollView.contentSize.height)?
+    (scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5 : 0.0;
+    self.shareImageView.center = CGPointMake(scrollView.contentSize.width * 0.5 + offsetX,
+                                            scrollView.contentSize.height * 0.5 + offsetY);
+    self.markupView.center = self.shareImageView.center;
     
-    
-    CGFloat scale = pWidth / (self.markupView.frame.size.width * [UIScreen mainScreen].scale);
-//    if (scale != self.imageScale) {
-        [ManagerService confService].imageScale = scale;
-//        if ([self.delegate respondsToSelector:@selector(dataMeetingViewUpdateScale:)]) {
-//            [self.delegate dataMeetingViewUpdateScale:scale];
-//        }
-//    }
-//
-//    if ([self.delegate respondsToSelector:@selector(dataMeetingViewUpdateImageViewSize:)]) {
-//        [self.delegate dataMeetingViewUpdateImageViewSize:self.dataImageView.frame.size];
-//    }
-    
-//    NSValue *imageViewFrameObject = [NSValue valueWithCGRect:self.dataImageView.frame];
-//    [[NSNotificationCenter defaultCenter] postNotificationName:TPDataMeetingViewImageViewFrameChangedNotification
-//                                                        object:self
-//                                                      userInfo:@{ @"imageViewFrame" : imageViewFrameObject }];
-    
-//    self.markupView.frame = self.dataImageView.frame;
+}
+
+- (void)handleReceiveScreenShareAction:(NSNotification *)notification {
+    NSData *imgData = notification.object;
+
+    [self updateShareImageData:imgData];
+
+    [self calculateDataViewFrameWith:imgData];
 }
 
 @end

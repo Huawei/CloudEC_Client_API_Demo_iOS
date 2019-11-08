@@ -49,10 +49,13 @@
 //        DDLogWarn(@"generate PKPushRegistry object failed, register voip push failed!");
 //    }
 //
-//    //注册apns push
-//    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge|UIUserNotificationTypeAlert|UIUserNotificationTypeSound) categories:nil];
-//    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-//    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    //注册apns push
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge|UIUserNotificationTypeAlert|UIUserNotificationTypeSound) categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    
+    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
+    }];
     
     
     [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:44.0/255 green:110.0/255 blue:232.0/255 alpha:1]];
@@ -74,10 +77,6 @@
     [[LocalNotificationCenter sharedInstance] start];
     
     //    [self gotoNormalFlow];
-    
-    [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-    }];
-    
     
     return YES;
 }
