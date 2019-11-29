@@ -1754,8 +1754,8 @@
 - (void)startSharingScreen {
     DDLogInfo(@"MainViewController startSharingScreen ");
     // 开始replaykit
-    
-    [[ManagerService confService]inviteDataShareWithNumber:[ManagerService confService].selfJoinNumber];
+    [ManagerService confService].isFirstBeginDataShare = YES;
+    [[ManagerService confService] inviteDataShareWithNumber:[ManagerService confService].selfJoinNumber];
 }
 
 - (void)stopSharingScreen {
@@ -1775,6 +1775,7 @@
     if (startIndex + 3 > attendeeArray.count) {
         startIndex = attendeeArray.count - 3;
     }
+    BOOL watchResult = 1;
     
     if (attendeeArray.count == 1) {
         _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
@@ -1788,7 +1789,7 @@
         [labelArray addObject:labelArray1[0]];
         [labelArray addObject:labelArray1[1]];
         
-        [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
+        watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
     }
     if (attendeeArray.count == 2) {
         _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
@@ -1807,7 +1808,7 @@
         [labelArray addObject:labelArray1[1]];
         [labelArray addObject:labelArray1[2]];
         
-        [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
+        watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
         
     }
     if (attendeeArray.count >= 3) {
@@ -1831,10 +1832,21 @@
         [labelArray addObject:labelArray1[2]];
         [labelArray addObject:labelArray1[3]];
         
-        [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
+        watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
 
     }
-    
+    if (!watchResult) {
+        _firstSVCView.currentAttendee = nil;
+        _firstSVCView.currentlabel = 0;
+        
+        _secondSVCView.currentAttendee = nil;
+        _secondSVCView.currentlabel = 0;
+        
+        _thirdSVCView.currentAttendee = nil;
+        _thirdSVCView.currentlabel = 0;
+        
+        DDLogError(@"watchAttendee faild,SVCView remove data!");
+    }
 }
 
 @end

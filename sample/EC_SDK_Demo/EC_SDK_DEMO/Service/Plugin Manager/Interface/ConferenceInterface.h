@@ -103,6 +103,8 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
 
 @property (nonatomic, assign) BOOL hasConfResumedFirstRewatch;
 
+@property (nonatomic, assign) BOOL isFirstBeginDataShare;
+
 /**
  *Indicates conf type enum
  *会议类型枚举
@@ -311,7 +313,7 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  */
 -(void)watchAttendeeNumber:(NSString *)attendeeNumber;
 
--(void)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray;
+-(BOOL)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray;
 
 /**
  * This method is used to set presenter (chairman)

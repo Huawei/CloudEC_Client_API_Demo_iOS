@@ -110,6 +110,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 @synthesize hasConfResumedFirstRewatch;
 
+@synthesize isFirstBeginDataShare;
+
 /**
  *This method is used to get sip account from call service
  *从呼叫业务获取sip账号
@@ -167,6 +169,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         self.imageScale = 1.0;
         self.mIsScreenSharing = NO;
         self.hasConfResumedFirstRewatch = NO;
+        self.isFirstBeginDataShare = NO;
         self.currentJoinConfIndInfo = [[JoinConfIndInfo alloc] init];
         self.currentBigViewAttendee = [[SVCConfWatchAttendeeInfo alloc] init];
         _isAnonymousConf = NO;
@@ -193,8 +196,14 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         if (state == 1) {
             if (self.isJoinDataConfSuccess) {
                 self.mIsScreenSharing = YES;
-                [self startDataConfAsPre];
-                [self startDataShare];
+                if (!self.isFirstBeginDataShare) {
+                    [self inviteDataShareWithNumber:self.selfJoinNumber];
+                }else{
+                    self.isFirstBeginDataShare = NO;
+                    [self startDataConfAsPre];
+                    [self startDataShare];
+                }
+                
                 
             } else {
                 NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"the meeting is unavailable", nil)}];
@@ -839,9 +848,16 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             if (@available(iOS 12, *)) {
                 if (isSelf) {
                     if (actionType == TSDK_E_CONF_AS_ACTION_ADD) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [[NSNotificationCenter defaultCenter] postNotificationName:APP_START_SYSTEM_SHARE_VIEW object:nil];
-                        });
+                    
+                        if(!self.mIsScreenSharing){
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [[NSNotificationCenter defaultCenter] postNotificationName:APP_START_SYSTEM_SHARE_VIEW object:nil];
+                            });
+                        }else{
+                            self.mIsScreenSharing = YES;
+                            [self startDataConfAsPre];
+                            [self startDataShare];
+                        }
                     }else if (actionType == TSDK_E_CONF_AS_ACTION_DELETE){
                         self.mIsScreenSharing = NO;
                         [self confStopReplay];
@@ -2008,7 +2024,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     DDLogInfo(@"ret_watch_attendee: %d", ret_watch_attendee);
 }
 
--(void)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray
+-(BOOL)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray
 {
     if (self.hasConfResumedFirstRewatch == YES) {
         self.hasConfResumedFirstRewatch = NO;
@@ -2042,7 +2058,11 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     attendeeInfo->watch_attendee_list = attendeeList;
     
     TSDK_RESULT ret_watch_attendee = tsdk_watch_attendee(_confHandle, attendeeInfo);
-//    DDLogInfo(@"ret_watch_attendee: %d", ret_watch_attendee);
+    if (ret_watch_attendee != 0) {
+        DDLogInfo(@"tsdk_watch_attendee,faild");
+        [self.watchAttendeesArray removeAllObjects];
+    }
+    return ret_watch_attendee == TSDK_SUCCESS;
 }
 
 /**
@@ -2147,6 +2167,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         self.currentJoinConfIndInfo = nil;
         self.currentBigViewAttendee = nil;
         self.hasConfResumedFirstRewatch = NO;
+        self.isFirstBeginDataShare = NO;
         [self confStopReplay];
         [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
         [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
@@ -2484,8 +2505,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     ret = tsdk_set_video_window((TSDK_UINT32)self.currentCallId, 2, videoInfo);
     DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
     
-    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:self.currentCallId];
-    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:self.currentCallId];
     return (TSDK_SUCCESS == ret);
 }
 
@@ -2503,10 +2522,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         ret = tsdk_set_video_window((TSDK_UINT32)self.currentCallId, 1, videoInfo);
         DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
     }
-        
-    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:self.currentCallId];
-    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:self.currentCallId];
-    
     return (TSDK_SUCCESS == ret);
 }
 
@@ -2546,10 +2561,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     
     TSDK_RESULT ret;
     ret = tsdk_set_svc_video_window((TSDK_UINT32)self.currentCallId, 4, svcWindow);
-    
-    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:self.currentCallId];
-    [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:self.currentCallId];
-    
     return (TSDK_SUCCESS == ret);
 }
 

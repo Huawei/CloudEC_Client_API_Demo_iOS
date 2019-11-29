@@ -305,15 +305,13 @@
         self.signalBackView.frame = CGRectMake(0, 0, 365, 365);
         self.signalDataScrollView.frame = CGRectMake(0, 0, 365, 365);
         self.zoomViewImageShare.frame = CGRectMake(0.0, 0.0, width, hight);
-        _zoomViewImageShare.contentSize = CGSizeMake(width, hight);
- 
+         
     }
     else if (interface2 == UIInterfaceOrientationLandscapeLeft || interface2 == UIInterfaceOrientationLandscapeRight)
     {
         self.signalBackView.frame = CGRectMake(0, 0, 365+200, 365);
         self.signalDataScrollView.frame = CGRectMake(0, 0, 365+200, 365);
         self.zoomViewImageShare.frame = CGRectMake(0.0, 0.0, width, hight);
-        _zoomViewImageShare.contentSize = CGSizeMake(width, hight);
         
     }
     
@@ -396,14 +394,15 @@
         _zoomViewImageShare.maximumZoomScale = 4;
         _zoomViewImageShare.bouncesZoom = YES;
 
-        
-        
+        _zoomViewImageShare.pinchGestureRecognizer.enabled = NO;
+        _zoomViewImageShare.panGestureRecognizer.enabled = NO;
+        [_zoomViewImageShare setScrollEnabled:NO];
         [_zoomViewImageShare addSubview:_shareImageView];
         [_zoomViewImageShare addSubview:self.markupView];
         _zoomViewImageShare.delegate = self;
         _zoomViewImageShare.showsHorizontalScrollIndicator = NO;
         _zoomViewImageShare.showsVerticalScrollIndicator = NO;
-        _zoomViewImageShare.contentSize = CGSizeMake(FINAL_HEIGHT, FINAL_WIDTH);
+        
     }
     return _zoomViewImageShare;
 }
@@ -1081,6 +1080,8 @@
     self.markupView.frame = self.shareImageView.frame;
     CGFloat scale = pWidth / (self.shareImageView.frame.size.width * [UIScreen mainScreen].scale);
     [ManagerService confService].imageScale = scale;
+    
+    _zoomViewImageShare.contentSize = CGSizeMake(_shareImageView.frame.size.width, _shareImageView.frame.size.height);
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView

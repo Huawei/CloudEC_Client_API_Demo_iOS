@@ -264,9 +264,6 @@ static CallWindowController *g_windowCtrl = nil;
             }else{
                 
             }
-            
-//            [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[self getSelfCurrentConfId]];
-//            [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[self getSelfCurrentConfId]];
         }
     }
 }
@@ -346,17 +343,8 @@ static CallWindowController *g_windowCtrl = nil;
         
         _isFirstSetWindow = YES;
         
-        BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
-        BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
-        if (iSVideoConf) {
-            [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
-            if (isSvcConf) {
-                [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
-            }else{
-                [[ManagerService confService] setVideoWindowWithLocal:_locationView andRemote:_remoteView];
-            }
-            
-        }
+        [self updateVideoWindows];
+        
         if (![ManagerService confService].hasConfResumedFirstRewatch) {
             [AppDelegate goConference];
         }
@@ -367,6 +355,21 @@ static CallWindowController *g_windowCtrl = nil;
         }
         
     });
+}
+
+- (void)updateVideoWindows
+{
+    BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
+    BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
+    if (iSVideoConf) {
+        [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
+        if (isSvcConf) {
+            [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+        }else{
+            [[ManagerService confService] setVideoWindowWithLocal:_locationView andRemote:_remoteView];
+        }
+        
+    }
 }
 
 -(void)networkStatusChangeNotify:(NSNotification *)notify
@@ -411,9 +414,7 @@ static CallWindowController *g_windowCtrl = nil;
     }else{
         _needSetLocalIp = YES;
     }
-    
-    
-    
+        
 }
 
 - (void) appInactiveNotify:(NSNotification*) notify
@@ -502,10 +503,15 @@ static CallWindowController *g_windowCtrl = nil;
         [[ManagerService callService] rotationCameraCapture:newCameraRotation callId:[self getSelfCurrentConfId]];
         
         [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:YES];
-        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[self getSelfCurrentConfId]];
         
-//        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:NO];
-        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[self getSelfCurrentConfId]];
+        BOOL isLandscape = NO;
+        if ([DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationLandscapeLeft || [DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationLandscapeRight) {
+            isLandscape = YES;
+        }
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[self getSelfCurrentConfId] isLandscape:isLandscape];
+        
+        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:NO];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[self getSelfCurrentConfId] isLandscape:isLandscape];
         
     });
 }
@@ -594,18 +600,8 @@ static CallWindowController *g_windowCtrl = nil;
             break;
         case CALL_VIEW_REFRESH:
         {
-//            NSNumber *viewEvent = resultDictionary[TSDK_VIEW_REFRESH_KEY];
-//            if ([viewEvent intValue] == 1) {
-//                NSString *callId = resultDictionary[CALL_ID];
-//                [EAGLView hideLocalView];
-//                [EAGLView hideRemoteView];
-//                [EAGLView showRemoteView];
-//                [EAGLView showLocalView];
-//                [[ManagerService callService] updateVideoWindowWithLocal:_locationView
-//                                                               andRemote:_remoteView
-//                                                                 andBFCP:_bfcpView
-//                                                                  callId:callId.intValue];
-//            }
+            
+            [self updateVideoWindows];
 
             break;
         }

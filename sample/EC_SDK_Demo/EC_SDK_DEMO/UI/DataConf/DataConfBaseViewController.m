@@ -13,6 +13,7 @@
 #import "ConfBaseInfo.h"
 #import "ConfListViewController.h"
 #import "ConfRunningViewController.h"
+#import "SVCConfWatchAttendeeInfo.h"
 
 @interface DataConfBaseViewController () {
     BOOL isHideBar;
@@ -543,6 +544,7 @@
         }
         for (int i = 0 ; i < callInfo.svcStreamCount; i ++) {
             VideoStreamInfo *videoSingleStream = currentMutiStream[i];
+            
             if (videoSingleStream.recvBitRate != 0) {
                 StatisticShowInfo *videoRecvInfo = [[StatisticShowInfo alloc] init];
                 
@@ -573,8 +575,13 @@
                     if (recvName.length == 0) {
                         recvName = thirdSvcView.currentAttendee.number;
                     }
+                }else if([ManagerService confService].currentBigViewAttendee.label == videoSingleStream.recvSsrcLabel){
+                    recvName = [ManagerService confService].currentBigViewAttendee.name;
+                    if (recvName.length == 0) {
+                        recvName = [ManagerService confService].currentBigViewAttendee.number;
+                    }
                 }else{
-
+                    
                 }
                 
                 if (recvName.length > 0) {

@@ -575,7 +575,7 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
  */
 -(BOOL)ipCallConfig;
 
-- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TsdkVideoWindowType)renderType andCallId:(unsigned int)callid;
+- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TsdkVideoWindowType)renderType andCallId:(unsigned int)callid isLandscape:(BOOL)isLandscape;
 
 @end
 

@@ -427,14 +427,10 @@
             NSString* callId = [NSString stringWithFormat:@"%d", notify.param1];
             TSDK_S_VIDEO_VIEW_REFRESH *viewRefresh = (TSDK_S_VIDEO_VIEW_REFRESH *)notify.data;
             
-            NSDictionary *viewRefreshInd = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                 callId,CALL_ID,
-                                                 [NSNumber numberWithInt:viewRefresh->event],TSDK_VIEW_REFRESH_KEY,
-                                                 nil];
-            [self respondsCallDelegateWithType:CALL_VIEW_REFRESH result:viewRefreshInd];
-            [[NSNotificationCenter defaultCenter] postNotificationName:TUP_CALL_REFRESH_VIEW_NOTIFY
-                                                                object:[NSNumber numberWithUnsignedInteger:notify.param1]
-                                                              userInfo:nil];
+            if(viewRefresh->view_type == TSDK_E_VIEW_VIDEO_VIEW && viewRefresh->event == TSDK_E_VIDEO_LOCAL_VIEW_ADD)
+            {
+                [self respondsCallDelegateWithType:CALL_VIEW_REFRESH result:nil];
+            }
             break;
         }
         case TSDK_E_CALL_EVT_OPEN_VIDEO_REQ:
@@ -962,8 +958,6 @@
     ret = tsdk_set_video_window((TSDK_UINT32)callId, 3, videoInfo);
     DDLogInfo(@"Call_Log: tsdk_set_video_window = %d",ret);
     
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:callId];
-    [self updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:callId];
     return (TSDK_SUCCESS == ret);
 }
 
@@ -1215,7 +1209,6 @@
     {
         _cameraCaptureIndex = cameraCaptureIndex == 1 ? CameraIndexFront : CameraIndexBack;
     }
-    [self updateVideoRenderInfoWithVideoIndex:(CameraIndex)cameraCaptureIndex withRenderType:TsdkVideoWindowlacal andCallId:callId];
     return result == TSDK_SUCCESS ? YES : NO;
 }
 
@@ -1223,7 +1216,7 @@
  *This method is used to update video  render info with video index
  *根据摄像头序号更新视频渲染
  */
-- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TsdkVideoWindowType)renderType andCallId:(unsigned int)callid
+- (void)updateVideoRenderInfoWithVideoIndex:(CameraIndex)index withRenderType:(TsdkVideoWindowType)renderType andCallId:(unsigned int)callid isLandscape:(BOOL)isLandscape
 {
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
         return;
@@ -1231,6 +1224,7 @@
     
     TSDK_UINT32 mirrorType = 0;
     TSDK_UINT32 displaytype = 1;
+    TSDK_S_VIDEO_RENDER_INFO renderInfo;
     
     //本端视频，displaytype为1，镜像模式根据前后摄像头进行设置
     if (TsdkVideoWindowlacal == renderType)
@@ -1252,9 +1246,9 @@
         }
         
         displaytype = 2;
-        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
-            displaytype = 1;
-        }
+//        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
+//            displaytype = 1;
+//        }
     }
     //远端视频，镜像模式为0(不做镜像)，显示模式为0（拉伸模式）
     else if (TsdkVideoWindowRemote == renderType)
@@ -1262,17 +1256,20 @@
         mirrorType = 0;
         displaytype = 2;
         if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
-            displaytype = 1;
+            displaytype = TSDK_E_VIDEO_WND_DISPLAY_AUTO_ADAPT;
         }
+        
+        renderInfo.is_landscape = isLandscape;
     }
     else
     {
         DDLogInfo(@"rendertype is not remote or local");
     }
-    TSDK_S_VIDEO_RENDER_INFO renderInfo;
+    
     renderInfo.render_type = (TSDK_E_VIDEO_WND_TYPE)renderType;
     renderInfo.display_type = (TSDK_E_VIDEO_WND_DISPLAY_MODE)displaytype;
     renderInfo.mirror_type = (TSDK_E_VIDEO_WND_MIRROR_TYPE)mirrorType;
+    
     TSDK_RESULT ret_video_render_info = tsdk_set_video_render(callid, &renderInfo);
     DDLogInfo(@"tsdk_set_video_render : %d", ret_video_render_info);
 }
