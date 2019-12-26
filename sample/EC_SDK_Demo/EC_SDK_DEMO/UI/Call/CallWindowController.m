@@ -47,7 +47,6 @@
 @property (nonatomic, strong)CallTakingViewController *talkingCtrl;
 @property (nonatomic)EAGLView *remoteView;
 @property (nonatomic)EAGLView *locationView;
-@property (nonatomic)EAGLView *localBigView;
 
 @property (nonatomic)EAGLView *firstSVCView;
 @property (nonatomic)EAGLView *secondSVCView;
@@ -118,7 +117,6 @@ static CallWindowController *g_windowCtrl = nil;
         
         _remoteView = [EAGLView getRemoteView];
         _locationView = [EAGLView getLocalView];
-        _localBigView = [EAGLView getLocalBigView];
         
         _firstSVCView = [EAGLView getFirstSVCView];
         _secondSVCView = [EAGLView getSecondSVCView];
@@ -177,9 +175,7 @@ static CallWindowController *g_windowCtrl = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startReplayKitBroadcast) name:APP_START_SYSTEM_SHARE_VIEW object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confShareRequestAction) name:CONF_SHARE_REQUEST_ACTION object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confUserStatusUpdateNotify) name:CONF_ATTENDEE_STATUS_UPDATE_NOTIFY object:nil];
-    
+        
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCallStatisticInfo:) name:CALL_STATISTIC_INFO_NOTIFY object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(releaseConfResources) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
@@ -242,30 +238,6 @@ static CallWindowController *g_windowCtrl = nil;
     _isFirstSetWindow = YES;
     
     _currentTupCallInfo = nil;
-}
-
-- (void)confUserStatusUpdateNotify
-{
-    BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
-    BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
-    NSArray *attendees = [ManagerService confService].watchAttendeesArray;
-    if (iSVideoConf) {
-        if (isSvcConf) {
-            if (attendees.count > 0 && (_isSetAVCWindow || _isFirstSetWindow)) {
-                _isFirstSetWindow = NO;
-                _isSetAVCWindow = NO;
-                _isSetSVCWindow = YES;
-                [[ManagerService confService] setSvcVideoWindowWithLocal:_locationView];
-            }else if (attendees.count == 0 && (_isSetSVCWindow || _isFirstSetWindow)){
-                _isFirstSetWindow = NO;
-                _isSetSVCWindow = NO;
-                _isSetAVCWindow = YES;
-                [[ManagerService confService] setSvcVideoWindowWithLocal:_localBigView];
-            }else{
-                
-            }
-        }
-    }
 }
 
 - (void)confShareRequestAction
@@ -364,6 +336,7 @@ static CallWindowController *g_windowCtrl = nil;
     if (iSVideoConf) {
         [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
         if (isSvcConf) {
+            [[ManagerService confService] setSvcVideoWindowWithLocal:_locationView];
             [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
         }else{
             [[ManagerService confService] setVideoWindowWithLocal:_locationView andRemote:_remoteView];
@@ -601,7 +574,7 @@ static CallWindowController *g_windowCtrl = nil;
         case CALL_VIEW_REFRESH:
         {
             
-            [self updateVideoWindows];
+//            [self updateVideoWindows];
 
             break;
         }

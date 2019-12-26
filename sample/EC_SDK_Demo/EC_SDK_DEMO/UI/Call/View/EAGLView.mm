@@ -24,9 +24,6 @@
 static EAGLView *openGLPreviewView = nil;
 static EAGLView *openGLRemoteView = nil;
 static EAGLView *openGLLocalView = nil;
-
-static EAGLView *openGLLocalBigView = nil;
-
 static EAGLView *openGLFirstSVCView = nil;
 static EAGLView *openGLSecondSVCView = nil;
 static EAGLView *openGLThirdSVCView = nil;
@@ -95,17 +92,6 @@ static EAGLView *openGLDataRemoteView = nil;
 	return openGLLocalView;
 }
 
-+(EAGLView *)getLocalBigView
-{
-    if (openGLLocalBigView == nil)
-    {
-        openGLLocalBigView = [[self alloc] initWithFrame:CGRectZero];
-        openGLLocalBigView.backgroundColor = [UIColor blackColor];
-    }
-    
-    return openGLLocalBigView;
-}
-
 //tup
 + (EAGLView *)getTupBFCPView {
     if (nil == openGLTupBFCPView) {
@@ -172,15 +158,6 @@ static EAGLView *openGLDataRemoteView = nil;
     {
         [openGLLocalView removeFromSuperview];
         openGLLocalView = nil;
-    }
-}
-
-+ (void)destroyLocalBigView
-{
-    if (openGLLocalBigView)
-    {
-        [openGLLocalBigView removeFromSuperview];
-        openGLLocalBigView = nil;
     }
 }
 

@@ -105,6 +105,11 @@
  */
 -(void)authorizeLoginWithLoginInfo:(LoginInfo *)LoginInfo completionBlock:(void (^)(BOOL isSuccess, NSError *error))completionBlock
 {
+    //TSDK_S_DISPLAY_LOCAL_INFO display_info;
+    //memset(&display_info, 0, sizeof(TSDK_S_DISPLAY_LOCAL_INFO));
+    //strcpy(display_info.display_name, [@"self name" UTF8String]);
+    //tsdk_set_config_param(TSDK_E_CONFIG_DISPLAY_LOCAL_INFO, &display_info);
+    
     self.loginInfo = LoginInfo;
     // 登陆uportal鉴权
     [[LoginCenter sharedInstance] loginWithAccount:LoginInfo.account

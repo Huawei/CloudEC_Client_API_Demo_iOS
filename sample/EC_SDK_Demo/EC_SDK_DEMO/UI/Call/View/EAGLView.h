@@ -29,8 +29,6 @@
 
 + (EAGLView *)getLocalView;
 
-+ (EAGLView *)getLocalBigView;
-
 + (EAGLView *)getDataLocalView;
 
 + (EAGLView *)getDataRemoteView;
@@ -54,8 +52,6 @@
 + (void)destroyPreviewView;
 
 + (void)destroyLocalView;
-
-+ (void)destroyLocalBigView;
 
 + (void)destroyRemoteView;
 

@@ -38,7 +38,6 @@
 @property (nonatomic, strong) UIImageView *backImageView;
 @property (nonatomic, strong) EAGLView *remoteView;
 @property (nonatomic, strong) EAGLView *localView;
-@property (nonatomic, strong) EAGLView *localBigView;
 
 @property (nonatomic, strong) UIView *firstSVCViewShower;
 @property (nonatomic, strong) EAGLView *firstSVCView;
@@ -175,7 +174,6 @@
         BOOL needResumedRewatch = YES;
         if ([ManagerService confService].hasConfResumedFirstRewatch) {
             if ([ManagerService confService].haveJoinAttendeeArray.count == 0) {
-  
                 needResumedRewatch = NO;
                 return;
             }
@@ -183,12 +181,7 @@
         
         _localNameLabel.text = @"Local";
         
-        DDLogInfo(@"jinliang000,watchAttendees.count:%lu",(unsigned long)watchAttendees.count);
         if (watchAttendees.count == 0 && needResumedRewatch) {
-            self.localBigView.hidden = NO;
-            self.remoteView.hidden = YES;
-//            _backSVCView.hidden = YES;
-            
             _firstSVCViewShower.hidden = YES;
             _secondSVCViewShower.hidden = YES;
             _thirdSVCViewShower.hidden = YES;
@@ -205,8 +198,20 @@
             _thirdSVCView.currentAttendee = nil;
             _thirdSVCView.currentlabel = 0;
             
+            if (_remoteView.superview != nil) {
+                [_localView removeFromSuperview];
+                [_remoteView removeFromSuperview];
+                [self.view insertSubview:_localView aboveSubview:self.backImageView];
+                DDLogInfo(@"_localView.superview:%@",_localView.superview);
+                _localView.frame = self.view.frame;
+            }
         }else{
-            self.localBigView.hidden = YES;
+            if (_remoteView.superview == nil) {
+                [_localView removeFromSuperview];
+                _localView.frame = CGRectMake(1, 1, (SCREEN_WIDTH - 60) / 4 - 2, (SCREEN_WIDTH - 60) / 4 / 9 * 16 - 2);
+                [_localViewShower addSubview:_localView];
+                [self.view insertSubview:self.remoteView aboveSubview:self.backImageView];
+            }
             self.remoteView.hidden = NO;
             if ( _backSVCView.hidden ==  NO) {
                 _localViewShower.hidden = NO;
@@ -355,14 +360,7 @@
 //                                                 selector:@selector(tupRemoteVideoViewDecodeSuccessWithCallId:)
 //                                                     name:TUP_CALL_DECODE_SUCCESS_NOTIFY
 //                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(receiveConfModeChanged:)
-                                                     name:EC_SET_CONF_MODE_NOTIFY
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+        
     }
     return self;
 }
@@ -416,10 +414,20 @@
     }
     _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(receiveConfModeChanged:)
+                                                 name:EC_SET_CONF_MODE_NOTIFY
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(quitToListViewCtrl) name:CONF_QUITE_TO_CONFLISTVIEW
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -432,9 +440,8 @@
         [self.view insertSubview:self.backImageView belowSubview:self.bottomView];
         
         if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
-            [self.view insertSubview:self.localBigView aboveSubview:self.backImageView];
-            [self.view insertSubview:self.remoteView aboveSubview:self.localBigView];
-            [self.view insertSubview:self.backSVCView aboveSubview:_remoteView];
+            [self.view insertSubview:self.localView aboveSubview:self.backImageView];
+            [self.view insertSubview:self.backSVCView aboveSubview:_localView];
             [self.view addSubview:self.bigViewNameLabel];
         }else{
             [self.view insertSubview:self.remoteView aboveSubview:self.backImageView];
@@ -619,6 +626,8 @@
             [self.confCtrlArray addObject:shareString];
         }
     }
+    
+    [self.confCtrlArray addObject:@"rename self"];
 
 }
 
@@ -775,7 +784,6 @@
         _localViewShower = [[UIView alloc]initWithFrame:CGRectMake(30, 5, (SCREEN_WIDTH - 60) / 4, (SCREEN_WIDTH - 60) / 4 / 9 * 16)];
         _localViewShower.backgroundColor = [UIColor blackColor];
 //        _localViewShower.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"image_conf_video_small_video_back"]];
-        [_localViewShower addSubview:self.localView];
         [_localViewShower addSubview:self.localNameLabel];
     }
     return _localViewShower;
@@ -922,14 +930,6 @@
     return _remoteView;
 }
 
-- (EAGLView *)localBigView
-{
-    if (nil == _localBigView) {
-        _localBigView = [EAGLView getLocalBigView];
-    }
-    return _localBigView;
-}
-
 - (void)updateBtnViewFrame
 {
     if ([self isVideoConf]) {
@@ -955,14 +955,14 @@
             }
 
             if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
-                
-                if (nil != _localBigView) {
-                    _localBigView.frame = CGRectMake(0, 0, width, hight);
-                }
-                
                 _backSVCView.frame = CGRectMake(0, hight - 200, width, 115);
                 _localViewShower.frame = CGRectMake(30, 5, (width - 60) / 4, (width - 60) / 4 / 9 * 16);
-                _localView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
+                if (_remoteView.superview == nil) {
+                    _localView.frame = CGRectMake(0, 0, width, hight);
+                }else{
+                    _localView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
+                }
+                
                 _firstSVCViewShower.frame = CGRectMake((width - 60) / 4 + 30, 5, (width - 60) / 4, (width - 60) / 4 / 9 * 16);
                 _firstSVCView.frame = CGRectMake(1, 1, (width - 60) / 4 - 2, (width - 60) / 4 / 9 * 16 - 2);
                 _secondSVCViewShower.frame = CGRectMake((width - 60) / 4 * 2 + 30, 5 , (width - 60) / 4, (width - 60) / 4 / 9 * 16);
@@ -1005,14 +1005,13 @@
             }
             
             if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
-                
-                if (nil != _localBigView) {
-                    _localBigView.frame = CGRectMake(0, 0, width, hight);
-                }
-                
                 _backSVCView.frame = CGRectMake(44, 0, 115, hight);
                 _localViewShower.frame = CGRectMake(5, 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
-                _localView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
+                if (_remoteView.superview == nil) {
+                    _localView.frame = CGRectMake(0, 0, width, hight);
+                }else{
+                    _localView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
+                }
                 _firstSVCViewShower.frame = CGRectMake(5, (hight - 60) / 4 + 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
                 _firstSVCView.frame = CGRectMake(1, 1, (hight - 60) / 4 / 9 * 16 - 2, (hight - 60) / 4 - 2);
                 _secondSVCViewShower.frame = CGRectMake(5 , (hight - 60) / 4 * 2 + 30, (hight - 60) / 4 / 9 * 16, (hight - 60) / 4);
@@ -1327,7 +1326,7 @@
         return;
     }
     if (isAddView) {
-        [self.localViewShower addSubview:self.localView];
+//        [self.localViewShower addSubview:self.localView];
     }else {
         [self.localView removeFromSuperview];
     }
@@ -1557,6 +1556,10 @@
         if ([confCtrlAction isEqualToString:@"Hide SVCView"]) {
             self.backSVCView.hidden = YES;
         }
+        if ([confCtrlAction isEqualToString:@"rename self"]) {
+            [self resetSelfNickName];
+        }
+        
     }
 }
 
@@ -1634,7 +1637,7 @@
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (UITableView *)confCtrlTableView {
@@ -1847,6 +1850,29 @@
         
         DDLogError(@"watchAttendee faild,SVCView remove data!");
     }
+}
+
+- (void)resetSelfNickName
+{
+    [[ManagerService confService] confCtrlRenameSelf:@""];
+    
+    UIAlertController *alertCon = [UIAlertController alertControllerWithTitle:nil message:@"Please reset your nick name" preferredStyle:UIAlertControllerStyleAlert];
+    [alertCon addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        textField.placeholder = @"Name";
+        textField.secureTextEntry = NO;
+    }];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UITextField *nameFiled = alertCon.textFields[0];
+        
+        NSString *name = nameFiled.text;
+        
+        [[ManagerService confService] confCtrlRenameSelf:name];
+    }];
+    [alertCon addAction:okAction];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleDefault handler:nil];
+    [alertCon addAction:cancelAction];
+    [self presentViewController:alertCon animated:YES completion:nil];
+    
 }
 
 @end

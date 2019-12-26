@@ -374,6 +374,9 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
                                    remote:(id)remoteSVCView;
 
 - (VideoStreamInfo *)getSignalDataInfo;
+
+- (void)confCtrlRenameSelf:(NSString *)nikname;
+
 @end
 
 #endif /* ConferenceInterface_h */

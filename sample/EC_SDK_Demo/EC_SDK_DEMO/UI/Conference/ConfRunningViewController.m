@@ -714,9 +714,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     AttendeeListCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ConfAttendeeCell"];
 //    NSArray *attendeeArray = [ManagerService confService].haveJoinAttendeeArray;
-    DDLogInfo(@"jinliang2222222,%d",_currentAttendeeArray.count);
     ConfAttendeeInConf *attendee = _currentAttendeeArray[indexPath.row];
-    DDLogInfo(@"jinliang3333333,%d",_currentAttendeeArray.count);
     cell.attendee = attendee;
     cell.isSpeaking = NO;
     for (ConfCtrlSpeaker *speaker in _currentSpeakArray) {

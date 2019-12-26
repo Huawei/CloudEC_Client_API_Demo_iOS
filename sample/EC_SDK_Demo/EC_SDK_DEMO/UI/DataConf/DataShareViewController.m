@@ -179,6 +179,7 @@
         self.popoverView = nil;
         [self.toolboxView removeFromSuperview];
     }
+    _drawButton.hidden = YES;
     self.zoomViewImageShare.pinchGestureRecognizer.enabled = NO;
     self.zoomViewImageShare.panGestureRecognizer.enabled = NO;
     self.baseTap.enabled = YES;
@@ -208,23 +209,23 @@
     
     [self.view addSubview:self.zoomViewImageShare];
     
-    UIView* contentView = self.zoomViewImageShare;
-    UIView* bottomView = self.bottomView;
-    id<UILayoutSupport> top    = self.topLayoutGuide;
-    id<UILayoutSupport> bottom = self.bottomLayoutGuide;
-    NSDictionary* views = NSDictionaryOfVariableBindings(contentView,bottomView, top, bottom);
-    NSArray* contentViewVconstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[top]-0-[contentView]-0-[bottom]"
-                                                                               options:0
-                                                                               metrics:nil
-                                                                                 views:views];
-    
-    NSArray* contentViewHconstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[contentView]|"
-                                                                               options:0
-                                                                               metrics:nil
-                                                                                 views:views];
-    
-    [self.view addConstraints:contentViewVconstraints];
-    [self.view addConstraints:contentViewHconstraints];
+//    UIView* contentView = self.zoomViewImageShare;
+//    UIView* bottomView = self.bottomView;
+//    id<UILayoutSupport> top    = self.topLayoutGuide;
+//    id<UILayoutSupport> bottom = self.bottomLayoutGuide;
+//    NSDictionary* views = NSDictionaryOfVariableBindings(contentView,bottomView, top, bottom);
+//    NSArray* contentViewVconstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[top]-0-[contentView]-0-[bottom]"
+//                                                                               options:0
+//                                                                               metrics:nil
+//                                                                                 views:views];
+//
+//    NSArray* contentViewHconstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|[contentView]|"
+//                                                                               options:0
+//                                                                               metrics:nil
+//                                                                                 views:views];
+//
+//    [self.view addConstraints:contentViewVconstraints];
+//    [self.view addConstraints:contentViewHconstraints];
     
     [self.view bringSubviewToFront:self.bottomView];
     [self.view bringSubviewToFront:self.barView];
@@ -527,7 +528,6 @@
                 }
                 _drawButton.hidden = NO;
                 _toolboxView.hidden = YES;
-                DDLogInfo(@"jinliang,drawBtn,frame:%@",self.drawButton);
                 
             }else{
                 _popoverView.hidden = YES;
@@ -641,7 +641,6 @@
     self.barView.hidden = YES;
     self.bottomView.hidden = YES;
     
-    DDLogInfo(@"jinliang,toggleMarkupMode,self.drawButton:%@,self.toolboxView:%@",self.drawButton,self.toolboxView);
 }
 
 - (void)didToggleMarkupMode:(BOOL)inMarkupMode {
@@ -948,7 +947,6 @@
     }
 
     _annotationStartPoint = point;
-    DDLogInfo(@"jinliang,x:%ld,y:%ld",point.x,point.y);
     [[ManagerService confService] conferenceCreateAnnotationWithStartPointx:point.x Pointy:point.y];
 
 }

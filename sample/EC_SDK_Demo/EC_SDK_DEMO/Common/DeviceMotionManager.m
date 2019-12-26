@@ -419,7 +419,6 @@ static DeviceMotionManager *g_deviceManager = nil;
     }else{
         UIView *foregroundView = [[app valueForKeyPath:@"statusBar"] valueForKey:@"foregroundView"];
         for (id child in foregroundView.subviews) {
-//            DDLogInfo(@"jinliang222,%@",child);
             @try {
                 id item = [child valueForKey:@"item"];
                 int type = [[item valueForKey:@"type"] intValue];
@@ -436,7 +435,6 @@ static DeviceMotionManager *g_deviceManager = nil;
                  18, 竖屏锁定
                  34, 耳机
                  */
-                DDLogInfo(@"jinliang000,%d",type);
                 if (type == 18) {
                     isOn = YES;
                     break;
