@@ -20,7 +20,7 @@
 
 @property (weak, nonatomic) IBOutlet UIView *toolBarView;
 @property (weak, nonatomic) IBOutlet UILabel *tipLabel;
-@property (nonatomic,assign)id<CallViewDelegate> delegate;
+@property (nonatomic,weak)id<CallViewDelegate> delegate;
 @property (nonatomic,assign)BOOL isCameraClose;
 @property (nonatomic,assign)BOOL isMuteMic;
 @property (nonatomic,assign)BOOL isHold;

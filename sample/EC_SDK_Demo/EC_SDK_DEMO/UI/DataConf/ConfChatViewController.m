@@ -130,18 +130,20 @@
     NSValue * value = [notification.userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
     NSNumber *duration = [notification.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
     CGRect keyboardRect = [value CGRectValue];
+    __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:duration.doubleValue animations:^{
-        _bottomLayout.constant = CGRectGetHeight(keyboardRect);
-        [self.view layoutIfNeeded];
+        weakSelf.bottomLayout.constant = CGRectGetHeight(keyboardRect);
+        [weakSelf.view layoutIfNeeded];
     }];
 }
 
 - (void)keyboardWilHide:(NSNotification *)notification
 {
     NSNumber *duration = [notification.userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:duration.doubleValue animations:^{
-        _bottomLayout.constant = 0;
-        [self.view layoutIfNeeded];
+        weakSelf.bottomLayout.constant = 0;
+        [weakSelf.view layoutIfNeeded];
     }];
 }
 

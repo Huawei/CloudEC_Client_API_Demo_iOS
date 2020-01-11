@@ -90,12 +90,13 @@
 
 -(void)loginEventCallback:(TUP_LOGIN_EVENT_TYPE)loginEvent result:(NSDictionary *)resultDictionary
 {
+    __weak typeof(self) weakSelf = self;
     switch (loginEvent)
     {
         case LOGINOUT_EVENT:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self goToLoginViewController];
+                [weakSelf goToLoginViewController];
             });
             break;
         }

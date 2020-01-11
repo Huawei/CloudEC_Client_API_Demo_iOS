@@ -373,6 +373,11 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
                              thirdSVCView:(id)thirdSVCView
                                    remote:(id)remoteSVCView;
 
+- (BOOL)removeSvcVideoWindowWithFirstSVCView:(id)firstSVCView
+                               secondSVCView:(id)SecondSVCView
+                                thirdSVCView:(id)thirdSVCView
+                                      remote:(id)remoteSVCView;
+
 - (VideoStreamInfo *)getSignalDataInfo;
 
 - (void)confCtrlRenameSelf:(NSString *)nikname;

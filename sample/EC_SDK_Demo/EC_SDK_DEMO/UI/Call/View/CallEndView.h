@@ -14,7 +14,7 @@
 @end
 
 @interface CallEndView : UIView
-@property (assign, nonatomic)id<CallEndViewDelegate> delegate;
+@property (nonatomic, weak)id<CallEndViewDelegate> delegate;
 @property (assign, nonatomic)int callId;
 +(instancetype)shareInstance;
 

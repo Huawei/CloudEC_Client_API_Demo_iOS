@@ -185,33 +185,36 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 - (void)initScreenShareManager {
     DDLogInfo(@"enter initScreenShareManager ");
+    __weak typeof(self) weakSelf = self;
     NSString *appGroup = @"group.eSpaceMclientV2";
     self.screenShareManager = [[ScreenShareManager alloc]initWithAppGroupIdentifier:appGroup];
-    [self.screenShareManager listenForMessageWithIdentifier:@"screenshare" listener:^(id messageObject) {
+    [weakSelf.screenShareManager listenForMessageWithIdentifier:@"screenshare" listener:^(id messageObject) {
         
         NSDictionary *dir = [messageObject valueForKey:@"screendata"];
-        [self processImage:dir];
+        [weakSelf processImage:dir];
     }];
     
-    [self.screenShareManager listenForMessageWithIdentifier:@"screenShareStateChange" listener:^(id messageObject) {
+    [weakSelf.screenShareManager listenForMessageWithIdentifier:@"screenShareStateChange" listener:^(id messageObject) {
         long state = [[messageObject valueForKey:@"state"] longValue];
         if (state == 1) {
-            if (self.isJoinDataConfSuccess) {
-                if (!self.isFirstBeginDataShare) {
-                    _mIsGoToStartSharePre = YES;
-                    [self inviteDataShareWithNumber:self.selfJoinNumber];
+            if (weakSelf.isJoinDataConfSuccess) {
+                if (!weakSelf.isFirstBeginDataShare) {
+                    weakSelf.mIsGoToStartSharePre = YES;
+                    [weakSelf inviteDataShareWithNumber:weakSelf.selfJoinNumber];
                 }else{
-                    self.isFirstBeginDataShare = NO;
-                    [self startDataConfAsPre];
+                    weakSelf.isFirstBeginDataShare = NO;
+                    weakSelf.mWidthPixels = 0;
+                    weakSelf.mHeightPixels = 0;
+                    [weakSelf startDataConfAsPre];
                 }
                 
             } else {
                 NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"the meeting is unavailable", nil)}];
-                [self.screenShareManager passMessageObject:@{@"result" : error} identifier:@"StopBroadcast"];
+                [weakSelf.screenShareManager passMessageObject:@{@"result" : error} identifier:@"StopBroadcast"];
             }
             
         } else if (state == 0) {
-            [self confStopReplayKitBroadcast];
+            [weakSelf confStopReplayKitBroadcast];
         
         }
     }];
@@ -219,7 +222,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 - (void)confStopReplayKitBroadcast
 {
-    
     if (self.mIsScreenSharing) {
         TSDK_RESULT result = tsdk_app_share_stop(_confHandle);
     }
@@ -229,8 +231,11 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 - (void)confStopReplay
 {
-    NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"stop_screen_share", nil)}];
-    [self.screenShareManager passMessageObject:@{@"result" : error} identifier:@"StopBroadcast"];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:DATA_SHARE_STOP_NOTIFY object:nil];
+        NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"stop_screen_share", nil)}];
+        [self.screenShareManager passMessageObject:@{@"result" : error} identifier:@"StopBroadcast"];
+    });
     
     _mWidthPixels = 0;
     _mHeightPixels = 0;
@@ -271,6 +276,11 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     result = tsdk_app_share_start(_confHandle, TSDK_E_CONF_APP_SHARE_DESKTOP);
     
     self.mIsScreenSharing = YES;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:DATA_SHARE_SELF_START_NOTIFY
+                                                            object:nil];
+    });
     
 }
 
@@ -518,8 +528,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 DDLogError(@"TSDK_E_CONF_EVT_JOIN_CONF_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
                 if (_isAnonymousConf) {
                     _isAnonymousConf = NO;
+                    __weak typeof(self) weakSelf = self;
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self confCtrlLeaveConference];
+                        [weakSelf confCtrlLeaveConference];
                     });
                     [self restoreConfParamsInitialValue];
                 }
@@ -572,9 +583,10 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 DDLogError(@"TSDK_E_CONF_EVT_GET_DATACONF_PARAM_RESULT,error:%@",[NSString stringWithUTF8String:(TSDK_CHAR *)notify.data]);
                 return;
             }
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self joinDataConference];
-                [self startHeartBeatTimer];
+                [weakSelf joinDataConference];
+                [weakSelf startHeartBeatTimer];
             });
             
         }
@@ -640,8 +652,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 //                [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
 //            });
 //            [self respondsECConferenceDelegateWithType:CONF_E_END_RESULT result:nil];
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self confCtrlLeaveConference];
+                [weakSelf confCtrlLeaveConference];
             });
             [self restoreConfParamsInitialValue];
             
@@ -699,7 +712,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 __weak typeof(self) weakSelf = self;
                 dispatch_async(espace_dataconf_datashare_queue, ^{
                     [weakSelf stopSharedData];
-                    self.isStartScreenSharing = NO;
+                    weakSelf.isStartScreenSharing = NO;
                 });
             }
         }
@@ -790,7 +803,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 //});
                 
                 [weakSelf stopSharedData];
-                _currentDataShareTypeId = 0;
+                weakSelf.currentDataShareTypeId = 0;
                 
             });
         }
@@ -854,6 +867,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                             });
                         }else{
                             _mIsGoToStartSharePre = NO;
+                            self.mWidthPixels = 0;
+                            self.mHeightPixels = 0;
                             [self startDataConfAsPre];
                         }
                     }else if (actionType == TSDK_E_CONF_AS_ACTION_DELETE){
@@ -1290,9 +1305,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(ecConferenceEventCallback:result:)])
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate ecConferenceEventCallback:type result:resultDictionary];
-        });
+//        });
     }
 }
 
@@ -1321,6 +1336,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     TSDK_S_ATTENDEE *participants = confStatusStruct->attendee_list;
     
     [self.haveJoinAttendeeArray removeAllObjects];
+    
+    __weak typeof(self) weakSelf = self;
     for (int i = 0; i<confStatusStruct->attendee_num; i++)
     {
         TSDK_S_ATTENDEE participant = participants[i];
@@ -1347,7 +1364,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         }
         
         __block BOOL isAttendeeInConf = NO;
-        [self.watchAttendeesArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+        [weakSelf.watchAttendeesArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
             if([addAttendee.number isEqualToString:attendeeInfo.number]){
                 if (addAttendee.state == ATTENDEE_STATUS_IN_CONF) {
                     attendeeInfo.name = [NSString stringWithUTF8String:participant.base_info.display_name];
@@ -1370,7 +1387,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 *stop = YES;
                 if (*stop == YES) {
                     if (addAttendee.state == ATTENDEE_STATUS_LEAVED || !addAttendee.isVideo || addAttendee.isSelf) {
-                        [self.watchAttendeesArray removeObject:attendeeInfo];
+                        [weakSelf.watchAttendeesArray removeObject:attendeeInfo];
                         DDLogInfo(@"watchAttendeeArray remove attendee,number:%@,isVideo:%d,isSelf:%d,state:%d",addAttendee.number,addAttendee.isVideo,addAttendee.isSelf,addAttendee.state);
                     }
                 }
@@ -1378,7 +1395,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         }];
         if(isAttendeeInConf == NO){
             if (addAttendee.state == ATTENDEE_STATUS_IN_CONF && addAttendee.isVideo && !addAttendee.isSelf) {
-                [self.watchAttendeesArray addObject:addAttendee];
+                [weakSelf.watchAttendeesArray addObject:addAttendee];
                 DDLogInfo(@"watchAttendeeArray add attendee,number:%@,isVideo:%d,isSelf:%d",addAttendee.number,addAttendee.isVideo,addAttendee.isSelf);
             }
         }
@@ -1392,10 +1409,10 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 //        }
     }
     if (self.haveJoinAttendeeArray.count > 0) {
-        [self.watchAttendeesArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+        [weakSelf.watchAttendeesArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* attendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
             __block BOOL isAttendeeIArray = NO;
             
-            [self.haveJoinAttendeeArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* joinAttendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
+            [weakSelf.haveJoinAttendeeArray enumerateObjectsUsingBlock:^(ConfAttendeeInConf* joinAttendeeInfo, NSUInteger idx, BOOL * _Nonnull stop) {
                 if([joinAttendeeInfo.number isEqualToString:attendeeInfo.number]){
                     
                     isAttendeeIArray = YES;
@@ -1406,17 +1423,16 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             }];
             
             if (isAttendeeIArray == NO) {
-                [self.watchAttendeesArray removeObject:attendeeInfo];
+                [weakSelf.watchAttendeesArray removeObject:attendeeInfo];
             }
             
             
         }];
     }
     
-        
     dispatch_async(dispatch_get_main_queue(), ^{
 //        [[NSNotificationCenter defaultCenter] postNotificationName:CONF_ATTENDEE_STATUS_UPDATE_NOTIFY object:nil];
-        [self respondsECConferenceDelegateWithType:CONF_E_ATTENDEE_UPDATE_INFO result:nil];
+        [weakSelf respondsECConferenceDelegateWithType:CONF_E_ATTENDEE_UPDATE_INFO result:nil];
     });
 }
 
@@ -2076,9 +2092,10 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  */
 -(void)startHeartBeatTimer
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        _heartBeatTimer = [NSTimer scheduledTimerWithTimeInterval:0.03
-                                                           target:self
+        weakSelf.heartBeatTimer = [NSTimer scheduledTimerWithTimeInterval:0.03
+                                                           target:weakSelf
                                                          selector:@selector(heartBeat)
                                                          userInfo:nil
                                                           repeats:YES];
@@ -2105,13 +2122,14 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  */
 -(void)stopHeartBeat
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         DDLogInfo(@"<INFO>: stopHeartBeat: enter!!! ");
-        if ([self.heartBeatTimer isValid])
+        if ([weakSelf.heartBeatTimer isValid])
         {
             DDLogInfo(@"<INFO>: stopHeartBeat");
-            [self.heartBeatTimer invalidate];
-            self.heartBeatTimer = nil;
+            [weakSelf.heartBeatTimer invalidate];
+            weakSelf.heartBeatTimer = nil;
         }
     });
     
@@ -2142,29 +2160,30 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
  */
 -(void)restoreConfParamsInitialValue
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         DDLogInfo(@"restoreConfParamsInitialValue");
-        [_confTokenDic removeAllObjects];
-        [self.haveJoinAttendeeArray removeAllObjects];
-        [self.watchAttendeesArray removeAllObjects];
-        self.isJoinDataConf = NO;
-        _dataConfIdWaitConfInfo = nil;
-        _confCtrlUrl = nil;
-        self.selfJoinNumber = nil;
-        _hasReportMediaxSpeak = NO;
-        [self stopHeartBeat];
-        self.currentCallId = 0;
-        self.isVideoConfInvited = NO;
-        self.currentConfBaseInfo = nil;
-        self.lastConfSharedData = nil;
-        self.isJoinDataConfSuccess = NO;
-        self.isBeginAnnotation = NO;
-        self.imageScale = 1.0;
-        self.currentJoinConfIndInfo = nil;
-        self.currentBigViewAttendee = nil;
-        self.hasConfResumedFirstRewatch = NO;
-        self.isFirstBeginDataShare = NO;
-        [self confStopReplay];
+        [weakSelf.confTokenDic removeAllObjects];
+        [weakSelf.haveJoinAttendeeArray removeAllObjects];
+        [weakSelf.watchAttendeesArray removeAllObjects];
+        weakSelf.isJoinDataConf = NO;
+        weakSelf.dataConfIdWaitConfInfo = nil;
+        weakSelf.confCtrlUrl = nil;
+        weakSelf.selfJoinNumber = nil;
+        weakSelf.hasReportMediaxSpeak = NO;
+        [weakSelf stopHeartBeat];
+        weakSelf.currentCallId = 0;
+        weakSelf.isVideoConfInvited = NO;
+        weakSelf.currentConfBaseInfo = nil;
+        weakSelf.lastConfSharedData = nil;
+        weakSelf.isJoinDataConfSuccess = NO;
+        weakSelf.isBeginAnnotation = NO;
+        weakSelf.imageScale = 1.0;
+        weakSelf.currentJoinConfIndInfo = nil;
+        weakSelf.currentBigViewAttendee = nil;
+        weakSelf.hasConfResumedFirstRewatch = NO;
+        weakSelf.isFirstBeginDataShare = NO;
+        [weakSelf confStopReplay];
         [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
         [[NSNotificationCenter defaultCenter] postNotificationName:CONF_QUITE_TO_CONFLISTVIEW object:nil];
     });
@@ -2560,6 +2579,27 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     return (TSDK_SUCCESS == ret);
 }
 
+- (BOOL)removeSvcVideoWindowWithFirstSVCView:(id)firstSVCView
+                            secondSVCView:(id)SecondSVCView
+                             thirdSVCView:(id)thirdSVCView
+                                   remote:(id)remoteSVCView
+{
+    TSDK_S_SVC_VIDEO_WND_INFO svcWindow[4];
+    memset_s(svcWindow, sizeof(TSDK_S_SVC_VIDEO_WND_INFO) * 4, 0, sizeof(TSDK_S_SVC_VIDEO_WND_INFO) * 4);
+    svcWindow[0].render = (TSDK_UPTR)remoteSVCView;
+    svcWindow[0].label = [self.currentJoinConfIndInfo.svcLable[0] intValue];
+    svcWindow[1].render = (TSDK_UPTR)firstSVCView;
+    svcWindow[1].label = [self.currentJoinConfIndInfo.svcLable[1] intValue];
+    svcWindow[2].render = (TSDK_UPTR)SecondSVCView;
+    svcWindow[2].label = [self.currentJoinConfIndInfo.svcLable[2] intValue];
+    svcWindow[3].render = (TSDK_UPTR)thirdSVCView;
+    svcWindow[3].label = [self.currentJoinConfIndInfo.svcLable[3] intValue];
+
+    TSDK_RESULT ret;
+    ret = tsdk_remove_svc_video_window((TSDK_UINT32)self.currentCallId, 4, svcWindow);
+    return (TSDK_SUCCESS == ret);
+}
+
 - (VideoStreamInfo *)getSignalDataInfo
 {
     TSDK_S_SHARE_STATISTIC_INFO share_statistic_info;
@@ -2602,6 +2642,11 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 {
     
     tsdk_rename_self(_confHandle, (TSDK_CHAR *)[nikname UTF8String]);
+}
+
+- (void)didReceiveMemoryWarning
+{
+    DDLogInfo(@"didReceiveMemoryWarning");
 }
 
 @end

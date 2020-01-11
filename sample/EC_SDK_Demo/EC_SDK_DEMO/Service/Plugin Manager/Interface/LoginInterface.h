@@ -33,7 +33,7 @@
  *Indicates login service delegate
  *登陆业务代理
  */
-@property (nonatomic, assign)id<LoginServiceDelegate> delegate;
+@property (nonatomic, weak)id<LoginServiceDelegate> delegate;
 
 /**
  *Indicates current login info

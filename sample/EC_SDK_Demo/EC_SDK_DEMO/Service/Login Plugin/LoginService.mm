@@ -91,11 +91,11 @@
 -(void)respondsLoginDelegateWithType:(TUP_LOGIN_EVENT_TYPE)type result:(NSDictionary *)resultDictionary
 {
     DDLogInfo(@"post to UI");
-    if ([self.delegate respondsToSelector:@selector(loginEventCallback:result:)])
+    if (self.delegate && [self.delegate respondsToSelector:@selector(loginEventCallback:result:)])
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate loginEventCallback:type result:resultDictionary];
-        });
+//        });
     }
 }
 

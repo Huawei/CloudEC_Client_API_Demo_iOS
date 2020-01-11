@@ -121,13 +121,17 @@ typedef NS_ENUM(NSInteger, ESpaceConfListSection){
 #pragma mark - Voice conference ballback
 -(void)ecConferenceEventCallback:(EC_CONF_E_TYPE)ecConfEvent result:(NSDictionary *)resultDictionary
 {
-    if (ecConfEvent == CONF_E_GET_CONFLIST) {
-        _confListAll = resultDictionary[ECCONF_LIST_KEY];
-        [self reloadDataWithConfList:_confListAll];
-    }
-    if (ecConfEvent == CONF_E_ATTENDEE_UPDATE_INFO) {
-        DDLogInfo(@"ConfListViewController,CONF_E_ATTENDEE_UPDATE_INFO");
-    }
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (ecConfEvent == CONF_E_GET_CONFLIST) {
+            weakSelf.confListAll = resultDictionary[ECCONF_LIST_KEY];
+            [weakSelf reloadDataWithConfList:_confListAll];
+        }
+        if (ecConfEvent == CONF_E_ATTENDEE_UPDATE_INFO) {
+            DDLogInfo(@"ConfListViewController,CONF_E_ATTENDEE_UPDATE_INFO");
+        }
+    });
+    
 }
 
 - (IBAction)createConf:(id)sender {

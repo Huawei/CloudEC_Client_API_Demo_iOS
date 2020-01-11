@@ -65,9 +65,10 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
 
 - (void)loginAuthFailed
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self showMessage:@"lgoin faild! auth failed!"];
-        [self hiddenActivityIndicator:YES];
+        [weakSelf showMessage:@"lgoin faild! auth failed!"];
+        [weakSelf hiddenActivityIndicator:YES];
     });
     
 }
@@ -122,15 +123,16 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     user.password = self.passwordTextField.text;
     [CommonUtils userDefaultSaveValue:self.accountTextField.text forKey:USER_ACCOUNT];
     [CommonUtils userDefaultSaveValue:self.passwordTextField.text forKey:USER_PASSWORD];
+    __weak typeof(self) weakSelf = self;
     [[ManagerService loginService] authorizeLoginWithLoginInfo:user completionBlock:^(BOOL isSuccess, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (!isSuccess) {
-                [self showMessage:[NSString stringWithFormat:@"Login Fail!code:%d",error.code]];
-                [self hiddenActivityIndicator:YES];
+                [weakSelf showMessage:[NSString stringWithFormat:@"Login Fail!code:%d",error.code]];
+                [weakSelf hiddenActivityIndicator:YES];
                 return ;
             }
             
-            [self hiddenActivityIndicator:YES];
+            [weakSelf hiddenActivityIndicator:YES];
             UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
             ViewController *baseViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"ViewController"];
             [UIApplication sharedApplication].delegate.window.rootViewController = baseViewController;

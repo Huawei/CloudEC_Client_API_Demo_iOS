@@ -1643,11 +1643,11 @@
  */
 -(void)respondsCallDelegateWithType:(TUP_CALL_EVENT_TYPE)type result:(NSDictionary *)resultDictionary
 {
-    if ([self.delegate respondsToSelector:@selector(callEventCallback:result:)])
+    if (self.delegate && [self.delegate respondsToSelector:@selector(callEventCallback:result:)])
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate callEventCallback:type result:resultDictionary];
-        });
+//        });
     }
 }
 
@@ -1657,11 +1657,11 @@
  */
 -(void)respondsCTDDelegateWithType:(TUP_CTD_EVENT_TYPE)type result:(NSDictionary *)resultDictionary
 {
-    if ([self.delegate respondsToSelector:@selector(ctdCallEventCallback:result:)])
+    if (self.delegate && [self.delegate respondsToSelector:@selector(ctdCallEventCallback:result:)])
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
+//        dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate ctdCallEventCallback:type result:resultDictionary];
-        });
+//        });
     }
 }
 

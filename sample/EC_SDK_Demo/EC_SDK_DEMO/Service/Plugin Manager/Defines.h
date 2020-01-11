@@ -105,6 +105,9 @@ extern NSString* const RECEIVE_SCREEN_SHARE_DATA_NOTIFY;
 
 extern NSString* const RECEIVE_SCREEN_SHARE_DATA_KEY;
 
+extern NSString* const DATA_SHARE_SELF_START_NOTIFY;
+
+extern NSString* const DATA_SHARE_STOP_NOTIFY;
 
 /**
  * [en]This enumeration is used to describe the call type.

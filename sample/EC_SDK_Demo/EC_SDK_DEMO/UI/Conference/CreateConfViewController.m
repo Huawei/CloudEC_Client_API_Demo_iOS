@@ -1021,6 +1021,7 @@
 
 -(void)ecConferenceEventCallback:(EC_CONF_E_TYPE)ecConfEvent result:(NSDictionary *)resultDictionary
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         switch (ecConfEvent)
         {
@@ -1030,11 +1031,11 @@
 //                ECCurrentConfInfo *currentConfInfo = resultDictionary[ECCONF_BOOK_CONF_INFO_KEY];
                 if (!result)
                 {
-                    [self showMessage:@"Create conference failed"];
+                    [weakSelf showMessage:@"Create conference failed"];
                     return ;
                 }
                 else {
-                    [self showMessage:@"Create conference success"];
+                    [weakSelf showMessage:@"Create conference success"];
                 }
                 break;
             }
@@ -1049,7 +1050,7 @@
                 BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
                 if (!result)
                 {
-                    [self dismissViewControllerAnimated:YES completion:nil];
+                    [weakSelf dismissViewControllerAnimated:YES completion:nil];
                     return;
                 }
                 break;

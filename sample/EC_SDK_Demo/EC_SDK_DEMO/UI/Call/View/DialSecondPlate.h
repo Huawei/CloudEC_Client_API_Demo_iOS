@@ -16,7 +16,7 @@
 
 @interface DialSecondPlate : UIView
 
-@property (nonatomic, assign)id<DialSecondPlateDelegate> delegate;
+@property (nonatomic, weak)id<DialSecondPlateDelegate> delegate;
 
 +(instancetype)shareInstance;
 

@@ -62,19 +62,20 @@
 
 -(void)ecConferenceEventCallback:(EC_CONF_E_TYPE)ecConfEvent result:(NSDictionary *)resultDictionary
 {
+    __weak typeof(self) weakSelf = self;
     switch (ecConfEvent)
     {
         case CONF_E_ATTENDEE_UPDATE_INFO:
         {
             dispatch_async(dispatch_get_main_queue(), ^{
 
-                _currentAttendeeArray = [NSArray arrayWithArray:[ManagerService confService].haveJoinAttendeeArray];
-                if (_currentAttendeeArray.count > 0) {
+                weakSelf.currentAttendeeArray = [NSArray arrayWithArray:[ManagerService confService].haveJoinAttendeeArray];
+                if (weakSelf.currentAttendeeArray.count > 0) {
                     
-                    [self.attendeeListTableView reloadData];
+                    [weakSelf.attendeeListTableView reloadData];
                 }
                 
-                NSString *selfNumber = self.sipAccount;
+                NSString *selfNumber = weakSelf.sipAccount;
                 if ([ManagerService confService].selfJoinNumber) {
                     selfNumber = [ManagerService confService].selfJoinNumber;
                 }
@@ -83,12 +84,12 @@
                 {
                     if ([tempAttendee.number isEqualToString:selfNumber] || tempAttendee.isSelf)
                     {
-                        _mineConfInfo = tempAttendee;
+                        weakSelf.mineConfInfo = tempAttendee;
                         
                     }
                 }
                 
-                [self updateBtnStatus];
+                [weakSelf updateBtnStatus];
 //                [self updateRightBarBottonItems];
             });
         }
@@ -99,7 +100,7 @@
             if (!result)
             {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self showMessage:@"Upgrade data conference failed!"];
+                    [weakSelf showMessage:@"Upgrade data conference failed!"];
                 });
             }
         }
@@ -112,17 +113,17 @@
                 if(result){
                     BOOL ismute = [resultDictionary[ECCONF_MUTE_KEY] boolValue];
                     if(ismute){
-                        [self showMessage:@"Mute conference success."];
-                        [_muteallBtn setImage:[UIImage imageNamed:@"conf_tab_muteall_highlight"] forState:UIControlStateNormal];
-                        [_unmuteallBtn setImage:[UIImage imageNamed:@"conf_tab_cancelmuteall"] forState:UIControlStateNormal];
+                        [weakSelf showMessage:@"Mute conference success."];
+                        [weakSelf.muteallBtn setImage:[UIImage imageNamed:@"conf_tab_muteall_highlight"] forState:UIControlStateNormal];
+                        [weakSelf.unmuteallBtn setImage:[UIImage imageNamed:@"conf_tab_cancelmuteall"] forState:UIControlStateNormal];
                     }else{
-                        [self showMessage:@"Unmute conference success."];
-                        [_muteallBtn setImage:[UIImage imageNamed:@"conf_tab_muteall"] forState:UIControlStateNormal];
-                        [_unmuteallBtn setImage:[UIImage imageNamed:@"conf_tab_cancelmuteall_highlight"] forState:UIControlStateNormal];
+                        [weakSelf showMessage:@"Unmute conference success."];
+                        [weakSelf.muteallBtn setImage:[UIImage imageNamed:@"conf_tab_muteall"] forState:UIControlStateNormal];
+                        [weakSelf.unmuteallBtn setImage:[UIImage imageNamed:@"conf_tab_cancelmuteall_highlight"] forState:UIControlStateNormal];
                     }
                 }
                 else{
-                    [self showMessage:@"Mute conf failed."];
+                    [weakSelf showMessage:@"Mute conf failed."];
                 }
             });
         }
@@ -133,16 +134,16 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (result) {
                     if(![ManagerService confService].currentConfBaseInfo.lock_state){
-                        [self showMessage:@"Lock conference success."];
-                        _lockConfLabel.text = @"UnlockConf";
+                        [weakSelf showMessage:@"Lock conference success."];
+                        weakSelf.lockConfLabel.text = @"UnlockConf";
                     }else{
-                        [self showMessage:@"Unlock conference success."];
-                        _lockConfLabel.text = @"LockConf";
+                        [weakSelf showMessage:@"Unlock conference success."];
+                        weakSelf.lockConfLabel.text = @"LockConf";
                     }
                     
                 }
                 else {
-                    [self showMessage:@"Lock conference failed."];
+                    [weakSelf showMessage:@"Lock conference failed."];
                 }
             });
             break;
@@ -150,7 +151,10 @@
         case CONF_E_SPEAKER_LIST:
         {
             _currentSpeakArray = [NSMutableArray arrayWithArray:resultDictionary[ECCONF_SPEAKERLIST_KEY]];
-            [self.attendeeListTableView reloadData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf.attendeeListTableView reloadData];
+            });
+            
             break;
         }
         case CONF_E_END_RESULT:
@@ -166,13 +170,13 @@
             DDLogInfo(@"DATA_CONF_JOIN_RESOULT: %d", isSuccess);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (isSuccess) {
-                    [self showMessage:@"Join data conf success."];
-                    _dataMeetingBtn.enabled = NO;
-                    [self stopTupBfcpCapability];
-                    _isJoinDataConfSuccess = YES;
+                    [weakSelf showMessage:@"Join data conf success."];
+                    weakSelf.dataMeetingBtn.enabled = NO;
+                    [weakSelf stopTupBfcpCapability];
+                    weakSelf.isJoinDataConfSuccess = YES;
                 }else {
-                    [self showMessage:@"Join data conf failed."];
-                    _isJoinDataConfSuccess = NO;
+                    [weakSelf showMessage:@"Join data conf failed."];
+                    weakSelf.isJoinDataConfSuccess = NO;
                 }
 //                [self updateRightBarBottonItems];
             });
@@ -183,9 +187,9 @@
             BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (result) {
-                    [self showMessage:@"request chairman success."];
+                    [weakSelf showMessage:@"request chairman success."];
                 }else {
-                    [self showMessage:@"request chairman failed."];
+                    [weakSelf showMessage:@"request chairman failed."];
                 }
             });
             break;
@@ -195,9 +199,9 @@
             BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (result) {
-                    [self showMessage:@"release chairman success."];
+                    [weakSelf showMessage:@"release chairman success."];
                 }else {
-                    [self showMessage:@"release chairman failed."];
+                    [weakSelf showMessage:@"release chairman failed."];
                 }
             });
             break;
@@ -303,8 +307,9 @@
 
 - (void)gobackBtnAction
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.navigationController popViewControllerAnimated:YES];
+        [weakSelf.navigationController popViewControllerAnimated:YES];
     });
 }
 
@@ -320,8 +325,9 @@
 
 -(void)finishConference
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.navigationController.navigationBarHidden = NO;
+        weakSelf.navigationController.navigationBarHidden = NO;
     });
 }
 

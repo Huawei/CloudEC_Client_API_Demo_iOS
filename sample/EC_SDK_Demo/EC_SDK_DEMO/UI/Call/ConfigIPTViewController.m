@@ -297,19 +297,20 @@
 
 - (void)iptConfigCallBack:(IPTConfigType)type result:(BOOL)isSuccess;
 {
+    __weak typeof(self) weakSelf = self;
     switch (type) {
         case IPT_REG_DND:
         {
             if(!isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     _dndSwitch.on = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }else{
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }
         }
@@ -319,13 +320,13 @@
             if(!isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     _dndSwitch.on = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }else{
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }
         }
@@ -335,14 +336,14 @@
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     _cfuNumberTextField.enabled = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     _cfuSwitch.on = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -351,15 +352,15 @@
         {
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfuNumberTextField.enabled = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    weakSelf.cfuNumberTextField.enabled = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfuSwitch.on = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfuSwitch.on = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -369,14 +370,14 @@
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     _cfbNumberTextField.enabled = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _cfbSwitch.on = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfbSwitch.on = NO;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -385,15 +386,15 @@
         {
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfbNumberTextField.enabled = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    weakSelf.cfbNumberTextField.enabled = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _cfbSwitch.on = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfbSwitch.on = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -402,15 +403,15 @@
         {
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfnrNumberTextField.enabled = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    weakSelf.cfnrNumberTextField.enabled = NO;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _cfnrSwitch.on = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfnrSwitch.on = NO;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -419,15 +420,15 @@
         {
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfnrNumberTextField.enabled = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    weakSelf.cfnrNumberTextField.enabled = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _cfnrSwitch.on = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfnrSwitch.on = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -436,15 +437,15 @@
         {
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfnaNumberTextField.enabled = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    weakSelf.cfnaNumberTextField.enabled = NO;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _cfnaSwitch.on = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfnaSwitch.on = NO;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -453,15 +454,15 @@
         {
             if(isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _cfnaNumberTextField.enabled = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    weakSelf.cfnaNumberTextField.enabled = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }else{
                 dispatch_sync(dispatch_get_main_queue(), ^{
-                    _cfnaSwitch.on = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.cfnaSwitch.on = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }
         }
@@ -470,14 +471,14 @@
         {
             if(!isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _callWaitSwitch.on = NO;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.callWaitSwitch.on = NO;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }else{
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }
         }
@@ -486,14 +487,14 @@
         {
             if(!isSuccess){
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    _callWaitSwitch.on = YES;
-                    [self hideWaitView];
-                    [self showMessage:@"Failed!"];
+                    weakSelf.callWaitSwitch.on = YES;
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Failed!"];
                 });
             }else{
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self hideWaitView];
-                    [self showMessage:@"Success!"];
+                    [weakSelf hideWaitView];
+                    [weakSelf showMessage:@"Success!"];
                 });
             }
         }

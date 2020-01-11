@@ -381,9 +381,10 @@ typedef NS_ENUM(NSUInteger, SelectedPickerType) {
 
 - (void) contectInsetOfTableviewWithTop:(CGFloat)top
 {
+    __weak typeof(self) weakSelf = self;
     if (self.view.frame.size.width > self.view.frame.size.height) {
         [UIView animateWithDuration:0.3 animations:^{
-            self.tableView.contentInset = UIEdgeInsetsMake(top, 0, 0, 0);
+            weakSelf.tableView.contentInset = UIEdgeInsetsMake(top, 0, 0, 0);
         }];
     }
 }
@@ -398,8 +399,9 @@ typedef NS_ENUM(NSUInteger, SelectedPickerType) {
     
     //竖屏
     CGFloat height = 0;
+    __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.3 animations:^{
-        self.tableView.contentInset = UIEdgeInsetsMake(height, 0, 0, 0);
+        weakSelf.tableView.contentInset = UIEdgeInsetsMake(height, 0, 0, 0);
     }];
     
     self.lastSelectIndex = NoSelectedTimePicker;

@@ -248,6 +248,7 @@ static CallWindowController *g_windowCtrl = nil;
 }
 
 - (void)startReplayKitBroadcast {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         
         DDLogInfo(@"enter startReplayKitBroadcast ");
@@ -257,11 +258,11 @@ static CallWindowController *g_windowCtrl = nil;
             NSString *mainBundleId = [[NSBundle mainBundle]bundleIdentifier];
             NSString *extensionId = [mainBundleId stringByAppendingString:@".ScreenShareExtension"];
             if (isNeedSetpreferredExtension) {
-                self.broadcastPickerView.preferredExtension = extensionId;
+                weakSelf.broadcastPickerView.preferredExtension = extensionId;
             }
-            self.broadcastPickerView.showsMicrophoneButton = NO;
+            weakSelf.broadcastPickerView.showsMicrophoneButton = NO;
             
-            for (UIView *view in self.broadcastPickerView.subviews) {
+            for (UIView *view in weakSelf.broadcastPickerView.subviews) {
                 if ([view isKindOfClass:[UIButton class]]) {
                     if (@available(iOS 13, *)) {
                         [(UIButton *)view sendActionsForControlEvents:UIControlEventTouchUpInside];
@@ -276,16 +277,17 @@ static CallWindowController *g_windowCtrl = nil;
 
 -(void)confIcomingDeal:(NSNotification *)notify
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSDictionary *resultDic = notify.userInfo;
         CallInfo *callInfo = resultDic[TUP_CONF_INCOMING_KEY];
-        _currentTupCallInfo = callInfo;
-        _isJoinConfCall = YES;
+        weakSelf.currentTupCallInfo = callInfo;
+        weakSelf.isJoinConfCall = YES;
         
-        TUP_CALL_TYPE callType = (TUP_CALL_TYPE)self.currentTupCallInfo.stateInfo.callType;
+        TUP_CALL_TYPE callType = (TUP_CALL_TYPE)weakSelf.currentTupCallInfo.stateInfo.callType;
         NSString *commingCallNumber = [NSString stringWithFormat:@"%@",callInfo.stateInfo.callNum];
-        [self.callWindow makeKeyAndVisible];
-        [[CallTipView shareInstance] showCommingCallTipViewInUIView:self.callWindow.rootViewController.view delegate:self];
+        [weakSelf.callWindow makeKeyAndVisible];
+        [[CallTipView shareInstance] showCommingCallTipViewInUIView:weakSelf.callWindow.rootViewController.view delegate:weakSelf];
         [CallTipView shareInstance].callId = callInfo.stateInfo.callId;
         [CallTipView shareInstance].commingView.displayCallNumberLabel.text = commingCallNumber;
         [CallTipView shareInstance].commingView.currentCallType = callType;
@@ -295,35 +297,36 @@ static CallWindowController *g_windowCtrl = nil;
 
 -(void)removeCallViewNotify
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
         
-        [self removeCallView:[self getSelfCurrentConfId]];
-        [self.callWindow setHidden:YES];
-        _isJoinConfCall = YES;
+        [weakSelf removeCallView:[weakSelf getSelfCurrentConfId]];
+        [weakSelf.callWindow setHidden:YES];
+        weakSelf.isJoinConfCall = YES;
         
-        _firstSVCView = [EAGLView getFirstSVCView];
-        _secondSVCView = [EAGLView getSecondSVCView];
-        _thirdSVCView = [EAGLView getThirdSVCView];
+        weakSelf.firstSVCView = [EAGLView getFirstSVCView];
+        weakSelf.secondSVCView = [EAGLView getSecondSVCView];
+        weakSelf.thirdSVCView = [EAGLView getThirdSVCView];
         
-        _firstSVCView.currentlabel = 0;
-        _firstSVCView.currentAttendee = nil;
-        _secondSVCView.currentlabel = 0;
-        _secondSVCView.currentAttendee = nil;
-        _thirdSVCView.currentlabel = 0;
-        _secondSVCView.currentAttendee = nil;
+        weakSelf.firstSVCView.currentlabel = 0;
+        weakSelf.firstSVCView.currentAttendee = nil;
+        weakSelf.secondSVCView.currentlabel = 0;
+        weakSelf.secondSVCView.currentAttendee = nil;
+        weakSelf.thirdSVCView.currentlabel = 0;
+        weakSelf.secondSVCView.currentAttendee = nil;
         
-        _isFirstSetWindow = YES;
+        weakSelf.isFirstSetWindow = YES;
         
-        [self updateVideoWindows];
+        [weakSelf updateVideoWindows];
         
         if (![ManagerService confService].hasConfResumedFirstRewatch) {
             [AppDelegate goConference];
         }
         
-        BOOL isSuccess = [[ManagerService callService] switchCameraIndex:_cameraCaptureIndex callId:[self getSelfCurrentConfId]];
+        BOOL isSuccess = [[ManagerService callService] switchCameraIndex:weakSelf.cameraCaptureIndex callId:[weakSelf getSelfCurrentConfId]];
         if (isSuccess) {
-            [self deviceMotionOrientationChanged];
+            [weakSelf deviceMotionOrientationChanged];
         }
         
     });
@@ -438,6 +441,7 @@ static CallWindowController *g_windowCtrl = nil;
 
 - (void)deviceMotionOrientationChanged
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSUInteger cameraRotation = 0;
         NSUInteger displayRotation = 0;
@@ -451,10 +455,10 @@ static CallWindowController *g_windowCtrl = nil;
             return;
         }
         BOOL needAdjust = YES;
-        if (_isJoinConfCall) {
-            needAdjust = [[DeviceMotionManager sharedInstance] conferenceAdjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:_cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
+        if (weakSelf.isJoinConfCall) {
+            needAdjust = [[DeviceMotionManager sharedInstance] conferenceAdjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:weakSelf.cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
         }else{
-            needAdjust = [[DeviceMotionManager sharedInstance] adjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:_cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
+            needAdjust = [[DeviceMotionManager sharedInstance] adjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:weakSelf.cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
         }
         
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
@@ -473,18 +477,18 @@ static CallWindowController *g_windowCtrl = nil;
         NSUInteger newCameraRotation = cameraRotation;
         NSUInteger newDisplayRotation = displayRotation;
         
-        [[ManagerService callService] rotationCameraCapture:newCameraRotation callId:[self getSelfCurrentConfId]];
+        [[ManagerService callService] rotationCameraCapture:newCameraRotation callId:[weakSelf getSelfCurrentConfId]];
         
-        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:YES];
+        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[weakSelf getSelfCurrentConfId] isLocalWnd:YES];
         
         BOOL isLandscape = NO;
         if ([DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationLandscapeLeft || [DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationLandscapeRight) {
             isLandscape = YES;
         }
-        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[self getSelfCurrentConfId] isLandscape:isLandscape];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[weakSelf getSelfCurrentConfId] isLandscape:isLandscape];
         
-        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:NO];
-        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[self getSelfCurrentConfId] isLandscape:isLandscape];
+        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[weakSelf getSelfCurrentConfId] isLocalWnd:NO];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[weakSelf getSelfCurrentConfId] isLandscape:isLandscape];
         
     });
 }
@@ -522,6 +526,7 @@ static CallWindowController *g_windowCtrl = nil;
         }
         case CALL_RINGBACK:
         {
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
                 BOOL isPlay = [resultDictionary[TSDK_CALL_RINGBACK_KEY] boolValue];
                 if (isPlay)
@@ -531,7 +536,7 @@ static CallWindowController *g_windowCtrl = nil;
                     [[ManagerService callService] mediaStartPlayWithFile:wavPath];
                 }
                 else {
-                    [self performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
+                    [weakSelf performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
                 }
             });
             break;
@@ -587,74 +592,80 @@ static CallWindowController *g_windowCtrl = nil;
         {
             _hasAddView = NO;
             NSString *callId = resultDictionary[CALL_ID];
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                CallView *callView = [self callViewWithCallId:callId.intValue];
-                CallInfo *callInfo = [self callInfoWithCallId:callId.intValue];
+                CallView *callView = [weakSelf callViewWithCallId:callId.intValue];
+                CallInfo *callInfo = [weakSelf callInfoWithCallId:callId.intValue];
                 callInfo.stateInfo.callType = CALL_AUDIO;
                 callView.currentTupCallInfo = callInfo;
                 [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
-                [self removeGLViewInCallView:callView];
+                [weakSelf removeGLViewInCallView:callView];
             });
             break;
         }
         case CALL_REFUSE_OPEN_VIDEO:
         {
+            __weak typeof(self) weakSelf = self;
             NSString *callId = resultDictionary[CALL_ID];
             dispatch_async(dispatch_get_main_queue(), ^{
-                CallView *callView = [self callViewWithCallId:callId.intValue];
-                CallInfo *callInfo = [self callInfoWithCallId:callId.intValue];
+                CallView *callView = [weakSelf callViewWithCallId:callId.intValue];
+                CallInfo *callInfo = [weakSelf callInfoWithCallId:callId.intValue];
                 callInfo.stateInfo.callType = CALL_VIDEO;
                 callView.currentTupCallInfo = callInfo;
                 [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
-                [self addGLViewInCallView:callView];
+                [weakSelf addGLViewInCallView:callView];
             });
             break;
         }
         case CALL_HOLD_RESULT:
         {
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSString *callId = resultDictionary[CALL_ID];
                 BOOL isHoldSuccess = [resultDictionary[TSDK_CALL_HOLD_RESULT_KEY] boolValue];
-                CallView *currentCallView = [self callViewWithCallId:callId.intValue];
+                CallView *currentCallView = [weakSelf callViewWithCallId:callId.intValue];
                 currentCallView.isHold = isHoldSuccess;
                 if (!isHoldSuccess)
                 {
-                    [self showMessage:@"Hold fail!"];
+                    [weakSelf showMessage:@"Hold fail!"];
                 }
             });
             break;
         }
         case CALL_UNHOLD_RESULT:
         {
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
                 NSString *callId = resultDictionary[CALL_ID];
                 BOOL isUnHoldSuccess = [resultDictionary[TSDK_CALL_UNHOLD_RESULT_KEY] boolValue];
-                CallView *currentCallView = [self callViewWithCallId:callId.intValue];
+                CallView *currentCallView = [weakSelf callViewWithCallId:callId.intValue];
                 currentCallView.isHold = !isUnHoldSuccess;
                 if (!isUnHoldSuccess)
                 {
-                    [self showMessage:@"Unhold fail!"];
+                    [weakSelf showMessage:@"Unhold fail!"];
                 }
             });
             break;
         }
         case CALL_TRANSFER_RESULT:
         {
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
                 BOOL isTransferSuccess = [resultDictionary[TSDK_CALL_TRANSFER_RESULT_KEY] boolValue];
                 if (isTransferSuccess)
                 {
-                    [self showMessage:@"Transfer success"];
+                    [weakSelf showMessage:@"Transfer success"];
                     return ;
                 }
-                [self showMessage:@"Transfer fail"];
+                [weakSelf showMessage:@"Transfer fail"];
             });
             break;
         }
         case CALL_DIVERT_FAILED:
         {
+            __weak typeof(self) weakSelf = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self showMessage:@"Divert transfer failed!"];
+                [weakSelf showMessage:@"Divert transfer failed!"];
             });
             break;
         }
@@ -665,16 +676,17 @@ static CallWindowController *g_windowCtrl = nil;
 
 -(void)handleCallConnectEventWithResult:(NSDictionary *)resultDictionary
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         
         [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
         
         CallInfo *callInfo = resultDictionary[TSDK_CALL_INFO_KEY];
-        self.currentTupCallInfo = callInfo;
-        if (_callInfoArray.count > 0)
+        weakSelf.currentTupCallInfo = callInfo;
+        if (weakSelf.callInfoArray.count > 0)
         {
             BOOL isExist = NO;
-            for (CallInfo *tempCallInfo in _callInfoArray)
+            for (CallInfo *tempCallInfo in weakSelf.callInfoArray)
             {
                 if (tempCallInfo.stateInfo.callId == callInfo.stateInfo.callId)
                 {
@@ -683,25 +695,25 @@ static CallWindowController *g_windowCtrl = nil;
             }
             if (!isExist)
             {
-                [_callInfoArray addObject:callInfo];
+                [weakSelf.callInfoArray addObject:callInfo];
             }
         }
         else
         {
-            [_callInfoArray addObject:callInfo];
+            [weakSelf.callInfoArray addObject:callInfo];
         }
         
 //        if (!callInfo.isFocus) {
-            [self.callWindow makeKeyAndVisible];
-            [self addCallView];
+            [weakSelf.callWindow makeKeyAndVisible];
+            [weakSelf addCallView];
 //        }
 //        else {
 //            [self removeCallView:_currentTupCallInfo.stateInfo.callId];
 //            [self.callWindow setHidden:YES];
 //        }
         
-        if (self.currentTupCallInfo.stateInfo.callType == CALL_VIDEO) {
-            [self setVideoWindow];
+        if (weakSelf.currentTupCallInfo.stateInfo.callType == CALL_VIDEO) {
+            [weakSelf setVideoWindow];
         }
         
         if (callInfo.stateInfo.callId == [CallTipView shareInstance].callId) {
@@ -709,8 +721,8 @@ static CallWindowController *g_windowCtrl = nil;
             [CallTipView shareInstance].callId = 0;
         }
         
-        _callTimeOut = NO;
-        [self performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
+        weakSelf.callTimeOut = NO;
+        [weakSelf performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
         
         if (callInfo.stateInfo.callId == [CallEndView shareInstance].callId) {
             [[CallEndView shareInstance] removeCallEndView];
@@ -721,19 +733,20 @@ static CallWindowController *g_windowCtrl = nil;
 
 -(void)handleCallIncommingEventWithResult:(NSDictionary *)resultDictionary
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         CallInfo *callInfo = resultDictionary[TSDK_CALL_INFO_KEY];
-        _currentTupCallInfo = callInfo;
-        _isJoinConfCall = NO;
+        weakSelf.currentTupCallInfo = callInfo;
+        weakSelf.isJoinConfCall = NO;
 //        if (callInfo.isFocus) {
 //            [self clickCommingTipViewButton:ANSWER_COMMING_CALL];
 //            return ;
 //        }
         
-        TUP_CALL_TYPE callType = (TUP_CALL_TYPE)self.currentTupCallInfo.stateInfo.callType;
+        TUP_CALL_TYPE callType = (TUP_CALL_TYPE)weakSelf.currentTupCallInfo.stateInfo.callType;
         NSString *commingCallNumber = [NSString stringWithFormat:@"%@",callInfo.stateInfo.callNum];
-        [self.callWindow makeKeyAndVisible];
-        [[CallTipView shareInstance] showCommingCallTipViewInUIView:self.callWindow.rootViewController.view delegate:self];
+        [weakSelf.callWindow makeKeyAndVisible];
+        [[CallTipView shareInstance] showCommingCallTipViewInUIView:weakSelf.callWindow.rootViewController.view delegate:weakSelf];
         [CallTipView shareInstance].callId = callInfo.stateInfo.callId;
         [CallTipView shareInstance].commingView.displayCallNumberLabel.text = commingCallNumber;
         [CallTipView shareInstance].commingView.currentCallType = callType;
@@ -747,6 +760,7 @@ static CallWindowController *g_windowCtrl = nil;
 -(void)handleCallUpgrageVideoPassiveEventWithResult:(NSDictionary *)resultDictionary
 {
     NSString *callId = resultDictionary[CALL_ID];
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"Upgrade to video call" preferredStyle:UIAlertControllerStyleAlert];
@@ -757,74 +771,75 @@ static CallWindowController *g_windowCtrl = nil;
             [[ManagerService callService] replyAddVideoCallIsAccept:YES callId:callId.intValue];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                CallView *callView = [self callViewWithCallId:callId.intValue];
-                CallInfo *callInfo = [self callInfoWithCallId:callId.intValue];
+                CallView *callView = [weakSelf callViewWithCallId:callId.intValue];
+                CallInfo *callInfo = [weakSelf callInfoWithCallId:callId.intValue];
                 callInfo.stateInfo.callType = CALL_VIDEO;
                 callView.currentTupCallInfo = callInfo;
                 [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
-                [self addGLViewInCallView:callView];
+                [weakSelf addGLViewInCallView:callView];
             });
             
         }];
         [alertController addAction:refuseAction];
         [alertController addAction:answerAction];
-        [self.callWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+        [weakSelf.callWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
     });
 }
 
 -(void)handleCallCloseEvent:(NSDictionary *)resultDic
 {
     CallInfo *callInfo = resultDic[TSDK_CALL_INFO_KEY];
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
-        [self performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
-        [self removeCallView:callInfo.stateInfo.callId];
-        if (_callInfoArray.count > 0)
+        [weakSelf performSelector:@selector(delayStopRing) withObject:nil afterDelay:0.5];
+        [weakSelf removeCallView:callInfo.stateInfo.callId];
+        if (weakSelf.callInfoArray.count > 0)
         {
-            NSMutableArray *tempMutArray = [NSMutableArray arrayWithArray:_callInfoArray];
+            NSMutableArray *tempMutArray = [NSMutableArray arrayWithArray:weakSelf.callInfoArray];
             for (CallInfo *tempCallInfo in tempMutArray)
             {
                 DDLogInfo(@"_callInfoArray tempCallInfo : %d",tempCallInfo.stateInfo.callId);
                 if (tempCallInfo.stateInfo.callId == callInfo.stateInfo.callId)
                 {
                     DDLogInfo(@"_callInfoArray removeObject : %d",tempCallInfo.stateInfo.callId);
-                    [_callInfoArray removeObject:tempCallInfo];
+                    [weakSelf.callInfoArray removeObject:tempCallInfo];
                 }
             }
         }
         
-        if (callInfo.stateInfo.callId == [self getSelfCurrentConfId]) {
-            if (_callInfoArray.count > 0)
+        if (callInfo.stateInfo.callId == [weakSelf getSelfCurrentConfId]) {
+            if (weakSelf.callInfoArray.count > 0)
             {
-                _currentTupCallInfo = _callInfoArray.lastObject;
-                CallView *currentCallView = [self callViewWithCallId:[self getSelfCurrentConfId]];
-                [[ManagerService callService] unHoldCallWithCallId:[self getSelfCurrentConfId]];
-                [self.callWindow.rootViewController.view bringSubviewToFront:currentCallView];
-                _talkingCtrl.orientation = currentCallView.showOrient;
+                weakSelf.currentTupCallInfo = weakSelf.callInfoArray.lastObject;
+                CallView *currentCallView = [weakSelf callViewWithCallId:[weakSelf getSelfCurrentConfId]];
+                [[ManagerService callService] unHoldCallWithCallId:[weakSelf getSelfCurrentConfId]];
+                [weakSelf.callWindow.rootViewController.view bringSubviewToFront:currentCallView];
+                weakSelf.talkingCtrl.orientation = currentCallView.showOrient;
                 [CommonUtils setToOrientation:(UIDeviceOrientation)currentCallView.showOrient];
             }
         }
         
-        if (_callInfoArray.count == 0) {
-            _currentTupCallInfo = nil;
+        if (weakSelf.callInfoArray.count == 0) {
+            weakSelf.currentTupCallInfo = nil;
             DDLogInfo(@"_callInfoArray removeAllObjects");
-            _talkingCtrl.orientation = UIInterfaceOrientationPortrait;
+            weakSelf.talkingCtrl.orientation = UIInterfaceOrientationPortrait;
             if (UIDeviceOrientationPortrait != [[UIDevice currentDevice] orientation])
             {
                 [[UIDevice currentDevice] setValue:[NSNumber numberWithInt:UIDeviceOrientationPortrait] forKey:@"orientation"];
             }
 //            [CommonUtils setToOrientation:UIDeviceOrientationPortrait];
-            [self.callWindow setHidden:YES];
+            [weakSelf.callWindow setHidden:YES];
         }
         
-        _isCallTransToConf = NO;
+        weakSelf.isCallTransToConf = NO;
         
         if ([CallTipView shareInstance].callId == callInfo.stateInfo.callId) {
             [[CallTipView shareInstance] removeCommingCallTipView];
             [CallTipView shareInstance].callId = 0;
         }
         else {
-            [self.callWindow.rootViewController.view bringSubviewToFront:[CallTipView shareInstance].commingView];
+            [weakSelf.callWindow.rootViewController.view bringSubviewToFront:[CallTipView shareInstance].commingView];
         }
         
         if ([CallEndView shareInstance].callId == callInfo.stateInfo.callId) {
@@ -832,14 +847,14 @@ static CallWindowController *g_windowCtrl = nil;
             [CallEndView shareInstance].callId = 0;
         }
         else {
-            [self.callWindow.rootViewController.view bringSubviewToFront:[CallEndView shareInstance]];
+            [weakSelf.callWindow.rootViewController.view bringSubviewToFront:[CallEndView shareInstance]];
         }
         
         [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
-        _isCallVideoOpeartionStatus = NO;
+        weakSelf.isCallVideoOpeartionStatus = NO;
 //        _cameraClose = YES;
-        _cameraCaptureIndex = 1;
-        _hasAddView = NO;
+        weakSelf.cameraCaptureIndex = 1;
+        weakSelf.hasAddView = NO;
         
     });
 }

@@ -686,10 +686,10 @@
 
 - (CGRect)popoverViewFrame {
     
-    CGSize superVSize = SCREEN_SIZE;
-    if (self.zoomViewImageShare.superview) {
-        superVSize = self.zoomViewImageShare.superview.frame.size;
-    }
+//    CGSize superVSize = SCREEN_SIZE;
+//    if (self.zoomViewImageShare.superview) {
+//        superVSize = self.zoomViewImageShare.superview.frame.size;
+//    }
     //CGSize superVSize = SCREEN_SIZE;
     //CGFloat buttonMidX = superVSize.width * 0.3; //middle X coordinate of the 2nd button (the button over which the popover appears)
     CGRect popverViewFrame=CGRectZero;
@@ -896,32 +896,33 @@
 
 -(void)PanGestureView:(UIView *)panView withPoint:(CGPoint)offset{
     
+    __weak typeof(self) weakSelf = self;
     [UIView animateWithDuration:0.2 animations:^{
         //x轴左右极限坐标
         CGFloat x=offset.x;
         //x 向右滑动
-        if (offset.x>0.0 && self.toolboxView.center.x + offset.x + screenPadding.right*2.4 > (kMainScreenWidth -self.toolboxView.frame.size.width/2))
+        if (offset.x>0.0 && weakSelf.toolboxView.center.x + offset.x + screenPadding.right*2.4 > (kMainScreenWidth -weakSelf.toolboxView.frame.size.width/2))
         {
             x = 0.0;
-        }else if (offset.x<0.0 && self.toolboxView.center.x+ offset.x - screenPadding.left < self.toolboxView.frame.size.width/2){
+        }else if (offset.x<0.0 && weakSelf.toolboxView.center.x+ offset.x - screenPadding.left < weakSelf.toolboxView.frame.size.width/2){
             x=0.0;
         }
 
         //y轴上下极限坐标
         CGFloat y=offset.y;
         //y向下滑动
-        if (offset.y>0.0 && self.toolboxView.center.y + offset.y + screenPadding.bottom > (self.toolboxView.superview.frame.size.height-self.toolboxView.frame.size.height/2))
+        if (offset.y>0.0 && weakSelf.toolboxView.center.y + offset.y + screenPadding.bottom > (weakSelf.toolboxView.superview.frame.size.height-weakSelf.toolboxView.frame.size.height/2))
         {
             y = 0.0;
         }else if(offset.y<0.0 && panView.center.y + offset.y - screenPadding.top <= panView.frame.size.height/2){
             y = 0.0;
         }
         if (x!=0.0||y!=0.0) {
-            self.popoverView.hidden=YES;
-            [self clearPopoverView];
+            weakSelf.popoverView.hidden=YES;
+            [weakSelf clearPopoverView];
         }
-        [self.toolboxView setCenter:CGPointMake(self.toolboxView.center.x + x, self.toolboxView.center.y + y)];
-        [self.popoverView setCenter:CGPointMake(self.popoverView.center.x+x, self.popoverView.center.y+y)];
+        [weakSelf.toolboxView setCenter:CGPointMake(weakSelf.toolboxView.center.x + x, weakSelf.toolboxView.center.y + y)];
+        [weakSelf.popoverView setCenter:CGPointMake(weakSelf.popoverView.center.x+x, weakSelf.popoverView.center.y+y)];
     }];
     
 }
@@ -1053,7 +1054,7 @@
                 self.shareImageView.frame = CGRectMake((FINALSVC_HEIGHT - finalWidth) / 2, 0, finalWidth, finalHeight);
             }
         }
-        DDLogInfo(@"manageDataViewFrameWith pwidth:%f,pHeight:%f,datawidth:%f",pWidth,pHeight,self.dataWidth);
+//        DDLogInfo(@"manageDataViewFrameWith pwidth:%f,pHeight:%f,datawidth:%f",pWidth,pHeight,self.dataWidth);
     } else {
         float widthScale = pWidth / FINAL_HEIGHT;
         float heightScale = pHeight / FINAL_WIDTH;
@@ -1073,7 +1074,7 @@
                 self.shareImageView.frame = CGRectMake((FINAL_HEIGHT - finalWidth) / 2, 0, finalWidth, finalHeight);
             }
         }
-        DDLogInfo(@"manageDataViewFrameWith start pwidth:%f,pHeight:%f,datawidth:%f",pWidth,pHeight,self.dataWidth);
+//        DDLogInfo(@"manageDataViewFrameWith start pwidth:%f,pHeight:%f,datawidth:%f",pWidth,pHeight,self.dataWidth);
     }
     self.markupView.frame = self.shareImageView.frame;
     CGFloat scale = pWidth / (self.shareImageView.frame.size.width * [UIScreen mainScreen].scale);

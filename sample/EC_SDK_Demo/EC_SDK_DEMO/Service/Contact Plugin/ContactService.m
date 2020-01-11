@@ -186,10 +186,10 @@ NSString *const TUP_ICON_FILE_KEY                   = @"TUP_ICON_FILE_KEY";
  *@param resultDictionary NSDictionary
  */
 -(void)respondsContactDelegateWithType:(TUP_CONTACT_EVENT_TYPE)type result:(NSDictionary *)resultDictionary {
-    if ([self.delegate respondsToSelector:@selector(contactEventCallback:result:)]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(contactEventCallback:result:)]) {
+//        dispatch_async(dispatch_get_main_queue(), ^{
             [self.delegate contactEventCallback:type result:resultDictionary];
-        });
+//        });
     }
 }
 

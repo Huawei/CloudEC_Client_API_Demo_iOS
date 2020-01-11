@@ -58,64 +58,68 @@
 
 -(void)ecConferenceEventCallback:(EC_CONF_E_TYPE)ecConfEvent result:(NSDictionary *)resultDictionary
 {
-    if (ecConfEvent == CONF_E_CURRENTCONF_DETAIL)
-    {
-        BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
-        if (!result)
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (ecConfEvent == CONF_E_CURRENTCONF_DETAIL)
         {
-            [self dismissViewControllerAnimated:YES completion:nil];
-            return;
+            BOOL result = [resultDictionary[ECCONF_RESULT_KEY] boolValue];
+            if (!result)
+            {
+                [weakSelf dismissViewControllerAnimated:YES completion:nil];
+                return;
+            }
+            
+            ConfBaseInfo *baseInfo = [ManagerService confService].currentConfBaseInfo;
+            weakSelf.idLabel.text = baseInfo.conf_id;
+            weakSelf.subjectLabel.text = baseInfo.conf_subject;
+            weakSelf.accessNumberLabel.text = baseInfo.access_number;
+            weakSelf.startTimeLabel.text = baseInfo.start_time;
+            weakSelf.endTimeLabel.text = baseInfo.end_time;
+            weakSelf.chairmanPwdLabel.text = baseInfo.chairman_pwd;
+            weakSelf.generalPwdLabel.text = baseInfo.general_pwd;
+            weakSelf.scheduserNameLabel.text = baseInfo.scheduser_name;
+            weakSelf.scheduserNumberLabel.text = baseInfo.scheduser_number;
+            
+            switch (baseInfo.media_type)
+            {
+                case CONF_MEDIATYPE_VOICE:
+                    weakSelf.mediaType.text = @"Voice conference";
+                    break;
+                case CONF_MEDIATYPE_VIDEO:
+                    weakSelf.mediaType.text = @"Video conference";
+                    break;
+                case CONF_MEDIATYPE_DATA:
+                    weakSelf.mediaType.text = @"Data conference";
+                    break;
+                case CONF_MEDIATYPE_VIDEO_DATA:
+                    weakSelf.mediaType.text = @"Data + Video conference";
+                    break;
+                default:
+                    break;
+            }
+            switch (baseInfo.conf_state)
+            {
+                case CONF_E_STATE_SCHEDULE:
+                    weakSelf.confStatusLabel.text = @"SCHEDULE";
+                    break;
+                case CONF_E_STATE_CREATING:
+                    weakSelf.confStatusLabel.text = @"CREATING";
+                    break;
+                case CONF_E_STATE_GOING:
+                    weakSelf.confStatusLabel.text = @"ON GOING";
+                    break;
+                case CONF_E_STATE_DESTROYED:
+                    weakSelf.confStatusLabel.text = @"END";
+                    break;
+                default:
+                    break;
+            }
         }
-        
-        ConfBaseInfo *baseInfo = [ManagerService confService].currentConfBaseInfo;
-        _idLabel.text = baseInfo.conf_id;
-        _subjectLabel.text = baseInfo.conf_subject;
-        _accessNumberLabel.text = baseInfo.access_number;
-        _startTimeLabel.text = baseInfo.start_time;
-        _endTimeLabel.text = baseInfo.end_time;
-        _chairmanPwdLabel.text = baseInfo.chairman_pwd;
-        _generalPwdLabel.text = baseInfo.general_pwd;
-        _scheduserNameLabel.text = baseInfo.scheduser_name;
-        _scheduserNumberLabel.text = baseInfo.scheduser_number;
-        
-        switch (baseInfo.media_type)
-        {
-            case CONF_MEDIATYPE_VOICE:
-                _mediaType.text = @"Voice conference";
-                break;
-            case CONF_MEDIATYPE_VIDEO:
-                _mediaType.text = @"Video conference";
-                break;
-            case CONF_MEDIATYPE_DATA:
-                _mediaType.text = @"Data conference";
-                break;
-            case CONF_MEDIATYPE_VIDEO_DATA:
-                _mediaType.text = @"Data + Video conference";
-                break;
-            default:
-                break;
+        if (ecConfEvent == CONF_E_ATTENDEE_UPDATE_INFO) {
+            DDLogInfo(@"ConfDetailViewController,CONF_E_ATTENDEE_UPDATE_INFO");
         }
-        switch (baseInfo.conf_state)
-        {
-            case CONF_E_STATE_SCHEDULE:
-                _confStatusLabel.text = @"SCHEDULE";
-                break;
-            case CONF_E_STATE_CREATING:
-                _confStatusLabel.text = @"CREATING";
-                break;
-            case CONF_E_STATE_GOING:
-                _confStatusLabel.text = @"ON GOING";
-                break;
-            case CONF_E_STATE_DESTROYED:
-                _confStatusLabel.text = @"END";
-                break;
-            default:
-                break;
-        }
-    }
-    if (ecConfEvent == CONF_E_ATTENDEE_UPDATE_INFO) {
-        DDLogInfo(@"ConfDetailViewController,CONF_E_ATTENDEE_UPDATE_INFO");
-    }
+    });
+    
 }
 
 - (IBAction)joinConferenceButtonAction:(id)sender

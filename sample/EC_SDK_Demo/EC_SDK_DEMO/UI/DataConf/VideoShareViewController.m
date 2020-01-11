@@ -29,10 +29,11 @@
 #import "SignalDataScrollView.h"
 
 #import "StatisticShowInfo.h"
+#import "ScreenShareView.h"
 
 
 
-@interface VideoShareViewController ()<UITableViewDelegate, UITableViewDataSource, ConferenceServiceDelegate>
+@interface VideoShareViewController ()<UITableViewDelegate, UITableViewDataSource, ConferenceServiceDelegate, ScreenShareViewDelegate>
 
 @property (nonatomic, strong) UIView *localViewShower;
 @property (nonatomic, strong) UIImageView *backImageView;
@@ -86,6 +87,7 @@
 @property (nonatomic, assign) CGFloat currentNameHeight;
 
 @property (nonatomic, strong) NSArray *currentAttendeeWatchArray;
+@property (nonatomic, strong) ScreenShareView *screenShareView;
 
 
 @end
@@ -102,11 +104,13 @@
 
 -(void)ecConferenceEventCallback:(EC_CONF_E_TYPE)ecConfEvent result:(NSDictionary *)resultDictionary
 {
+    __weak typeof(self) weakSelf = self;
     switch (ecConfEvent) {
         case CONF_E_ATTENDEE_UPDATE_INFO:
         {
-            [self confAttendeeUpdateAction];
-            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf confAttendeeUpdateAction];
+            });
         }
             break;
             
@@ -136,9 +140,12 @@
             _currentNameWith = rect.size.width + 20;
             _currentNameHeight = rect.size.height + 20;
             
-            [self updateBtnViewFrame];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [weakSelf updateBtnViewFrame];
+                
+                weakSelf.bigViewNameLabel.text = name;
+            });
             
-            _bigViewNameLabel.text = name;
         }
             
             break;
@@ -174,7 +181,7 @@
         BOOL needResumedRewatch = YES;
         if ([ManagerService confService].hasConfResumedFirstRewatch) {
             if ([ManagerService confService].haveJoinAttendeeArray.count == 0) {
-                needResumedRewatch = NO;
+//                needResumedRewatch = NO;
                 return;
             }
         }
@@ -423,10 +430,37 @@
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataShareSelfStartAciton) name:DATA_SHARE_SELF_START_NOTIFY object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataShareStopAciton) name:DATA_SHARE_STOP_NOTIFY object:nil];
+
+}
+
+- (void)dataShareSelfStartAciton
+{
+    [[ManagerService confService] removeSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+    [[ManagerService callService] switchCameraOpen:NO callId:[ManagerService confService].currentCallId];
+    [CallWindowController shareInstance].cameraClose = YES;
+    [self showScreenShareView];
+    
+}
+
+- (void)dataShareStopAciton
+{
+    [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+    [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+    [[ManagerService callService] switchCameraOpen:YES callId:[ManagerService confService].currentCallId];
+    [CallWindowController shareInstance].cameraClose = NO;
+    [[CallWindowController shareInstance] deviceMotionOrientationChanged];
+    [self hideScreenShareView];
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    [ManagerService confService].delegate = nil;
+    _confCtrlTableView.delegate = nil;
+    _attendTableView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -456,11 +490,7 @@
         [self.view insertSubview:self.audioBackImageView belowSubview:self.bottomView];
     }
     
-    if ([self isVideoConf]) {
-        [self updateBtnViewFrame];
-    }else{
-        [self configBottomViewBtnsWithWidth:SCREEN_WIDTH];
-    }
+
     
 //    if ([self isSelfMaster]) {
 //        [self.bottomView addSubview:self.setConfModeBtn];
@@ -484,6 +514,12 @@
         self.signalBtn.frame = CGRectMake(SCREEN_WIDTH - 50, 60, 30, 30);
     }
 
+        if ([self isVideoConf]) {
+            [self updateBtnViewFrame];
+        }else{
+            [self configBottomViewBtnsWithWidth:SCREEN_WIDTH];
+        }
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -816,6 +852,7 @@
 
 - (void)svcAlertActionWithNumber:(NSString *)number name:(NSString *)name
 {
+    __weak typeof(self) weakSelf = self;
     NSString *tipString = name.length != 0 ? name : number;
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Tips"
@@ -824,7 +861,7 @@
     UIAlertAction *sureAction = [UIAlertAction actionWithTitle:@"Sure"
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction * _Nonnull action) {
-                                                           [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:number];
+                                                           [weakSelf updateWatchAttendeesWithPage:weakSelf.currentWatchPage bigViewNumber:number];
                                                        }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
                                                            style:UIAlertActionStyleDefault
@@ -1097,11 +1134,11 @@
 }
 
 - (void)setConfModeBtnClicked:(id)sender {
-    
+    __weak typeof(self) weakSelf = self;
     void (^setModeBlock)(EC_CONF_MODE mode) = ^(EC_CONF_MODE mode) {
         if ([[ManagerService confService] isUportalMediaXConf]) {
             [[ManagerService confService] setConfMode:mode];
-            _currentConfMode = mode;
+            weakSelf.currentConfMode = mode;
         }
     };
     
@@ -1429,6 +1466,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    __weak typeof(self) weakSelf = self;
     if (tableView == _attendTableView) {
         if (indexPath.row == 0) {
             if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
@@ -1468,7 +1506,7 @@
                                                                    handler:^(UIAlertAction * _Nonnull action) {
                                                                        if ([ManagerService confService].currentJoinConfIndInfo.isSvcConf) {
                                                                            
-                                                                           [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:attendee.number];
+                                                                           [weakSelf updateWatchAttendeesWithPage:weakSelf.currentWatchPage bigViewNumber:attendee.number];
                                                                        }else{
                                                                            //watch attendee todo jl
                                                                            [[ManagerService confService] watchAttendeeNumber:attendee.number];
@@ -1519,7 +1557,7 @@
             }
             else {  // mediaX conf
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self requestConfChairman];
+                    [weakSelf requestConfChairman];
                 });
             }
         }
@@ -1637,6 +1675,9 @@
 }
 
 - (void)dealloc {
+    [ManagerService confService].delegate = nil;
+    _confCtrlTableView.delegate = nil;
+    _attendTableView.delegate = nil;
 //    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -1700,39 +1741,41 @@
 
 - (void)gobackBtnAction
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Info" message:@"Exit the meeting?" preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *closeMeetingAction = [UIAlertAction actionWithTitle:@"End" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
             [[ManagerService confService] confCtrlEndConference];
             [[ManagerService confService] restoreConfParamsInitialValue];
-            [self finishConference];
-            [self quitToListViewCtrl];
+            [weakSelf finishConference];
+            [weakSelf quitToListViewCtrl];
         }];
         
         UIAlertAction *leaveMeetingAction = [UIAlertAction actionWithTitle:@"Leave" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             
             [[ManagerService confService] confCtrlLeaveConference];
             [[ManagerService confService] restoreConfParamsInitialValue];
-            [self finishConference];
-            [self quitToListViewCtrl];
+            [weakSelf finishConference];
+            [weakSelf quitToListViewCtrl];
             
         }];
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil];
-        if (self.selfConfInfo.role == CONF_ROLE_CHAIRMAN)
+        if (weakSelf.selfConfInfo.role == CONF_ROLE_CHAIRMAN)
         {
             [alertController addAction:closeMeetingAction];
         }
         [alertController addAction:leaveMeetingAction];
         [alertController addAction:cancelAction];
-        [self presentViewController:alertController animated:YES completion:nil];
+        [weakSelf presentViewController:alertController animated:YES completion:nil];
     });
 }
 
 -(void)finishConference
 {
+    __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.navigationController.navigationBarHidden = NO;
+        weakSelf.navigationController.navigationBarHidden = NO;
     });
 }
 
@@ -1767,7 +1810,6 @@
     [[ManagerService confService] confStopReplayKitBroadcast];
     
 }
-
 
 - (void)updateWatchAttendeesWithPage:(NSInteger)page bigViewNumber:(NSString *)number
 {
@@ -1874,5 +1916,35 @@
     [self presentViewController:alertCon animated:YES completion:nil];
     
 }
+
+
+- (void)showScreenShareView {
+    DDLogInfo(@"enter showScreenShareView ");
+    [self.view insertSubview:self.screenShareView belowSubview:self.bottomView];
+    self.screenShareView.hidden = NO;
+    self.screenShareView.userInteractionEnabled = YES;
+        
+}
+
+- (void)hideScreenShareView {
+    DDLogInfo(@"enter hideScreenShareView ");
+    [self.screenShareView removeFromSuperview];
+}
+
+- (ScreenShareView *)screenShareView
+{
+    if (!_screenShareView) {
+        _screenShareView = [[ScreenShareView alloc] initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HIGHT)];
+        _screenShareView.screenShareViewDelegate = self;
+        
+    }
+    return _screenShareView;
+}
+
+- (void)onClickStopShare {
+    DDLogInfo(@"userClick stop share screen ");
+    [self stopSharingScreen];
+}
+
 
 @end

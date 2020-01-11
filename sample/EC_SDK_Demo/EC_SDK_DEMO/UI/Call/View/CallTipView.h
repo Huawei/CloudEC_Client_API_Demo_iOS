@@ -26,7 +26,7 @@
 @property (nonatomic)CallTipView *commingView;
 @property (assign,nonatomic)TUP_CALL_TYPE currentCallType;
 @property (assign, nonatomic)ConfType currentConfType;
-@property (assign, nonatomic)id<CallTipDelegate> delegate;
+@property (nonatomic, weak)id<CallTipDelegate> delegate;
 @property (assign, nonatomic)unsigned int callId;
 
 +(instancetype)shareInstance;
