@@ -131,30 +131,31 @@
     
     switch (ecConfEvent)
     {
-//        case DATA_CONF_AS_ON_SCREEN_DATA:
-//        {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                DDLogInfo(@"UILOG: DATACONF_RECEIVE_SHARE_DATA");
-//                NSData *shareImage = resultDictionary[DATACONF_SHARE_DATA_KEY];
-//                UIImage *image = [[UIImage alloc] initWithData:shareImage];
-//                if (image == nil)
-//                {
-//                    DDLogInfo(@"share image from data fail!");
-//                    return;
-//                }
-//
-//                [self showShareView:image];
-//            });
-//            break;
-//        }
-//        case DATACONF_SHARE_SCREEN_DATA_STOP:
-//        {
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                DDLogInfo(@"UILOG: DATACONF_SHARE_SCREEN_DATA_STOP");
-//                [self removeShareView];
-//            });
-//            break;
-//        }
+        case DATA_CONF_AS_ON_SCREEN_DATA:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                DDLogInfo(@"UILOG: DATACONF_RECEIVE_SHARE_DATA");
+                NSData *shareImage = resultDictionary[DATACONF_SHARE_DATA_KEY];
+                UIImage *image = [[UIImage alloc] initWithData:shareImage];
+                if (image == nil)
+                {
+                    DDLogInfo(@"share image from data fail!");
+                    return;
+                }
+
+                [self showShareView:image];
+                [self calculateDataViewFrameWith:shareImage];
+            });
+            break;
+        }
+        case DATACONF_SHARE_SCREEN_DATA_STOP:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                DDLogInfo(@"UILOG: DATACONF_SHARE_SCREEN_DATA_STOP");
+                [self removeShareView];
+            });
+            break;
+        }
         default:
             break;
     }

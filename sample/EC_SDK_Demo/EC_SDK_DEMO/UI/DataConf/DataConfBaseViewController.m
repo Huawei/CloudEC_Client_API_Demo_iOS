@@ -622,7 +622,7 @@
         VideoStreamInfo *dataStream = callInfo.dataStreamInfo;
         StatisticShowInfo *dataLocallSendInfo = [[StatisticShowInfo alloc] init];
         dataLocallSendInfo.name = @"local send";
-        dataLocallSendInfo.bandWidth = dataStream.sendBitRate/1000;
+        dataLocallSendInfo.bandWidth = dataStream.sendBitRate;
         dataLocallSendInfo.lossFraction = dataStream.sendLossFraction;
         dataLocallSendInfo.delay = dataStream.sendDelay;
         dataLocallSendInfo.jitter = dataStream.sendJitter;
@@ -631,7 +631,7 @@
         
         StatisticShowInfo *dataLocallRecvInfo = [[StatisticShowInfo alloc] init];
         dataLocallRecvInfo.name = @"local recv";
-        dataLocallRecvInfo.bandWidth = dataStream.recvBitRate/1000;
+        dataLocallRecvInfo.bandWidth = dataStream.recvBitRate;
         dataLocallRecvInfo.lossFraction = dataStream.recvLossFraction;
         dataLocallRecvInfo.delay = dataStream.recvDelay;
         dataLocallRecvInfo.jitter = dataStream.recvJitter;

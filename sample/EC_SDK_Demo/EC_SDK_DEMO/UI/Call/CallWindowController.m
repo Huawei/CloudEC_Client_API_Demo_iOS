@@ -39,6 +39,9 @@
 #import "NSTimer+Extension.h"
 #import "LoginCenter.h"
 
+#import <CoreTelephony/CTCallCenter.h>
+#import <CoreTelephony/CTCall.h>
+
 #define SCREEN_WIDTH MIN(self.callWindow.rootViewController.view.bounds.size.width, self.callWindow.rootViewController.view.bounds.size.height)
 #define SCREEN_HIGHT MAX(self.callWindow.rootViewController.view.bounds.size.height, self.callWindow.rootViewController.view.bounds.size.width)
 
@@ -81,6 +84,8 @@
 
 @property (nonatomic, assign) BOOL needSetActiveLocalIp;
 @property (nonatomic, copy) NSString *currentLocalIp;
+
+@property (nonatomic, strong) CTCallCenter *callCenter;
 
 @end
 static CallWindowController *g_windowCtrl = nil;
@@ -133,6 +138,7 @@ static CallWindowController *g_windowCtrl = nil;
         _currentLocalIp = @"0.0.0.0";
         
         [ECSDKProgressHud shareInstance];
+        [self monitorCall];
         
         if (@available(iOS 12, *)) {
             CGRect broadcastPickerViewFrame = CGRectMake(0, 0, 100.0f, 100.0f);
@@ -340,7 +346,7 @@ static CallWindowController *g_windowCtrl = nil;
         [[DeviceMotionManager sharedInstance] startDeviceMotionManager];
         if (isSvcConf) {
             [[ManagerService confService] setSvcVideoWindowWithLocal:_locationView];
-            [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+//            [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
         }else{
             [[ManagerService confService] setVideoWindowWithLocal:_locationView andRemote:_remoteView];
         }
@@ -1360,7 +1366,7 @@ static CallWindowController *g_windowCtrl = nil;
         VideoStreamInfo *dataStream = callInfo.dataStreamInfo;
         StatisticShowInfo *dataLocallSendInfo = [[StatisticShowInfo alloc] init];
         dataLocallSendInfo.name = @"local send";
-        dataLocallSendInfo.bandWidth = dataStream.sendBitRate/1000;
+        dataLocallSendInfo.bandWidth = dataStream.sendBitRate;
         dataLocallSendInfo.lossFraction = dataStream.sendLossFraction;
         dataLocallSendInfo.delay = dataStream.sendDelay;
         dataLocallSendInfo.jitter = dataStream.sendJitter;
@@ -1369,7 +1375,7 @@ static CallWindowController *g_windowCtrl = nil;
         
         StatisticShowInfo *dataLocallRecvInfo = [[StatisticShowInfo alloc] init];
         dataLocallRecvInfo.name = @"local recv";
-        dataLocallRecvInfo.bandWidth = dataStream.recvBitRate/1000;
+        dataLocallRecvInfo.bandWidth = dataStream.recvBitRate;
         dataLocallRecvInfo.lossFraction = dataStream.recvLossFraction;
         dataLocallRecvInfo.delay = dataStream.recvDelay;
         dataLocallRecvInfo.jitter = dataStream.recvJitter;
@@ -1407,4 +1413,59 @@ static CallWindowController *g_windowCtrl = nil;
     
 }
 
+// 监测电话
+- (void)monitorCall {
+    __weak typeof(self) weakSelf = self;
+    weakSelf.callCenter.callEventHandler = ^(CTCall* call) {
+        if (weakSelf.currentTupCallInfo.stateInfo.callState == CallStateTaking || [self getSelfCurrentConfId] != 0) {
+            CallView *currentCallView = [self obtainCurrentCallView];
+            if (call.callState == CTCallStateDisconnected) {
+                DDLogInfo(@"电话结束或挂断电话,callid:%d",[self getSelfCurrentConfId]);
+                if (weakSelf.isJoinConfCall) {
+                    [[ManagerService confService] confCtrlMuteAttendee:[ManagerService confService].selfJoinNumber isMute:NO];
+                    
+                }else{
+                    [[ManagerService callService] muteMic:NO callId:weakSelf.currentTupCallInfo.stateInfo.callId];
+                    currentCallView.isMuteMic = NO;
+                }
+                
+//                [[ManagerService callService] muteSpeak:NO callId:[self getSelfCurrentConfId]];
+//                ROUTE_TYPE routeType = [[ManagerService callService] obtainMobileAudioRoute];
+//                ROUTE_TYPE configType = routeType == ROUTE_LOUDSPEAKER_TYPE ? ROUTE_DEFAULT_TYPE : ROUTE_LOUDSPEAKER_TYPE;
+//                configType = ROUTE_LOUDSPEAKER_TYPE;
+//                [[ManagerService callService] configAudioRoute:configType];
+//                currentCallView.isloudSpeak = configType == ROUTE_LOUDSPEAKER_TYPE ? YES : NO;
+                
+            } else if (call.callState == CTCallStateConnected){
+                DDLogInfo(@"电话接通");
+                if (weakSelf.isJoinConfCall) {
+                    [[ManagerService confService] confCtrlMuteAttendee:[ManagerService confService].selfJoinNumber isMute:YES];
+                }else{
+                    [[ManagerService callService] muteMic:YES callId:weakSelf.currentTupCallInfo.stateInfo.callId];
+                    currentCallView.isMuteMic = YES;
+                }
+//                [[ManagerService callService] muteSpeak:YES callId:[self getSelfCurrentConfId]];
+//                ROUTE_TYPE configType = ROUTE_DEFAULT_TYPE;
+//                [[ManagerService callService] configAudioRoute:configType];
+                
+            } else if(call.callState == CTCallStateIncoming) {
+                DDLogInfo(@"来电话");
+            } else if (call.callState ==CTCallStateDialing) {
+                DDLogInfo(@"拨号打电话(在应用内调用打电话功能)");
+            }
+        }
+        
+    };
+}
+
+#pragma mark - getter Methods
+
+- (CTCallCenter *)callCenter {
+    if (!_callCenter) {
+        _callCenter = [[CTCallCenter alloc] init];
+    }
+    return _callCenter;
+}
+
 @end
+ 

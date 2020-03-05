@@ -313,7 +313,7 @@ extern NSString *const CONFERENCE_CONNECT_NOTIFY;
  */
 -(void)watchAttendeeNumber:(NSString *)attendeeNumber;
 
--(BOOL)watchAttendeeNumberArray:(NSArray *)attendeeArray labelArray:(NSArray *)labelArray;
+-(BOOL)watchAttendeeNumberArray:(NSArray *)attendeeArray;
 
 /**
  * This method is used to set presenter (chairman)

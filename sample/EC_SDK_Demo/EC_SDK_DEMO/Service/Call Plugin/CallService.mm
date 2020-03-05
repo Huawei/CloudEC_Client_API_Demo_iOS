@@ -1416,6 +1416,12 @@
     return result == TSDK_SUCCESS ? YES : NO;
 }
 
+-(BOOL)muteSpeak:(BOOL)mute callId:(unsigned int)callId
+{
+    TSDK_RESULT result = tsdk_mute_speaker(callId , mute);
+    DDLogInfo(@"Call_Log: tsdk_mute_speaker result= %@",(TSDK_SUCCESS == result)?@"YES":@"NO");
+    return result == TSDK_SUCCESS ? YES : NO;
+}
 
 /**
  * This method is used to set audio route

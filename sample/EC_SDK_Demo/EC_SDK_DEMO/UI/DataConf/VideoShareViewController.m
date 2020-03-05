@@ -30,7 +30,7 @@
 
 #import "StatisticShowInfo.h"
 #import "ScreenShareView.h"
-
+#import "AppDelegate.h"
 
 
 @interface VideoShareViewController ()<UITableViewDelegate, UITableViewDataSource, ConferenceServiceDelegate, ScreenShareViewDelegate>
@@ -433,7 +433,32 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataShareSelfStartAciton) name:DATA_SHARE_SELF_START_NOTIFY object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataShareStopAciton) name:DATA_SHARE_STOP_NOTIFY object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+    selector:@selector(appActiveNotify:)
+        name:UIApplicationDidBecomeActiveNotification
+      object:nil];
 
+}
+
+- (void) appActiveNotify:(NSNotification*) notify
+{
+    if ([ManagerService confService].isStartScreenSharing) {
+        return;
+    }
+    BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
+    BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
+    
+    if (!isSvcConf && !iSVideoConf) {
+        return;
+    }
+    
+//    [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+    [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
+    [[ManagerService callService] switchCameraOpen:YES callId:[ManagerService confService].currentCallId];
+    [CallWindowController shareInstance].cameraClose = NO;
+    [[CallWindowController shareInstance] deviceMotionOrientationChanged];
+    [self hideScreenShareView];
 }
 
 - (void)dataShareSelfStartAciton
@@ -447,7 +472,17 @@
 
 - (void)dataShareStopAciton
 {
-    [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+    if (UIApplicationStateActive != [UIApplication sharedApplication].applicationState) {
+        return;
+    }
+    BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
+    BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
+    
+    if (!isSvcConf && !iSVideoConf) {
+        return;
+    }
+    
+//    [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
     [self updateWatchAttendeesWithPage:_currentWatchPage bigViewNumber:@""];
     [[ManagerService callService] switchCameraOpen:YES callId:[ManagerService confService].currentCallId];
     [CallWindowController shareInstance].cameraClose = NO;
@@ -1813,85 +1848,78 @@
 
 - (void)updateWatchAttendeesWithPage:(NSInteger)page bigViewNumber:(NSString *)number
 {
-    NSArray *attendeeArray = [ManagerService confService].watchAttendeesArray;
-    NSArray *labelArray1 = [ManagerService confService].currentJoinConfIndInfo.svcLable;
-    
-    NSInteger startIndex = page * 3;
-    if (startIndex + 3 > attendeeArray.count) {
-        startIndex = attendeeArray.count - 3;
-    }
-    BOOL watchResult = 1;
-    
-    if (attendeeArray.count == 1) {
-        _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
-        _firstSVCView.currentlabel = [labelArray1[1] integerValue];;
+        if (UIApplicationStateActive != [UIApplication sharedApplication].applicationState) {
+            return;
+        }
         
-        NSMutableArray *numberArray = [[NSMutableArray alloc] init];
-        [numberArray addObject:number];
-        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[0]).number];
+        [[ManagerService confService] setSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
         
-        NSMutableArray *labelArray = [[NSMutableArray alloc] init];
-        [labelArray addObject:labelArray1[0]];
-        [labelArray addObject:labelArray1[1]];
+        NSArray *attendeeArray = [ManagerService confService].watchAttendeesArray;
+        NSArray *labelArray1 = [ManagerService confService].currentJoinConfIndInfo.svcLable;
         
-        watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
-    }
-    if (attendeeArray.count == 2) {
-        _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
-        _firstSVCView.currentlabel = [labelArray1[1] integerValue];
-        _secondSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[1];
-        _secondSVCView.currentlabel = [labelArray1[2] integerValue];
+        NSInteger startIndex = page * 3;
+        if (startIndex + 3 > attendeeArray.count) {
+            startIndex = attendeeArray.count - 3;
+        }
+        BOOL watchResult = 1;
         
-        
-        NSMutableArray *numberArray = [[NSMutableArray alloc] init];
-        [numberArray addObject:number];
-        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[0]).number];
-        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[1]).number];
-        
-        NSMutableArray *labelArray = [[NSMutableArray alloc] init];
-        [labelArray addObject:labelArray1[0]];
-        [labelArray addObject:labelArray1[1]];
-        [labelArray addObject:labelArray1[2]];
-        
-        watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
-        
-    }
-    if (attendeeArray.count >= 3) {
-        _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex];
-        _firstSVCView.currentlabel = [labelArray1[1] integerValue];
-        _secondSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex + 1];
-        _secondSVCView.currentlabel = [labelArray1[2] integerValue];
-        _thirdSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex + 2];
-        _thirdSVCView.currentlabel = [labelArray1[3] integerValue];
-        
-        
-        NSMutableArray *numberArray = [[NSMutableArray alloc] init];
-        [numberArray addObject:number];
-        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex]).number];
-        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex + 1]).number];
-        [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex + 2]).number];
-        
-        NSMutableArray *labelArray = [[NSMutableArray alloc] init];
-        [labelArray addObject:labelArray1[0]];
-        [labelArray addObject:labelArray1[1]];
-        [labelArray addObject:labelArray1[2]];
-        [labelArray addObject:labelArray1[3]];
-        
-        watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray labelArray:labelArray];
+        if (attendeeArray.count == 1) {
+            _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
+            _firstSVCView.currentlabel = [labelArray1[1] integerValue];;
+            
+            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+            [numberArray addObject:number];
+            [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[0]).number];
+            
+            watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray];
+        }
+        if (attendeeArray.count == 2) {
+            _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[0];
+            _firstSVCView.currentlabel = [labelArray1[1] integerValue];
+            _secondSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[1];
+            _secondSVCView.currentlabel = [labelArray1[2] integerValue];
+            
+            
+            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+            [numberArray addObject:number];
+            [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[0]).number];
+            [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[1]).number];
+ 
+            
+            watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray];
+            
+        }
+        if (attendeeArray.count >= 3) {
+            _firstSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex];
+            _firstSVCView.currentlabel = [labelArray1[1] integerValue];
+            _secondSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex + 1];
+            _secondSVCView.currentlabel = [labelArray1[2] integerValue];
+            _thirdSVCView.currentAttendee = (ConfAttendeeInConf *)attendeeArray[startIndex + 2];
+            _thirdSVCView.currentlabel = [labelArray1[3] integerValue];
+            
+            
+            NSMutableArray *numberArray = [[NSMutableArray alloc] init];
+            [numberArray addObject:number];
+            [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex]).number];
+            [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex + 1]).number];
+            [numberArray addObject:((ConfAttendeeInConf *)attendeeArray[startIndex + 2]).number];
+            
+            watchResult = [[ManagerService confService] watchAttendeeNumberArray:numberArray];
 
-    }
-    if (!watchResult) {
-        _firstSVCView.currentAttendee = nil;
-        _firstSVCView.currentlabel = 0;
-        
-        _secondSVCView.currentAttendee = nil;
-        _secondSVCView.currentlabel = 0;
-        
-        _thirdSVCView.currentAttendee = nil;
-        _thirdSVCView.currentlabel = 0;
-        
-        DDLogError(@"watchAttendee faild,SVCView remove data!");
-    }
+        }
+        if (!watchResult) {
+            _firstSVCView.currentAttendee = nil;
+            _firstSVCView.currentlabel = 0;
+            
+            _secondSVCView.currentAttendee = nil;
+            _secondSVCView.currentlabel = 0;
+            
+            _thirdSVCView.currentAttendee = nil;
+            _thirdSVCView.currentlabel = 0;
+            
+            DDLogError(@"watchAttendee faild,SVCView remove data!");
+        }
+    
 }
 
 - (void)resetSelfNickName
