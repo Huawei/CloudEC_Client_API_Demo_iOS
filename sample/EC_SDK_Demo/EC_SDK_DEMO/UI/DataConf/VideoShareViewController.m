@@ -463,6 +463,8 @@
 
 - (void)dataShareSelfStartAciton
 {
+    self.barView.hidden = YES;
+    self.bottomView.hidden = YES;
     [[ManagerService confService] removeSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
     [[ManagerService callService] switchCameraOpen:NO callId:[ManagerService confService].currentCallId];
     [CallWindowController shareInstance].cameraClose = YES;

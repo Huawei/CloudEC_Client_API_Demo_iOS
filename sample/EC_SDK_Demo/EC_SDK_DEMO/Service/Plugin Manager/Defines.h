@@ -98,6 +98,8 @@ extern NSString* const EC_COMING_CONF_NOTIFY;
 extern NSString* const CONF_ATTENDEE_STATUS_UPDATE_NOTIFY;
 
 extern NSString* const CALL_STATISTIC_INFO_NOTIFY;
+extern NSString* const NEED_UPDATE_SIGNAL_STRENGT;
+
 
 extern NSString* const LOGIN_AND_CONF_RESUMING_NOTIFY;
 

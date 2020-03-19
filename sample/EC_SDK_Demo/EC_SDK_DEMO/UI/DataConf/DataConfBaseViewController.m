@@ -14,6 +14,7 @@
 #import "ConfListViewController.h"
 #import "ConfRunningViewController.h"
 #import "SVCConfWatchAttendeeInfo.h"
+#import "JoinConfIndInfo.h"
 
 @interface DataConfBaseViewController () {
     BOOL isHideBar;
@@ -113,8 +114,8 @@
 
 -(void)screenTap:(UITapGestureRecognizer*)tap {
     isHideBar = !isHideBar;
-    self.bottomView.hidden = isHideBar;
-    self.barView.hidden = isHideBar;
+    self.bottomView.hidden = !self.bottomView.hidden;
+    self.barView.hidden = !self.barView.hidden;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -494,12 +495,19 @@
 - (void)signalBtnAction
 {
     _signalBackView.hidden = !_signalBackView.hidden;
+    if (_signalBackView.hidden == NO) {
+        [[ManagerService callService] getSignalCallInfoWithCallId:[ManagerService confService].currentCallId];
+    }
+    
 }
 
 - (void)updateCallStatisticInfo:(NSNotification *)notification
 {
     CallStatisticInfo *callInfo = notification.userInfo[CALL_STATISTIC_INFO];
-    [self updatesignalImageWithSignalStrength:callInfo.signalStrength];
+    BOOL needUpdateSignalStrength = [notification.userInfo[NEED_UPDATE_SIGNAL_STRENGT] boolValue];
+    if (needUpdateSignalStrength) {
+        [self updatesignalImageWithSignalStrength:callInfo.signalStrength];
+    }
     AudioStreamInfo *audioStreamInfo = callInfo.audioStreamInfo;
     
     NSMutableArray *audioInfoArray = [[NSMutableArray alloc] init];
@@ -559,18 +567,20 @@
                 EAGLView *secondSvcView = [EAGLView getSecondSVCView];
                 EAGLView *thirdSvcView = [EAGLView getThirdSVCView];
                 
+                NSArray *svcLableArray = [ManagerService confService].currentJoinConfIndInfo.svcLable;
+                
                 NSString *recvName = @"";
-                if (firstSvcView.currentlabel == videoSingleStream.recvSsrcLabel) {
+                if ([svcLableArray[1] intValue] == videoSingleStream.recvSsrcLabel || [svcLableArray[4] intValue] == videoSingleStream.recvSsrcLabel) {
                     recvName = firstSvcView.currentAttendee.name;
                     if (recvName.length == 0) {
                         recvName = firstSvcView.currentAttendee.number;
                     }
-                }else if (secondSvcView.currentlabel == videoSingleStream.recvSsrcLabel){
+                }else if ([svcLableArray[2] intValue] == videoSingleStream.recvSsrcLabel || [svcLableArray[5] intValue] == videoSingleStream.recvSsrcLabel){
                     recvName = secondSvcView.currentAttendee.name;
                     if (recvName.length == 0) {
                         recvName = secondSvcView.currentAttendee.number;
                     }
-                }else if (thirdSvcView.currentlabel == videoSingleStream.recvSsrcLabel){
+                }else if ([svcLableArray[3] intValue] == videoSingleStream.recvSsrcLabel || [svcLableArray[6] intValue] == videoSingleStream.recvSsrcLabel){
                     recvName = thirdSvcView.currentAttendee.name;
                     if (recvName.length == 0) {
                         recvName = thirdSvcView.currentAttendee.number;

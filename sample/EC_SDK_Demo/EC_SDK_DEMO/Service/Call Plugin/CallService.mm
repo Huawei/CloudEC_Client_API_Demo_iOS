@@ -576,101 +576,13 @@
         
         case TSDK_E_CALL_EVT_STATISTIC_INFO:
         {
-            VideoStreamInfo *dataStreamInfo = [[VideoStreamInfo alloc] init];
-            if ([ManagerService confService].isStartScreenSharing) {
-                dataStreamInfo = [[ManagerService confService] getSignalDataInfo];
-            }
             
             TSDK_UINT32 call_id = notify.param1;
             TSDK_UINT32 signal_strength = notify.param2;
             TSDK_S_CALL_STATISTIC_INFO* statistic_info = (TSDK_S_CALL_STATISTIC_INFO*)notify.data;
             
-            TSDK_S_AUDIO_STREAM_INFO audio_stream_info = statistic_info->audio_stream_info;
-            TSDK_S_VIDEO_STREAM_INFO video_stream_info = statistic_info->video_stream_info;
+            [self callStatisticInfoTransCallStatisticInfo:statistic_info callId:call_id needUpdateSignalStrength:YES SignalStrength:signal_strength];
             
-            TSDK_S_VIDEO_STREAM_INFO *svc_stream_info = statistic_info->svc_stream_info;
-            
-            
-            CallStatisticInfo *callInfo = [[CallStatisticInfo alloc] init];
-            callInfo.callId = call_id;
-            callInfo.signalStrength = signal_strength;
-            callInfo.effectiveBitrate = statistic_info->effective_bitrate;
-            callInfo.isSvcConf = statistic_info->is_svc_conf;
-            
-            AudioStreamInfo *audioStreamInfo = [[AudioStreamInfo alloc] init];
-            audioStreamInfo.isSrtp = audio_stream_info.is_srtp;
-            audioStreamInfo.encodeProtocol = [NSString stringWithUTF8String:audio_stream_info.encode_protocol];
-            audioStreamInfo.sendBitRate = audio_stream_info.send_bit_rate;
-            audioStreamInfo.sendLossFraction = audio_stream_info.send_loss_fraction;
-            audioStreamInfo.sendDelay = audio_stream_info.send_delay;
-            audioStreamInfo.sendJitter = audio_stream_info.send_jitter;
-            audioStreamInfo.decodeProtocol = [NSString stringWithUTF8String:audio_stream_info.decode_protocol];
-            audioStreamInfo.recvBitRate = audio_stream_info.recv_bit_rate;
-            audioStreamInfo.recvLossFraction = audio_stream_info.recv_loss_fraction;
-            audioStreamInfo.recvDelay = audio_stream_info.recv_delay;
-            audioStreamInfo.recvJitter = audio_stream_info.recv_jitter;
-            audioStreamInfo.recvAverageMos = audio_stream_info.recv_average_mos;
-            callInfo.audioStreamInfo = audioStreamInfo;
-            
-            VideoStreamInfo *videoStreamInfo = [[VideoStreamInfo alloc] init];
-            videoStreamInfo.isSrtp = video_stream_info.is_srtp;
-            videoStreamInfo.bandWidth = video_stream_info.bandwidth;
-            videoStreamInfo.encodeProtocol = [NSString stringWithUTF8String:video_stream_info.encode_protocol];
-            videoStreamInfo.sendBitRate = video_stream_info.send_bit_rate;
-            videoStreamInfo.sendFrameSize = [NSString stringWithUTF8String:video_stream_info.send_frame_size];
-            videoStreamInfo.sendFrameRate = video_stream_info.send_frame_rate;
-            videoStreamInfo.sendLossFraction = video_stream_info.send_loss_fraction;
-            videoStreamInfo.sendDelay = video_stream_info.send_delay;
-            videoStreamInfo.sendJitter = video_stream_info.send_jitter;
-            videoStreamInfo.decodeProtocol = [NSString stringWithUTF8String:video_stream_info.decode_protocol];
-            videoStreamInfo.recvBitRate = video_stream_info.recv_bit_rate;
-            videoStreamInfo.recvFrameSize = [NSString stringWithUTF8String:video_stream_info.recv_frame_size];
-            videoStreamInfo.recvLossFraction = video_stream_info.recv_loss_fraction;
-            videoStreamInfo.recvFrameRate = video_stream_info.recv_frame_rate;
-            videoStreamInfo.recvDelay = video_stream_info.recv_delay;
-            videoStreamInfo.recvJitter = video_stream_info.recv_jitter;
-            videoStreamInfo.recvSsrcLabel = video_stream_info.recv_ssrc_label;
-            callInfo.videoStreamInfo = videoStreamInfo;
-            
-            callInfo.svcStreamCount = statistic_info->svc_stream_count;
-            NSMutableArray *svcStreamInfoArray = [[NSMutableArray alloc] init];
-            for (int i = 0; i < callInfo.svcStreamCount; i++) {
-                TSDK_S_VIDEO_STREAM_INFO svcStreamInfo = svc_stream_info[i];
-                VideoStreamInfo *videoStreamInfoM = [[VideoStreamInfo alloc] init];
-                
-                videoStreamInfoM.isSrtp = svcStreamInfo.is_srtp;
-                videoStreamInfoM.bandWidth = svcStreamInfo.bandwidth;
-                videoStreamInfoM.encodeProtocol = [NSString stringWithUTF8String:svcStreamInfo.encode_protocol];
-                videoStreamInfoM.sendBitRate = svcStreamInfo.send_bit_rate;
-                videoStreamInfoM.sendFrameSize = [NSString stringWithUTF8String:svcStreamInfo.send_frame_size];
-                videoStreamInfoM.sendFrameRate = svcStreamInfo.send_frame_rate;
-                videoStreamInfoM.sendLossFraction = svcStreamInfo.send_loss_fraction;
-                videoStreamInfoM.sendDelay = svcStreamInfo.send_delay;
-                videoStreamInfoM.sendJitter = svcStreamInfo.send_jitter;
-                videoStreamInfoM.decodeProtocol = [NSString stringWithUTF8String:svcStreamInfo.decode_protocol];
-                videoStreamInfoM.recvBitRate = svcStreamInfo.recv_bit_rate;
-                videoStreamInfoM.recvFrameSize = [NSString stringWithUTF8String:svcStreamInfo.recv_frame_size];
-                videoStreamInfoM.recvLossFraction = svcStreamInfo.recv_loss_fraction;
-                videoStreamInfoM.recvFrameRate = svcStreamInfo.recv_frame_rate;
-                videoStreamInfoM.recvDelay = svcStreamInfo.recv_delay;
-                videoStreamInfoM.recvJitter = svcStreamInfo.recv_jitter;
-                videoStreamInfoM.recvSsrcLabel = svcStreamInfo.recv_ssrc_label;
-                
-                [svcStreamInfoArray addObject:videoStreamInfoM];
-            }
-            callInfo.svcStreamInfoArray = [NSArray arrayWithArray:svcStreamInfoArray];
-            
-            callInfo.dataStreamInfo = dataStreamInfo;
-            
-            NSDictionary *callInDic = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                    callInfo,CALL_STATISTIC_INFO,
-                                                    nil];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NSNotificationCenter defaultCenter] postNotificationName:CALL_STATISTIC_INFO_NOTIFY object:nil userInfo:callInDic];
-            });
-
-//            [self respondsCallDelegateWithType:CALL_EVT_STATISTIC_INFO result:callInDic];
             
         }
             break;
@@ -1640,6 +1552,120 @@
     DDLogInfo(@"config ip call result: %d", configResult);
     
     return configResult;
+}
+
+
+- (void)getSignalCallInfoWithCallId:(unsigned int)callId
+{
+    
+    TSDK_S_CALL_STATISTIC_INFO call_statistic_info;
+    memset(&call_statistic_info, 0, sizeof(TSDK_S_CALL_STATISTIC_INFO));
+    
+    tsdk_get_call_statistic_info(callId, &call_statistic_info);
+    
+    
+    [self callStatisticInfoTransCallStatisticInfo:&call_statistic_info callId:callId needUpdateSignalStrength:NO SignalStrength:1];
+    
+    
+}
+
+- (void)callStatisticInfoTransCallStatisticInfo:(TSDK_S_CALL_STATISTIC_INFO *)statistic_info callId:(NSInteger)callId needUpdateSignalStrength:(BOOL)needUpdateSignalStrength SignalStrength:(NSInteger)signalStrength
+{
+    
+    
+    VideoStreamInfo *dataStreamInfo = [[VideoStreamInfo alloc] init];
+    if ([ManagerService confService].isStartScreenSharing) {
+        dataStreamInfo = [[ManagerService confService] getSignalDataInfo];
+    }
+    
+    TSDK_S_AUDIO_STREAM_INFO audio_stream_info = statistic_info->audio_stream_info;
+    TSDK_S_VIDEO_STREAM_INFO video_stream_info = statistic_info->video_stream_info;
+    
+    TSDK_S_VIDEO_STREAM_INFO *svc_stream_info = statistic_info->svc_stream_info;
+    
+    
+    CallStatisticInfo *callInfo = [[CallStatisticInfo alloc] init];
+    callInfo.callId = callId;
+    if (needUpdateSignalStrength) {
+        callInfo.signalStrength = signalStrength;
+    }
+    callInfo.effectiveBitrate = statistic_info->effective_bitrate;
+    callInfo.isSvcConf = statistic_info->is_svc_conf;
+    
+    AudioStreamInfo *audioStreamInfo = [[AudioStreamInfo alloc] init];
+    audioStreamInfo.isSrtp = audio_stream_info.is_srtp;
+    audioStreamInfo.encodeProtocol = [NSString stringWithUTF8String:audio_stream_info.encode_protocol];
+    audioStreamInfo.sendBitRate = audio_stream_info.send_bit_rate;
+    audioStreamInfo.sendLossFraction = audio_stream_info.send_loss_fraction;
+    audioStreamInfo.sendDelay = audio_stream_info.send_delay;
+    audioStreamInfo.sendJitter = audio_stream_info.send_jitter;
+    audioStreamInfo.decodeProtocol = [NSString stringWithUTF8String:audio_stream_info.decode_protocol];
+    audioStreamInfo.recvBitRate = audio_stream_info.recv_bit_rate;
+    audioStreamInfo.recvLossFraction = audio_stream_info.recv_loss_fraction;
+    audioStreamInfo.recvDelay = audio_stream_info.recv_delay;
+    audioStreamInfo.recvJitter = audio_stream_info.recv_jitter;
+    audioStreamInfo.recvAverageMos = audio_stream_info.recv_average_mos;
+    callInfo.audioStreamInfo = audioStreamInfo;
+    
+    VideoStreamInfo *videoStreamInfo = [[VideoStreamInfo alloc] init];
+    videoStreamInfo.isSrtp = video_stream_info.is_srtp;
+    videoStreamInfo.bandWidth = video_stream_info.bandwidth;
+    videoStreamInfo.encodeProtocol = [NSString stringWithUTF8String:video_stream_info.encode_protocol];
+    videoStreamInfo.sendBitRate = video_stream_info.send_bit_rate;
+    videoStreamInfo.sendFrameSize = [NSString stringWithUTF8String:video_stream_info.send_frame_size];
+    videoStreamInfo.sendFrameRate = video_stream_info.send_frame_rate;
+    videoStreamInfo.sendLossFraction = video_stream_info.send_loss_fraction;
+    videoStreamInfo.sendDelay = video_stream_info.send_delay;
+    videoStreamInfo.sendJitter = video_stream_info.send_jitter;
+    videoStreamInfo.decodeProtocol = [NSString stringWithUTF8String:video_stream_info.decode_protocol];
+    videoStreamInfo.recvBitRate = video_stream_info.recv_bit_rate;
+    videoStreamInfo.recvFrameSize = [NSString stringWithUTF8String:video_stream_info.recv_frame_size];
+    videoStreamInfo.recvLossFraction = video_stream_info.recv_loss_fraction;
+    videoStreamInfo.recvFrameRate = video_stream_info.recv_frame_rate;
+    videoStreamInfo.recvDelay = video_stream_info.recv_delay;
+    videoStreamInfo.recvJitter = video_stream_info.recv_jitter;
+    videoStreamInfo.recvSsrcLabel = video_stream_info.recv_ssrc_label;
+    callInfo.videoStreamInfo = videoStreamInfo;
+    
+    callInfo.svcStreamCount = statistic_info->svc_stream_count;
+    NSMutableArray *svcStreamInfoArray = [[NSMutableArray alloc] init];
+    for (int i = 0; i < callInfo.svcStreamCount; i++) {
+        TSDK_S_VIDEO_STREAM_INFO svcStreamInfo = svc_stream_info[i];
+        VideoStreamInfo *videoStreamInfoM = [[VideoStreamInfo alloc] init];
+        
+        videoStreamInfoM.isSrtp = svcStreamInfo.is_srtp;
+        videoStreamInfoM.bandWidth = svcStreamInfo.bandwidth;
+        videoStreamInfoM.encodeProtocol = [NSString stringWithUTF8String:svcStreamInfo.encode_protocol];
+        videoStreamInfoM.sendBitRate = svcStreamInfo.send_bit_rate;
+        videoStreamInfoM.sendFrameSize = [NSString stringWithUTF8String:svcStreamInfo.send_frame_size];
+        videoStreamInfoM.sendFrameRate = svcStreamInfo.send_frame_rate;
+        videoStreamInfoM.sendLossFraction = svcStreamInfo.send_loss_fraction;
+        videoStreamInfoM.sendDelay = svcStreamInfo.send_delay;
+        videoStreamInfoM.sendJitter = svcStreamInfo.send_jitter;
+        videoStreamInfoM.decodeProtocol = [NSString stringWithUTF8String:svcStreamInfo.decode_protocol];
+        videoStreamInfoM.recvBitRate = svcStreamInfo.recv_bit_rate;
+        videoStreamInfoM.recvFrameSize = [NSString stringWithUTF8String:svcStreamInfo.recv_frame_size];
+        videoStreamInfoM.recvLossFraction = svcStreamInfo.recv_loss_fraction;
+        videoStreamInfoM.recvFrameRate = svcStreamInfo.recv_frame_rate;
+        videoStreamInfoM.recvDelay = svcStreamInfo.recv_delay;
+        videoStreamInfoM.recvJitter = svcStreamInfo.recv_jitter;
+        videoStreamInfoM.recvSsrcLabel = svcStreamInfo.recv_ssrc_label;
+        
+        [svcStreamInfoArray addObject:videoStreamInfoM];
+    }
+    callInfo.svcStreamInfoArray = [NSArray arrayWithArray:svcStreamInfoArray];
+    
+    callInfo.dataStreamInfo = dataStreamInfo;
+    
+    NSDictionary *callInDic = [NSDictionary dictionaryWithObjectsAndKeys:
+                                            callInfo,CALL_STATISTIC_INFO,
+                                            [NSNumber numberWithBool:needUpdateSignalStrength],NEED_UPDATE_SIGNAL_STRENGT,
+                                            nil];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:CALL_STATISTIC_INFO_NOTIFY object:nil userInfo:callInDic];
+    });
+    
 }
 
 

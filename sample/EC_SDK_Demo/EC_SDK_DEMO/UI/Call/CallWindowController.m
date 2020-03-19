@@ -1246,12 +1246,18 @@ static CallWindowController *g_windowCtrl = nil;
 - (void)signalBtnAction
 {
     _signalBackView.hidden = !_signalBackView.hidden;
+    if (_signalBackView.hidden == NO) {
+        [[ManagerService callService] getSignalCallInfoWithCallId:[self getSelfCurrentConfId]];
+    }
 }
 
 - (void)updateCallStatisticInfo:(NSNotification *)notification
 {
     CallStatisticInfo *callInfo = notification.userInfo[CALL_STATISTIC_INFO];
-    [self updatesignalImageWithSignalStrength:callInfo.signalStrength];
+    BOOL needUpdateSignalStrength = [notification.userInfo[NEED_UPDATE_SIGNAL_STRENGT] boolValue];
+    if (needUpdateSignalStrength) {
+        [self updatesignalImageWithSignalStrength:callInfo.signalStrength];
+    }
     AudioStreamInfo *audioStreamInfo = callInfo.audioStreamInfo;
     
     NSMutableArray *audioInfoArray = [[NSMutableArray alloc] init];
