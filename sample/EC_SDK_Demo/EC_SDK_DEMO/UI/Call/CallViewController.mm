@@ -130,8 +130,7 @@ typedef enum
     }
     
     LoginInfo *uportalLoginInfo = [[ManagerService loginService] obtainCurrentLoginInfo];
-    NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
-    NSString *shortSipNum = array[0];
+    NSString *shortSipNum = [ManagerService callService].terminal;
     if ([self.callNumberTextFiled.text isEqualToString:shortSipNum] || [self.callNumberTextFiled.text isEqualToString:uportalLoginInfo.account])
     {
         [self showMessage:@"Can not call yourself!"];
@@ -142,9 +141,7 @@ typedef enum
         // if do not config callback number , call back to sip number.
         NSString *callBackNumber = [CommonUtils getUserDefaultValueWithKey:@"CallbackNumber"];
         if (callBackNumber.length == 0) {
-            NSString *sipNumber = [ManagerService callService].sipAccount;
-            NSRange range = [sipNumber rangeOfString:@"@"];
-            sipNumber = range.location == NSNotFound ? sipNumber : [sipNumber substringToIndex:range.location];
+            NSString *sipNumber = [ManagerService callService].terminal;
             callBackNumber = sipNumber;
         }
         

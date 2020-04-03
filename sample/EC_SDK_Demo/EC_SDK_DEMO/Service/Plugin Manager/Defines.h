@@ -111,6 +111,14 @@ extern NSString* const DATA_SHARE_SELF_START_NOTIFY;
 
 extern NSString* const DATA_SHARE_STOP_NOTIFY;
 
+extern NSString* const CONF_SET_SHARE_ONWER_FAILED_DESCRIPTION;
+
+extern NSString* const CONF_START_SHARE_FAILED_DESCRIPTION;
+
+extern NSString* const JOIN_DATA_CONF_FAILED_DESCRIPTION;
+
+extern NSString* const CONF_QUITE_TO_CONFLISTVIEW_DESCRIPTION;
+
 /**
  * [en]This enumeration is used to describe the call type.
  * [cn]∫ÙΩ–¿‡–Õ
@@ -361,37 +369,6 @@ extern NSString *const LOGIN_FIREWALL_DETECT_RESULT;     // value: BOOL
 extern NSString *const LOGIN_FIREWALL_MODE_KEY;          // value: TUP_FIREWALL_MODE
 extern NSString *const LOGIN_STG_TUNNEL_CREATE_RESULT_KEY; // value: BOOL
 
-typedef NS_ENUM(NSUInteger, TUP_LOGIN_EVENT_TYPE)
-{
-    LOGINOUT_EVENT,
-    LOGININ_EVENT,
-};
-
-/**
- *This enum is about login status type
- *登陆状态类型
- */
-typedef enum
-{
-    LOGIN_STATUS_ONLINE,
-    LOGIN_STATUS_OFFLINE,
-    LOGIN_STATUS_BUTT
-}LOGIN_STATUS_TYPE;
-
-/**
- *This enum is about login result type
- *登陆结果类型
- */
-typedef NS_ENUM(NSUInteger, TUPSERVICE_LOGIN_RESULT_TYPE)
-{
-    LOGIN_TYPE_SUCCESS,
-    LOGIN_TYPE_ERROR_ACCOUNT_ISNIL,
-    LOGIN_TYPE_ERROR_PASSWORD_ISNIL,
-    LOGIN_TYPE_ERROR_PORT_ISNOTALLNUMBER,
-    LOGIN_TYPE_ERROR_ADDRESS,
-    LOGIN_TYPE_FAIL
-};
-
 /**
  *This enum is about firewall mode
  *防火墙模式
@@ -629,6 +606,8 @@ typedef enum
     DATA_CONF_AS_ON_SCREEN_DATA,
     DATACONF_SHARE_SCREEN_DATA_STOP,
     CONF_E_SVC_WATCH_INFO_IND,
+    CONF_E_SET_SHARE_OWNER_FAILED,
+    CONF_E_START_SHARE_FAILED,
 }EC_CONF_E_TYPE;
 
 /**

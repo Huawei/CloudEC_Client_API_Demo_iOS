@@ -94,21 +94,12 @@
  */
 @property (nonatomic,strong)NSMutableDictionary<NSString* , CallInfo*> *tsdkCallInfoDic;
 
-/**
- *Indicates authorize token
- *鉴权token
- */
-@property (nonatomic, copy)NSString *token;
-
 @end
 
 @implementation CallService
 
 //creat getter and setter method of delegate
 @synthesize delegate;
-
-//creat getter and setter method of sipAccount
-@synthesize sipAccount;
 
 //creat getter and setter method of terminal
 @synthesize terminal;
@@ -180,31 +171,6 @@
     NSArray *array = [_tsdkCallInfoDic allValues];
     for (CallInfo *info in array) {
         [self closeCall:info.stateInfo.callId];
-    }
-}
-
-/**
- * This method is used to config bussiness token
- * 配置业务token
- *@param sipAccount         Indicates sip account
- *                          sip账号
- *@param terminal         Indicates terminal
- *                          terminal号码（长号）
- *@param token              Indicates token
- *                          鉴权token
- */
-- (void)configBussinessAccount:(NSString *)sipAccount
-                      terminal:(NSString *)terminal
-                         token:(NSString *)token
-{
-    if (token.length > 0 || token != nil) {
-        self.token = token;
-    }
-    if (sipAccount.length > 0 || sipAccount != nil) {
-        self.sipAccount = sipAccount;
-    }
-    if (terminal.length > 0 || terminal != nil) {
-        self.terminal = terminal;
     }
 }
 
@@ -1711,7 +1677,7 @@
 - (NSString *)callHistoryDBPath
 {
     NSString *logPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-    NSString *plistName = [NSString stringWithFormat:@"%@_allHistory.plist",[ManagerService callService].sipAccount];
+    NSString *plistName = [NSString stringWithFormat:@"%@_allHistory.plist",[ManagerService loginService].currentLoginInfo];
     NSString *filePath = [logPath stringByAppendingPathComponent:plistName];
     if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         if ([[NSFileManager defaultManager] createFileAtPath:filePath

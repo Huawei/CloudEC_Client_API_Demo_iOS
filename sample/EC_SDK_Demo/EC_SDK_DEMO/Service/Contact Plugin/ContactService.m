@@ -92,11 +92,9 @@ NSString *const TUP_ICON_FILE_KEY                   = @"TUP_ICON_FILE_KEY";
                         if (accountNumber.length == 0 || accountNumber == nil) {
                             accountNumber = contactInfo.terminal2;
                         }
-                        [[ManagerService callService] configBussinessAccount:accountNumber terminal:contactInfo.terminal2 token:nil];
-                        
-//                        if (nil == [eSpaceDBService sharedInstance].localDataManager) {
-//                            [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:contactInfo.staffAccount];
-//                        }
+                        if (accountNumber.length > 0) {
+                            [ManagerService callService].terminal = accountNumber;
+                        }
                         
                     }
                     return;

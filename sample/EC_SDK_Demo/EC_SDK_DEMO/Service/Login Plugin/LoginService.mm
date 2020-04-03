@@ -36,12 +36,6 @@
 @implementation LoginService
 
 /**
- *Indicates delegate of LoginInterface protocol
- *LoginInterface协议的代理
- */
-@synthesize delegate;
-
-/**
  *Indicates current login info and part of authrize result
  *当前登陆信息以及部分鉴权结果
  */
@@ -57,11 +51,6 @@
 {
     if (self = [super init])
     {
-        //monitor the notification of sip status change
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(loginSipStatusChangedNotify)
-                                                     name:LOGIN_UNREGISTERED_RESULT
-                                                   object:nil];
     }
     return self;
 }
@@ -73,30 +62,6 @@
 -(void)dealloc
 {
     [self unInitLoginServer];
-}
-
-/**
- *This method is used to get login status after receiving sip register notification
- *收到sip登陆回调后设置登陆状态
- */
-- (void)loginSipStatusChangedNotify
-{
-    [self respondsLoginDelegateWithType:LOGINOUT_EVENT result:nil];
-}
-
-/**
- *This method is used to respond login delegate with event type
- *根据事件类型将消息传递给代理
- */
--(void)respondsLoginDelegateWithType:(TUP_LOGIN_EVENT_TYPE)type result:(NSDictionary *)resultDictionary
-{
-    DDLogInfo(@"post to UI");
-    if (self.delegate && [self.delegate respondsToSelector:@selector(loginEventCallback:result:)])
-    {
-//        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.delegate loginEventCallback:type result:resultDictionary];
-//        });
-    }
 }
 
 /**
@@ -122,14 +87,6 @@
      {
          dispatch_async(dispatch_get_main_queue(), ^{
              if (isSuccess) {
-                 
-                 
-                 
-                 //             [eSpaceDBService sharedInstance].localDataManager = [[ESpaceLocalDataManager alloc] initWithUserAccount:userConfig.account];
-                 //             ESPACE_APP_DELEGATE.localDataManager = [eSpaceDBService sharedInstance].localDataManager;
-                 
-                 
-                 
 //                 //搜索自己软终端号码
 //                 [[ManagerService contactService] searchContactsToConfigSelfTerminalNum];
                  
@@ -140,7 +97,6 @@
              }else {
                  if (completionBlock) {
                      completionBlock(isSuccess, error);
-                     //                 [ManagerService loginService].serviceStatus = ECServiceKickOff;
                  }
              }
          });
@@ -166,24 +122,6 @@
 -(LoginInfo *)obtainCurrentLoginInfo
 {
     return _loginInfo;
-}
-
-/**
- *This method is used to obtain token
- *获取鉴权token
- */
--(NSString *)obtainToken
-{
-    return [[LoginCenter sharedInstance] currentServerInfo].token;
-}
-
-/**
- *This method is used to obtain server info
- *获取服务器信息
- */
--(LoginServerInfo *)obtainAccessServerInfo
-{
-    return [[LoginCenter sharedInstance] currentServerInfo];
 }
 
 #pragma mark - Authorize

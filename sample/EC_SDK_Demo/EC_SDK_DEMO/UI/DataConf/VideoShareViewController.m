@@ -147,7 +147,35 @@
             });
             
         }
-            
+            break;
+        case CONF_E_SET_SHARE_OWNER_FAILED:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *description = resultDictionary[CONF_SET_SHARE_ONWER_FAILED_DESCRIPTION];
+                [self showMessage:description];
+            });
+        }
+            break;
+        case CONF_E_START_SHARE_FAILED:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *description = resultDictionary[CONF_START_SHARE_FAILED_DESCRIPTION];
+                [self showMessage:description];
+            });
+        }
+            break;
+        case DATA_CONF_JOIN_RESOULT: {
+            BOOL isSuccess = [resultDictionary[UCCONF_RESULT_KEY] boolValue];
+            NSString *description = resultDictionary[JOIN_DATA_CONF_FAILED_DESCRIPTION];
+            DDLogInfo(@"DATA_CONF_JOIN_RESOULT: %d", isSuccess);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (isSuccess) {
+                    [weakSelf showMessage:@"Join data conf success."];
+                }else {
+                    [weakSelf showMessage:description];
+                }
+            });
+        }
             break;
             
         default:
@@ -159,6 +187,25 @@
 - (void)confAttendeeUpdateAction
 {
     _currentAttendeeWatchArray = [NSArray arrayWithArray:[ManagerService confService].watchAttendeesArray];
+    NSArray *joinConfArray = [ManagerService confService].haveJoinAttendeeArray;
+    BOOL isSelfInConf = NO;
+    for (ConfAttendeeInConf *addAttendee in joinConfArray) {
+        if (addAttendee.isSelf) {
+            isSelfInConf = YES;
+        }
+    }
+    if (!isSelfInConf) {
+        _firstSVCView.currentAttendee = nil;
+        _firstSVCView.currentlabel = 0;
+        
+        _secondSVCView.currentAttendee = nil;
+        _secondSVCView.currentlabel = 0;
+        
+        _thirdSVCView.currentAttendee = nil;
+        _thirdSVCView.currentlabel = 0;
+        
+        return;
+    }
     
     if ([self isNeedAddDataBtn]) {
         if (_confDataShareBtn == nil) {
@@ -443,7 +490,7 @@
 
 - (void) appActiveNotify:(NSNotification*) notify
 {
-    if ([ManagerService confService].isStartScreenSharing) {
+    if ([ManagerService confService].isStartScreenSharing || ![ManagerService confService].currentJoinConfIndInfo.isSelfJoinConf) {
         return;
     }
     BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
@@ -465,6 +512,13 @@
 {
     self.barView.hidden = YES;
     self.bottomView.hidden = YES;
+    
+    BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
+    BOOL iSVideoConf = [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO_DATA || [ManagerService confService].currentJoinConfIndInfo.confMediaType == TSDK_E_CONF_MEDIA_VIDEO;
+    if (!isSvcConf && !iSVideoConf) {
+        return;
+    }
+    
     [[ManagerService confService] removeSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
     [[ManagerService callService] switchCameraOpen:NO callId:[ManagerService confService].currentCallId];
     [CallWindowController shareInstance].cameraClose = YES;
@@ -474,7 +528,7 @@
 
 - (void)dataShareStopAciton
 {
-    if (UIApplicationStateActive != [UIApplication sharedApplication].applicationState) {
+    if (UIApplicationStateActive != [UIApplication sharedApplication].applicationState || ![ManagerService confService].currentJoinConfIndInfo.isSelfJoinConf) {
         return;
     }
     BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
@@ -680,24 +734,24 @@
             [self.confCtrlArray addObject:@"Lock Conf"];
         }
         
-        EC_CONF_MEDIATYPE mediaType = [ManagerService confService].currentConfBaseInfo.media_type;
-        if (mediaType == CONF_MEDIATYPE_VIDEO || mediaType == CONF_MEDIATYPE_VOICE) {
-            [self.confCtrlArray addObject:@"UpGrade DateConf"];
-        }
+//        EC_CONF_MEDIATYPE mediaType = (EC_CONF_MEDIATYPE)[ManagerService confService].currentJoinConfIndInfo.confMediaType;
+//        if (mediaType == CONF_MEDIATYPE_VIDEO || mediaType == CONF_MEDIATYPE_VOICE) {
+//            [self.confCtrlArray addObject:@"UpGrade DateConf"];
+//        }
         
     }else{
         [self.confCtrlArray addObject:@"Request Chair"];
     }
     
     if (@available(iOS 12, *)) {
-        EC_CONF_MEDIATYPE mediaType = [ManagerService confService].currentConfBaseInfo.media_type;
-        if (mediaType == CONF_MEDIATYPE_VIDEO_DATA || mediaType == CONF_MEDIATYPE_DATA) {
+//        EC_CONF_MEDIATYPE mediaType = (EC_CONF_MEDIATYPE)[ManagerService confService].currentJoinConfIndInfo.confMediaType;
+//        if (mediaType == CONF_MEDIATYPE_VIDEO_DATA || mediaType == CONF_MEDIATYPE_DATA) {
             NSString *shareString = @"Screen Share";
             if ([ManagerService confService].mIsScreenSharing) {
                 shareString = @"Stop Share";
             }
             [self.confCtrlArray addObject:shareString];
-        }
+//        }
     }
     
     [self.confCtrlArray addObject:@"rename self"];
@@ -747,7 +801,7 @@
         _backImageView = [[UIImageView alloc] init];
         
         _backImageView.frame = CGRectMake(([self selfViewWidth] - 142)/2, ([self selfViewHeight] - 142)/2, 142, 142);
-        _backImageView.image = [UIImage imageNamed:@"image_conf_video_back"];
+//        _backImageView.image = [UIImage imageNamed:@"image_conf_video_back"];
     }
     return _backImageView;
 }

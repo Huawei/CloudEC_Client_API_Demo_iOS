@@ -19,6 +19,7 @@
 @property (nonatomic, assign) BOOL isSvcConf;  // 是否多流会议
 @property (nonatomic, assign) int svcLableCount;  // 多流Lable有效个数
 @property (nonatomic, copy) NSArray * svcLable;   // 多流Lable对应的ssrc值
+@property (nonatomic, assign) BOOL isSelfJoinConf;  // 是否已经加入会议
 
 @end
 

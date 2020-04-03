@@ -47,9 +47,7 @@ dispatch_async(dispatch_get_main_queue(), block);\
 
 - (BOOL)isSelf
 {
-    NSString *sipAccount = [ManagerService callService].sipAccount;
-    NSArray *array = [sipAccount componentsSeparatedByString:@"@"];
-    NSString *selfNumber = array[0];
+    NSString *selfNumber = [ManagerService callService].terminal;
     if ([ManagerService confService].selfJoinNumber) {
         selfNumber = [ManagerService confService].selfJoinNumber;
     }

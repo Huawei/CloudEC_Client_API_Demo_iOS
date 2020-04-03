@@ -9,6 +9,7 @@
 #import "CallHistoryViewController.h"
 #import "CallHistoryCell.h"
 #import "ManagerService.h"
+#import "CommonUtils.h"
 
 @interface CallHistoryViewController ()
 @property (nonatomic, strong)NSMutableArray *callHistoryDataSources;  // call history data array
@@ -82,7 +83,8 @@
 - (NSString *)callHistoryDBPath
 {
     NSString *logPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-    NSString *plistName = [NSString stringWithFormat:@"%@_allHistory.plist",[ManagerService callService].sipAccount];
+    NSString *accountId = [CommonUtils getUserDefaultValueWithKey:@"USER_ACCOUNT"];
+    NSString *plistName = [NSString stringWithFormat:@"%@_allHistory.plist",accountId];
     NSString *filePath = [logPath stringByAppendingPathComponent:plistName];
     if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
         if ([[NSFileManager defaultManager] createFileAtPath:filePath

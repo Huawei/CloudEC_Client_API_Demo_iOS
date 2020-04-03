@@ -280,7 +280,7 @@
     VideoShareViewController *videoShareView = [[VideoShareViewController alloc] init];
     videoShareView.hidesBottomBarWhenPushed = YES;
     
-    [navigationCtrl pushViewController:videoShareView animated:YES];
+    [navigationCtrl pushViewController:videoShareView animated:NO];
     
     DDLogInfo(@"goConference");
 }

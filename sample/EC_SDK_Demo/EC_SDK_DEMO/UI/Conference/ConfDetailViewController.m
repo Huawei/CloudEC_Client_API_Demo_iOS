@@ -42,8 +42,7 @@
     {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
-    NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
-    NSString *shortSipNum = array[0];
+    NSString *shortSipNum = [ManagerService callService].terminal;
     self.joinNumberTextField.text = shortSipNum;
 }
 

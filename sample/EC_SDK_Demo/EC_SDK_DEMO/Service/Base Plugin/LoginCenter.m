@@ -195,9 +195,7 @@ static LoginCenter *g_loginCenter = nil;
             LoginAccessServer.sipPwd= [NSString stringWithUTF8String:im_login_parama->password];
             LoginAccessServer.token = [NSString stringWithUTF8String:im_login_parama->token];
             self.loginServerInfo = LoginAccessServer;
-            
-//            [ManagerService loginService].serviceStatus = ECServiceLogin;
-            
+                        
 //            NSArray *pushTime = [CommonUtils getUserDefaultValueWithKey:PushTimeEnableRecoud];
 //            NSString *noPushStart = nil;
 //            NSString *noPushEnd = nil;
@@ -219,30 +217,21 @@ static LoginCenter *g_loginCenter = nil;
                 [[NSNotificationCenter defaultCenter] postNotificationName:LOGIN_AUTH_FAILED object:nil userInfo:nil];
             });
             _isResuming = NO;
-//            [ManagerService loginService].serviceStatus = ECServiceKickOff;
+            [ManagerService loginService].serviceStatus = ECServiceInvalidAccountOrPassword;
             DDLogInfo(@"authorize failed, reason code: %d", reasonCode);
             break;
         }
         case TSDK_E_LOGIN_EVT_AUTH_REFRESH_FAILED:
         {
             TSDK_UINT32 reasonCode = notify.param2;
-//            [ManagerService loginService].serviceStatus = ECServiceKickOff;
+            [ManagerService loginService].serviceStatus = ECServiceInvalidAccountOrPassword;
             DDLogInfo(@"authorize refresh failed, reason code: %d", reasonCode);
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGIN_SUCCESS:
         {
-            if (_isResuming) {
-                _isResuming = NO;
-                return;
-            }
-            sipStatus = kCallSipStatusRegistered;
-            [self isSipRegistered:sipStatus];
             TSDK_S_LOGIN_SUCCESS_INFO *login_success_info = notify.data;
-            if (login_success_info != NULL) {
-                [ManagerService confService].uPortalConfType = [self configDeployMode:login_success_info->conf_env_type];
-                
-            }
+            
             TSDK_E_SERVICE_ACCOUNT_TYPE accountType = notify.param2;
             if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
                 
@@ -251,6 +240,16 @@ static LoginCenter *g_loginCenter = nil;
                 BOOL needAutoLogin = [CommonUtils getUserDefaultBoolValueWithKey:NEED_AUTO_LOGIN];
                 if (!needAutoLogin) {
                     [CommonUtils userDefaultSaveBoolValue:YES forKey:NEED_AUTO_LOGIN];
+                }
+                if (_isResuming) {
+                    _isResuming = NO;
+                    return;
+                }
+                sipStatus = kCallSipStatusRegistered;
+                [self isSipRegistered:sipStatus];
+                
+                if (login_success_info != NULL) {
+                    [ManagerService confService].uPortalConfType = [self configDeployMode:login_success_info->conf_env_type];
                 }
             }else if (accountType == TSDK_E_IM_SERVICE_ACCOUNT){
 //                DDLogInfo(@"im have been login");
@@ -287,19 +286,17 @@ static LoginCenter *g_loginCenter = nil;
             if (accountType == TSDK_E_VOIP_SERVICE_ACCOUNT) {
                 DDLogInfo(@"sip unregister");
                 sipStatus = kCallSipStatusUnRegistered;
-                [self isSipRegistered:sipStatus];
-                //            [ManagerService loginService].serviceStatus = ECServiceOffline;
+                [ManagerService loginService].serviceStatus = ECServiceLogout;
             }
             
             break;
         }
         case TSDK_E_LOGIN_EVT_LOGOUT_FAILED:
         {
-//            sipStatus = kCallSipStatusRegistered;
+            sipStatus = kCallSipStatusRegistered;
             TSDK_UINT32 reasonCode = notify.param2;
-//            [ManagerService loginService].serviceStatus = ECServiceOffline;
+            [ManagerService loginService].serviceStatus = ECServiceLogout;
             DDLogInfo(@"sip logout failed, reason code: %d", reasonCode);
-//            [self isSipRegistered:sipStatus];
             break;
         }
         case TSDK_E_LOGIN_EVT_FORCE_LOGOUT:
@@ -309,10 +306,9 @@ static LoginCenter *g_loginCenter = nil;
                 [self logout];
                 DDLogInfo(@"sip unregister");
                 sipStatus = kCallSipStatusUnRegistered;
-                [self isSipRegistered:sipStatus];
             }
             
-            [ManagerService loginService].serviceStatus = ECServiceLogout;
+            [ManagerService loginService].serviceStatus = ECServiceKickOff;
             break;
         }
         case TSDK_E_LOGIN_EVT_VOIP_ACCOUNT_STATUS:
@@ -323,7 +319,10 @@ static LoginCenter *g_loginCenter = nil;
             if (terminal == nil || terminal.length == 0) {
                 terminal = number;
             }
-            [[ManagerService callService] configBussinessAccount:terminal terminal:number token:nil];
+            if (terminal.length > 0) {
+                [ManagerService callService].terminal = terminal;
+            }
+            
             
             break;
         }

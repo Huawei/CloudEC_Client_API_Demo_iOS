@@ -17,7 +17,7 @@
 
 NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
 
-@interface LoginViewController ()<LoginServiceDelegate>
+@interface LoginViewController ()
 {
     BOOL _hasTimeOut;
 }
@@ -50,18 +50,18 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     _versionLabel.text = [NSString stringWithFormat:@"Version: %@", [NSBundle mainBundle].infoDictionary[@"CFBundleVersion"]];
     [self.navigationController.navigationBar setHidden:YES];
     
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginSipUnregistered) name:LOGIN_UNREGISTERED_RESULT object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginSipUnregistered) name:LOGIN_UNREGISTERED_RESULT object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loginAuthFailed) name:LOGIN_AUTH_FAILED object:nil];
 }
 
-//- (void)loginSipUnregistered
-//{
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self showMessage:@"lgoin faild! sip unregistered!"];
-//        [self hiddenActivityIndicator:YES];
-//    });
-//    
-//}
+- (void)loginSipUnregistered
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self showMessage:@"lgoin faild! sip unregistered!"];
+        [self hiddenActivityIndicator:YES];
+    });
+    
+}
 
 - (void)loginAuthFailed
 {
@@ -126,38 +126,19 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     __weak typeof(self) weakSelf = self;
     [[ManagerService loginService] authorizeLoginWithLoginInfo:user completionBlock:^(BOOL isSuccess, NSError *error) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (!isSuccess) {
-                [weakSelf showMessage:[NSString stringWithFormat:@"Login Fail!code:%d",error.code]];
-                [weakSelf hiddenActivityIndicator:YES];
-                return ;
-            }
-            
             [weakSelf hiddenActivityIndicator:YES];
-            UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-            ViewController *baseViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"ViewController"];
-            [UIApplication sharedApplication].delegate.window.rootViewController = baseViewController;
-
+            if (!isSuccess) {
+                [weakSelf showMessage:[NSString stringWithFormat:@"Login Fail!code:%ld",(long)error.code]];
+                return ;
+            }else{
+                UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+                ViewController *baseViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"ViewController"];
+                [UIApplication sharedApplication].delegate.window.rootViewController = baseViewController;
+            }
         });
     }];
 }
 
-//-(void)configConferenceService
-//{
-//    LoginInfo *loginInfo = [[ManagerService loginService] obtainCurrentLoginInfo];
-//}
-
--(void)setCancelIPTService
-{
-    [[ManagerService callService] configDNDITPServerWithActiveCode:@"*56*" deactiveCode:@"#56#"];
-    [[ManagerService callService] configCallWaitITPServerWithActiveCode:@"*43#" deactiveCode:@"#43#"];
-    [[ManagerService callService] configCFBITPServerWithActiveCode:@"**67*" deactiveCode:@"##67#"];
-    [[ManagerService callService] configCFUITPServerWithActiveCode:@"**21*" deactiveCode:@"##21#"];
-    [[ManagerService callService] configCFNAITPServerWithActiveCode:@"**61*" deactiveCode:@"##61#"];
-    [[ManagerService callService] configCFNRITPServerWithActiveCode:@"**45*" deactiveCode:@"##45#"];
-    // TODO: CHENZHIQIAN
-
-    [CommonUtils userDefaultSaveValue:@"" forKey:IPTBUSINESS_KEY];
-}
 
 -(void)hiddenActivityIndicator:(BOOL)isHidden
 {
@@ -198,5 +179,8 @@ NSString *const IPTBUSINESS_KEY = @"IPTBUSINESS";
     [LoginViewController cancelPreviousPerformRequestsWithTarget:self selector:@selector(loginTimeOut) object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+
+
 
 @end

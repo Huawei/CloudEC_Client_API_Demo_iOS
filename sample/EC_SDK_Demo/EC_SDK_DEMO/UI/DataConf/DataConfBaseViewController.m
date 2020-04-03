@@ -31,9 +31,7 @@
 {
     self = [super init];
     if (self) {
-        
-        NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
-        self.selfNumber = array[0];
+        self.selfNumber = [ManagerService callService].terminal;
         self.confLastOrientation = UIDeviceOrientationPortrait;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSpeakerStatus:) name:NTF_AUDIOROUTE_CHANGED object:nil];

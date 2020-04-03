@@ -184,7 +184,7 @@ static CallWindowController *g_windowCtrl = nil;
         
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCallStatisticInfo:) name:CALL_STATISTIC_INFO_NOTIFY object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(releaseConfResources) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(releaseConfResources:) name:CONF_QUITE_TO_CONFLISTVIEW object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(confResumeingAction) name:LOGIN_AND_CONF_RESUMING_NOTIFY object:nil];
     
@@ -217,8 +217,15 @@ static CallWindowController *g_windowCtrl = nil;
 }
 
 
-- (void)releaseConfResources
+- (void)releaseConfResources:(NSNotification *)notification
 {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSString *description = notification.userInfo[CONF_QUITE_TO_CONFLISTVIEW_DESCRIPTION];
+        
+        if (description.length > 0) {
+            [[ECSDKProgressHud shareInstance] makeProgressHUD:description duration:2.0];
+        }
+    });
     [[CallTipView shareInstance] removeCommingCallTipView];
     self.cameraClose = NO;
     [self.callWindow setHidden:YES];
@@ -244,6 +251,11 @@ static CallWindowController *g_windowCtrl = nil;
     _isFirstSetWindow = YES;
     
     _currentTupCallInfo = nil;
+    
+    
+    
+    
+    
 }
 
 - (void)confShareRequestAction
@@ -555,6 +567,7 @@ static CallWindowController *g_windowCtrl = nil;
         case CALL_DESTROY:
         {
             [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
+            [[ManagerService confService] restoreConfParamsInitialValue];
 //            [[CallTipView shareInstance] removeCommingCallTipView];
 //            self.cameraClose = NO;
 //            [self.callWindow setHidden:YES];

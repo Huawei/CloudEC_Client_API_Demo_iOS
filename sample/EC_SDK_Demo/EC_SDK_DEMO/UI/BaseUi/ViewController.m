@@ -13,7 +13,7 @@
 #import "DataConfBaseViewController.h"
 
 
-@interface ViewController ()<LoginServiceDelegate>
+@interface ViewController ()
 @property (nonatomic,assign)BOOL isBeKickOut;
 
 @end
@@ -37,7 +37,6 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [ManagerService loginService].delegate = self;
 }
 
 
@@ -64,6 +63,7 @@
                 case ECServiceKickOff:
                 {
                     [[ManagerService loginService] logout];
+                    [self goToLoginViewController];
                 }
                     break;
                 case ECServiceReconnecting:
@@ -88,23 +88,6 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)loginEventCallback:(TUP_LOGIN_EVENT_TYPE)loginEvent result:(NSDictionary *)resultDictionary
-{
-    __weak typeof(self) weakSelf = self;
-    switch (loginEvent)
-    {
-        case LOGINOUT_EVENT:
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf goToLoginViewController];
-            });
-            break;
-        }
-        default:
-            break;
-    }
-}
-
 - (void)goToLoginViewController {
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
     UINavigationController *loginNavigationViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"LoginNavigationController"];
@@ -113,7 +96,6 @@
 
 -(void)dealloc
 {
-    [ManagerService loginService].delegate = nil;
     [((id)[ManagerService loginService]) removeObserver:self forKeyPath:@"serviceStatus" context:NULL];
 }
 

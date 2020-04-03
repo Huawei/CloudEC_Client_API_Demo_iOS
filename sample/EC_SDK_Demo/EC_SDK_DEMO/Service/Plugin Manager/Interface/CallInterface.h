@@ -86,14 +86,8 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
 @property (nonatomic, weak) id<IptConfigDelegate> iptDelegate;
 
 /**
- *Indicates global sip account
- *全局的sip账号
- */
-@property (nonatomic, copy)NSString *sipAccount;
-
-/**
  *Indicates global terminal
- *全局的terminal号码（长号）
+ *全局的terminal号码
  */
 @property (nonatomic, copy)NSString *terminal;
 
@@ -102,21 +96,6 @@ typedef NS_ENUM(NSUInteger, IPTConfigType){
  *是否显示会议bfcp界面
  */
 @property (nonatomic, assign)BOOL isShowTupBfcp;
-
-
-/**
- * This method is used to config bussiness token
- * 配置业务token
- *@param sipAccount         Indicates sip account
- *                          sip账号
- *@param terminal         Indicates terminal
- *                          terminal号码（长号）
- *@param token              Indicates token
- *                          鉴权token
- */
-- (void)configBussinessAccount:(NSString *)sipAccount
-                      terminal:(NSString *)terminal
-                         token:(NSString *)token;
 
 /**
  * This method is used to config video window local view

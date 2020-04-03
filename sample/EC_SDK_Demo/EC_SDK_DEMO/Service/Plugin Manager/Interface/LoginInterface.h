@@ -13,27 +13,8 @@
 #import "Defines.h"
 
 @class LoginInfo,LoginServerInfo;
-@protocol LoginServiceDelegate <NSObject>
-@required
-
-/**
- * This method is used to deel login event callback
- * 登陆事件回调处理
- *@param loginEvent                 Indicates login event
- *                                  登陆事件
- *@param resultDictionary           result value
- *                                  回调信息集
- */
--(void)loginEventCallback:(TUP_LOGIN_EVENT_TYPE)loginEvent result:(NSDictionary *)resultDictionary;
-@end
 
 @protocol LoginInterface <NSObject>
-
-/**
- *Indicates login service delegate
- *登陆业务代理
- */
-@property (nonatomic, weak)id<LoginServiceDelegate> delegate;
 
 /**
  *Indicates current login info
@@ -71,21 +52,6 @@
  */
 -(LoginInfo *)obtainCurrentLoginInfo;
 
-/**
- * This method is used to get token
- * 获取token
- *@return token                        Indicates token
- *                                     鉴权凭证
- */
--(NSString *)obtainToken;
-
-/**
- * This method is used to get access server info
- * 获取服务器信息
- *@return TUPLoginServerInfo*          Indicates access server info
- *                                     获取服务器信息
- */
--(LoginServerInfo *)obtainAccessServerInfo;
 
 
 @end

@@ -219,16 +219,13 @@
 
 -(void)fillSelfAttendeeInfo
 {
-//    NSArray *array = [[ManagerService callService].sipAccount componentsSeparatedByString:@"@"];
-//    NSString *shortSipNum = array[0];
-    
     LoginInfo *mine = [[ManagerService loginService] obtainCurrentLoginInfo];
     NSArray *array = [mine.account componentsSeparatedByString:@"@"];
     NSString *name = array[0];
     
     ConfAttendee *attendee = [[ConfAttendee alloc] init];
     attendee.name = name;
-    attendee.number = [ManagerService callService].sipAccount;
+    attendee.number = [ManagerService callService].terminal;
     attendee.account = mine.account;
     attendee.type = ATTENDEE_TYPE_NORMAL;
     attendee.role = CONF_ROLE_CHAIRMAN;
@@ -480,11 +477,7 @@
         return;
     }
     
-    _confSubjectTextField.text = [ManagerService confService].currentConfBaseInfo.conf_subject;
-    
-    if (0 == _confSubjectTextField.text.length) {
-        _confSubjectTextField.text = [self confDefaultName];
-    }
+    _confSubjectTextField.text = [self confDefaultName];
     
 }
 
@@ -680,15 +673,8 @@
         return;
     }
     
-    _selectedNumberLabel.text = [ManagerService confService].currentConfBaseInfo.conf_subject;
-    
-    if (0 == _selectedNumberLabel.text.length) {
-        
-        NSString *sipAccount = [ManagerService callService].sipAccount;
-        NSArray *array = [sipAccount componentsSeparatedByString:@"@"];
-        NSString *shortSipNum = array[0];
-        _selectedNumberLabel.text = shortSipNum;
-    }
+    NSString *shortSipNum = [ManagerService callService].terminal;
+    _selectedNumberLabel.text = shortSipNum;
 }
 
 

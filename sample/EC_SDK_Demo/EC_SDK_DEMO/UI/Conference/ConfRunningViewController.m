@@ -167,6 +167,7 @@
             break;
         case DATA_CONF_JOIN_RESOULT: {
             BOOL isSuccess = [resultDictionary[UCCONF_RESULT_KEY] boolValue];
+            NSString *description = resultDictionary[JOIN_DATA_CONF_FAILED_DESCRIPTION];
             DDLogInfo(@"DATA_CONF_JOIN_RESOULT: %d", isSuccess);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (isSuccess) {
@@ -175,7 +176,7 @@
                     [weakSelf stopTupBfcpCapability];
                     weakSelf.isJoinDataConfSuccess = YES;
                 }else {
-                    [weakSelf showMessage:@"Join data conf failed."];
+                    [weakSelf showMessage:description];
                     weakSelf.isJoinDataConfSuccess = NO;
                 }
 //                [self updateRightBarBottonItems];
@@ -333,9 +334,7 @@
 
 -(NSString *)sipAccount
 {
-    NSString *sipAccount = [ManagerService callService].sipAccount;
-    NSArray *array = [sipAccount componentsSeparatedByString:@"@"];
-    NSString *shortSipNum = array[0];
+    NSString *shortSipNum = [ManagerService callService].terminal;
     
     return shortSipNum;
 }

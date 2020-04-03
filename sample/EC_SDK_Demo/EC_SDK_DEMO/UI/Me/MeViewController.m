@@ -27,17 +27,23 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _sipAccountLabel.text = [ManagerService callService].sipAccount;
+    NSString *accountId = [CommonUtils getUserDefaultValueWithKey:@"USER_ACCOUNT"];
+    _sipAccountLabel.text = accountId;
 
     [self updateCallBackNumber];
 
     // Do any additional setup after loading the view.
 }
 
+-(void)viewWillAppear:(BOOL)animated
+{
+    if (_callBackNumber.text.length == 0) {
+        [self updateCallBackNumber];
+    }
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-
-    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -49,9 +55,7 @@
 {
     NSString *callBackNumberText = [CommonUtils getUserDefaultValueWithKey:@"CallbackNumber"];
     if (callBackNumberText.length == 0) {
-        NSString *sipNumber = [ManagerService callService].sipAccount;
-        NSRange range = [sipNumber rangeOfString:@"@"];
-        sipNumber = range.location == NSNotFound ? sipNumber : [sipNumber substringToIndex:range.location];
+        NSString *sipNumber = [ManagerService callService].terminal;
         _callBackNumber.text = sipNumber;
     }
     else {
