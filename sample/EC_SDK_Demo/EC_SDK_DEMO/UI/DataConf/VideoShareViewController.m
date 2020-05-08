@@ -133,17 +133,19 @@
                 name = [ManagerService confService].currentBigViewAttendee.number;
             }
             
-            CGRect rect = [name boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width - 20, MAXFLOAT)
-                                                  options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
-                                               attributes:@{NSFontAttributeName:_bigViewNameLabel.font}
-                                                  context:nil];
-            _currentNameWith = rect.size.width + 20;
-            _currentNameHeight = rect.size.height + 20;
+            
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf updateBtnViewFrame];
+                CGRect rect = [name boundingRectWithSize:CGSizeMake([UIScreen mainScreen].bounds.size.width - 20, MAXFLOAT)
+                                                      options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading
+                                                   attributes:@{NSFontAttributeName:_bigViewNameLabel.font}
+                                                      context:nil];
+                _currentNameWith = rect.size.width + 20;
+                _currentNameHeight = rect.size.height + 20;
                 
-                weakSelf.bigViewNameLabel.text = name;
+                [self updateBtnViewFrame];
+                
+                self.bigViewNameLabel.text = name;
             });
             
         }
@@ -170,9 +172,9 @@
             DDLogInfo(@"DATA_CONF_JOIN_RESOULT: %d", isSuccess);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (isSuccess) {
-                    [weakSelf showMessage:@"Join data conf success."];
+                    [self showMessage:@"Join data conf success."];
                 }else {
-                    [weakSelf showMessage:description];
+                    [self showMessage:description];
                 }
             });
         }
@@ -421,7 +423,10 @@
 
 - (void)deviceOrientationDidChange
 {
-    [self updateBtnViewFrame];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateBtnViewFrame];
+    });
+    
 }
 
 - (void)receiveConfModeChanged:(NSNotification *)notify {
@@ -490,7 +495,7 @@
 
 - (void) appActiveNotify:(NSNotification*) notify
 {
-    if ([ManagerService confService].isStartScreenSharing || ![ManagerService confService].currentJoinConfIndInfo.isSelfJoinConf) {
+    if ([ManagerService confService].mIsScreenSharing || ![ManagerService confService].currentJoinConfIndInfo.isSelfJoinConf) {
         return;
     }
     BOOL isSvcConf = [ManagerService confService].currentJoinConfIndInfo.isSvcConf;
@@ -519,7 +524,7 @@
         return;
     }
     
-    [[ManagerService confService] removeSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
+//    [[ManagerService confService] removeSvcVideoWindowWithFirstSVCView:_firstSVCView secondSVCView:_secondSVCView thirdSVCView:_thirdSVCView remote:_remoteView];
     [[ManagerService callService] switchCameraOpen:NO callId:[ManagerService confService].currentCallId];
     [CallWindowController shareInstance].cameraClose = YES;
     [self showScreenShareView];
@@ -528,6 +533,8 @@
 
 - (void)dataShareStopAciton
 {
+    //规避停止共享弹窗时，导致不在前台调用选看接口，选看失败的问题
+    [NSThread sleepForTimeInterval:0.2];
     if (UIApplicationStateActive != [UIApplication sharedApplication].applicationState || ![ManagerService confService].currentJoinConfIndInfo.isSelfJoinConf) {
         return;
     }

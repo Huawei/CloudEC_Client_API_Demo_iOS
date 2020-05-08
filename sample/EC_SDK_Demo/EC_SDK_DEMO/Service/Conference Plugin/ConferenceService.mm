@@ -232,6 +232,9 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 
 - (void)confStopReplay
 {
+    if (!self.mIsScreenSharing) {
+        return;
+    }
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:DATA_SHARE_STOP_NOTIFY object:nil];
         NSError *error = [[NSError alloc] initWithDomain:@"ScreenShare" code:-1 userInfo:@{NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"stop_screen_share", nil)}];
@@ -1082,7 +1085,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     
     if (result == TSDK_SUCCESS && (detailInfo.height > 0 && detailInfo.width > 0)) {
         TSDK_S_SIZE size;
-        memset(&size, 0, sizeof(TSDK_S_DOC_PAGE_BASE_INFO));
+        memset(&size, 0, sizeof(TSDK_S_SIZE));
         size.width = detailInfo.width;
         size.high = detailInfo.height;
         tsdk_doc_share_set_canvas_size(confHandle, pageInfo->component_id, &size, YES);
@@ -1701,6 +1704,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     bookConfInfoUportal->enter_prompt = TSDK_E_CONF_WARNING_DEFAULT;
     bookConfInfoUportal->leave_prompt = TSDK_E_CONF_WARNING_DEFAULT;
     bookConfInfoUportal->reminder = TSDK_E_CONF_REMINDER_NONE;
+    bookConfInfoUportal->is_auto_invite = TSDK_TRUE;
     
     // 默认语音提示播报为英文，如需中文播报，此字段赋值TSDK_E_CONF_LANGUAGE_ZH_CN即可。
     bookConfInfoUportal->language = TSDK_E_CONF_LANGUAGE_EN_US;
@@ -2436,8 +2440,8 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 }
 - (void)conferenceShareGetParam {
     
-    TSDK_S_SIZE sizeParam;
-    memset(&sizeParam, 0, sizeof(TSDK_S_SIZE));
+    TSDK_S_FLOAT_SIZE sizeParam;
+    memset(&sizeParam, 0, sizeof(TSDK_S_FLOAT_SIZE));
     
     TSDK_RESULT result = tsdk_get_remote_view_ppi_info(_confHandle, &sizeParam);
     if (TSDK_SUCCESS == result) {

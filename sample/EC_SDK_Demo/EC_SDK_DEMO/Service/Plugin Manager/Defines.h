@@ -119,6 +119,7 @@ extern NSString* const JOIN_DATA_CONF_FAILED_DESCRIPTION;
 
 extern NSString* const CONF_QUITE_TO_CONFLISTVIEW_DESCRIPTION;
 
+extern NSString* const NO_STREAM_DURATION_TIME;
 /**
  * [en]This enumeration is used to describe the call type.
  * [cn]∫ÙΩ–¿‡–Õ
@@ -161,7 +162,8 @@ typedef enum
     CALL_REFER_NOTIFY,
     CALL_OUTGOING,
     CALL_REFUSE_OPEN_VIDEO,
-    CALL_EVT_STATISTIC_INFO
+    CALL_EVT_STATISTIC_INFO,
+    CALL_EVT_NO_STREAM
 }TUP_CALL_EVENT_TYPE;
 
 /**

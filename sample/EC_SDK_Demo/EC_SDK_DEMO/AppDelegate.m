@@ -256,6 +256,12 @@
     UIViewController *controller = [UIApplication sharedApplication].delegate.window.rootViewController;
     if (![controller isKindOfClass:[UITabBarController class]]) {
         
+        if ([controller isKindOfClass:[UINavigationController class]]) {
+            if ([[((UINavigationController *)controller).viewControllers lastObject] isKindOfClass:[VideoShareViewController class]]) {
+                return;
+            }
+        }
+ 
         VideoShareViewController *runningView = [[VideoShareViewController alloc] init];
         runningView.hidesBottomBarWhenPushed = YES;
         
@@ -276,7 +282,6 @@
         return;
     }
     
-
     VideoShareViewController *videoShareView = [[VideoShareViewController alloc] init];
     videoShareView.hidesBottomBarWhenPushed = YES;
     

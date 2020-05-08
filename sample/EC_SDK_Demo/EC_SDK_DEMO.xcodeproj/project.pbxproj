@@ -130,7 +130,6 @@
 		DE87F1C6214B6534006D50DC /* ConfBaseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE87F1C5214B6534006D50DC /* ConfBaseInfo.m */; };
 		DE90F10623053B8C0006AD50 /* SignalScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = DE90F10323053B8C0006AD50 /* SignalScrollView.m */; };
 		DE90F10723053B8C0006AD50 /* SignalScrollView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DE90F10423053B8C0006AD50 /* SignalScrollView.xib */; };
-		DE961C8E242DF9DE0085855F /* libtup_track.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE961C8D242DF9DE0085855F /* libtup_track.a */; };
 		DE9B8FF7230D452F00AC7AE7 /* ECSLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FD9230D452E00AC7AE7 /* ECSLogger.m */; };
 		DE9B8FF8230D452F00AC7AE7 /* ECSDDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FDD230D452E00AC7AE7 /* ECSDDTTYLogger.m */; };
 		DE9B8FF9230D452F00AC7AE7 /* ECSDDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = DE9B8FDE230D452E00AC7AE7 /* ECSDDFileLogger.m */; };
@@ -145,80 +144,6 @@
 		DEA2B583230583C0001C6FAA /* ImageViewBtn.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA2B582230583C0001C6FAA /* ImageViewBtn.m */; };
 		DEAB8F20212E5DCF005BC744 /* CommonUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = DEAB8F1F212E5DCE005BC744 /* CommonUtils.mm */; };
 		DEAB8F23212E6309005BC744 /* CallLogMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAB8F22212E6308005BC744 /* CallLogMessage.m */; };
-		DEB767C62423A07500AC52E0 /* libtup_cwmp_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7677E2423A06E00AC52E0 /* libtup_cwmp_h5.a */; };
-		DEB767C72423A07500AC52E0 /* libtup_login.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7677F2423A06E00AC52E0 /* libtup_login.a */; };
-		DEB767C82423A07500AC52E0 /* libtup_msg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767802423A06E00AC52E0 /* libtup_msg.a */; };
-		DEB767C92423A07500AC52E0 /* libjsoncpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767812423A06F00AC52E0 /* libjsoncpp.a */; };
-		DEB767CA2423A07500AC52E0 /* libtup_commonlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767822423A06F00AC52E0 /* libtup_commonlib.a */; };
-		DEB767CB2423A07500AC52E0 /* libHW_MPT_IOS_G729AB_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767832423A06F00AC52E0 /* libHW_MPT_IOS_G729AB_LIB.a */; };
-		DEB767CC2423A07500AC52E0 /* libtup_os_adapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767842423A06F00AC52E0 /* libtup_os_adapter.a */; };
-		DEB767CD2423A07500AC52E0 /* libipsi_ssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767852423A06F00AC52E0 /* libipsi_ssl.a */; };
-		DEB767CE2423A07500AC52E0 /* libHME-Video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767862423A06F00AC52E0 /* libHME-Video.a */; };
-		DEB767CF2423A07500AC52E0 /* libipsi_osal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767872423A06F00AC52E0 /* libipsi_osal.a */; };
-		DEB767D02423A07500AC52E0 /* libminidopra.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767882423A06F00AC52E0 /* libminidopra.a */; };
-		DEB767D12423A07500AC52E0 /* libHW_MPT_IOS_G722_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767892423A06F00AC52E0 /* libHW_MPT_IOS_G722_LIB.a */; };
-		DEB767D32423A07500AC52E0 /* libtup_call_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7678B2423A06F00AC52E0 /* libtup_call_service.a */; };
-		DEB767D42423A07500AC52E0 /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7678C2423A06F00AC52E0 /* CloudLinkMeetingScreenShare.framework */; };
-		DEB767D52423A07500AC52E0 /* libtup_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7678D2423A06F00AC52E0 /* libtup_base.a */; };
-		DEB767D62423A07500AC52E0 /* libtup_ldap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7678E2423A06F00AC52E0 /* libtup_ldap.a */; };
-		DEB767D72423A07500AC52E0 /* libtup_call_mediacommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7678F2423A07000AC52E0 /* libtup_call_mediacommon.a */; };
-		DEB767D82423A07500AC52E0 /* libtup_httptrans.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767902423A07000AC52E0 /* libtup_httptrans.a */; };
-		DEB767D92423A07500AC52E0 /* libtup_eaddr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767912423A07000AC52E0 /* libtup_eaddr.a */; };
-		DEB767DA2423A07500AC52E0 /* libtup_svnapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767922423A07000AC52E0 /* libtup_svnapi.a */; };
-		DEB767DB2423A07500AC52E0 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767932423A07000AC52E0 /* libssl.a */; };
-		DEB767DC2423A07500AC52E0 /* libipsi_pse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767942423A07000AC52E0 /* libipsi_pse.a */; };
-		DEB767DD2423A07500AC52E0 /* libipsi_eap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767952423A07000AC52E0 /* libipsi_eap.a */; };
-		DEB767DE2423A07500AC52E0 /* libtup_eaddr_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767962423A07000AC52E0 /* libtup_eaddr_h5.a */; };
-		DEB767DF2423A07500AC52E0 /* libtup_confctrl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767972423A07000AC52E0 /* libtup_confctrl.a */; };
-		DEB767E02423A07500AC52E0 /* libtup_call_mediaservice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767982423A07000AC52E0 /* libtup_call_mediaservice.a */; };
-		DEB767E12423A07500AC52E0 /* libtup_xml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767992423A07100AC52E0 /* libtup_xml.a */; };
-		DEB767E22423A07500AC52E0 /* libKMC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7679A2423A07100AC52E0 /* libKMC.a */; };
-		DEB767E32423A07500AC52E0 /* libtsdk_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7679B2423A07100AC52E0 /* libtsdk_service.a */; };
-		DEB767E42423A07500AC52E0 /* libtup_cmpt_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7679C2423A07100AC52E0 /* libtup_cmpt_service.a */; };
-		DEB767E52423A07500AC52E0 /* libtup_support.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7679D2423A07100AC52E0 /* libtup_support.a */; };
-		DEB767E62423A07500AC52E0 /* libtup_https_srv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7679E2423A07100AC52E0 /* libtup_https_srv.a */; };
-		DEB767E72423A07500AC52E0 /* libipsi_crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7679F2423A07100AC52E0 /* libipsi_crypto.a */; };
-		DEB767E82423A07500AC52E0 /* libtup_socket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A02423A07100AC52E0 /* libtup_socket.a */; };
-		DEB767E92423A07500AC52E0 /* libtup_call_bfcp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A12423A07100AC52E0 /* libtup_call_bfcp.a */; };
-		DEB767EA2423A07500AC52E0 /* libtup_ipdetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A22423A07100AC52E0 /* libtup_ipdetect.a */; };
-		DEB767EB2423A07500AC52E0 /* libvcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A32423A07200AC52E0 /* libvcom.a */; };
-		DEB767EC2423A07500AC52E0 /* libTupConf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A42423A07200AC52E0 /* libTupConf.a */; };
-		DEB767ED2423A07500AC52E0 /* libplib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A52423A07200AC52E0 /* libplib.a */; };
-		DEB767EE2423A07500AC52E0 /* libtup_https_clt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A62423A07200AC52E0 /* libtup_https_clt.a */; };
-		DEB767EF2423A07500AC52E0 /* libtup_call_video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A72423A07200AC52E0 /* libtup_call_video.a */; };
-		DEB767F02423A07500AC52E0 /* libuspsdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A82423A07200AC52E0 /* libuspsdk.a */; };
-		DEB767F12423A07500AC52E0 /* libsipstacktup.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767A92423A07200AC52E0 /* libsipstacktup.a */; };
-		DEB767F22423A07500AC52E0 /* libtup_service_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767AA2423A07200AC52E0 /* libtup_service_base.a */; };
-		DEB767F32423A07500AC52E0 /* libtup_ctd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767AB2423A07200AC52E0 /* libtup_ctd.a */; };
-		DEB767F42423A07500AC52E0 /* libsecurec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767AC2423A07200AC52E0 /* libsecurec.a */; };
-		DEB767F52423A07500AC52E0 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767AD2423A07300AC52E0 /* libcrypto.a */; };
-		DEB767F62423A07500AC52E0 /* libHW_MPT_IOS_OPUS_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767AE2423A07300AC52E0 /* libHW_MPT_IOS_OPUS_LIB.a */; };
-		DEB767F72423A07500AC52E0 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767AF2423A07300AC52E0 /* libcurl.a */; };
-		DEB767F82423A07500AC52E0 /* libtup_ftp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B02423A07300AC52E0 /* libtup_ftp.a */; };
-		DEB767F92423A07500AC52E0 /* libtup_ldapstack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B12423A07300AC52E0 /* libtup_ldapstack.a */; };
-		DEB767FA2423A07500AC52E0 /* libACE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B22423A07300AC52E0 /* libACE.a */; };
-		DEB767FB2423A07500AC52E0 /* libsdp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B32423A07300AC52E0 /* libsdp.a */; };
-		DEB767FC2423A07500AC52E0 /* libtup_conf_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B42423A07300AC52E0 /* libtup_conf_agent.a */; };
-		DEB767FD2423A07500AC52E0 /* libipsi_http.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B52423A07300AC52E0 /* libipsi_http.a */; };
-		DEB767FE2423A07500AC52E0 /* libtup_ldapfrontstage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B62423A07400AC52E0 /* libtup_ldapfrontstage.a */; };
-		DEB767FF2423A07500AC52E0 /* libtup_tools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B72423A07400AC52E0 /* libtup_tools.a */; };
-		DEB768002423A07500AC52E0 /* libtup_socket_stg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B82423A07400AC52E0 /* libtup_socket_stg.a */; };
-		DEB768012423A07500AC52E0 /* libtupService.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767B92423A07400AC52E0 /* libtupService.a */; };
-		DEB768022423A07500AC52E0 /* libHW_MPT_IOS_ILBC_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767BA2423A07400AC52E0 /* libHW_MPT_IOS_ILBC_LIB.a */; };
-		DEB768032423A07500AC52E0 /* libtup_logone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767BB2423A07400AC52E0 /* libtup_logone.a */; };
-		DEB768042423A07500AC52E0 /* libtup_dns.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767BC2423A07400AC52E0 /* libtup_dns.a */; };
-		DEB768052423A07500AC52E0 /* libhme-audio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767BD2423A07400AC52E0 /* libhme-audio.a */; };
-		DEB768062423A07500AC52E0 /* libtscsvn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767BE2423A07400AC52E0 /* libtscsvn.a */; };
-		DEB768072423A07500AC52E0 /* libsasl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767BF2423A07400AC52E0 /* libsasl.a */; };
-		DEB768082423A07500AC52E0 /* libtup_publiclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767C02423A07500AC52E0 /* libtup_publiclib.a */; };
-		DEB768092423A07500AC52E0 /* libtup_zip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767C12423A07500AC52E0 /* libtup_zip.a */; };
-		DEB7680A2423A07500AC52E0 /* libHW_MPT_IOS_AMRWB_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767C22423A07500AC52E0 /* libHW_MPT_IOS_AMRWB_LIB.a */; };
-		DEB7680B2423A07500AC52E0 /* libHW_MPT_IOS_AMR_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767C32423A07500AC52E0 /* libHW_MPT_IOS_AMR_LIB.a */; };
-		DEB7680C2423A07500AC52E0 /* libtup_call_audio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767C42423A07500AC52E0 /* libtup_call_audio.a */; };
-		DEB7680D2423A07500AC52E0 /* libtup_call_sip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB767C52423A07500AC52E0 /* libtup_call_sip.a */; };
-		DEB7680E2423A0AD00AC52E0 /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB7678C2423A06F00AC52E0 /* CloudLinkMeetingScreenShare.framework */; };
-		DEB768132423A2AA00AC52E0 /* websockets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEB768122423A2AA00AC52E0 /* websockets.framework */; };
-		DEB768142423A2B700AC52E0 /* websockets.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = DEB768122423A2AA00AC52E0 /* websockets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DEBA4AA723155688005B771A /* SignalDataScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4AA623155688005B771A /* SignalDataScrollView.m */; };
 		DEBA4AB8231610ED005B771A /* VideoAndDataQualityTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = DEBA4AB3231610EC005B771A /* VideoAndDataQualityTableViewCell.xib */; };
 		DEBA4AB9231610ED005B771A /* AudioQualityTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DEBA4AB4231610EC005B771A /* AudioQualityTableViewCell.m */; };
@@ -233,6 +158,89 @@
 		DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D01690E022A4FB85002B2A27 /* ReplayKit.framework */; };
 		DED4CC1722EF16AF0035334C /* SampleHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = DED4CC1622EF16AF0035334C /* SampleHandler.m */; };
 		DED4CC1B22EF16AF0035334C /* ECSdkScreenShare.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DED4CC1222EF16AF0035334C /* ECSdkScreenShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DED91A4C24644E22000B6E07 /* libHW_MPT_IOS_AMRWB_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED919FB24644E1C000B6E07 /* libHW_MPT_IOS_AMRWB_LIB.a */; };
+		DED91A4D24644E22000B6E07 /* libtscsvn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED919FC24644E1C000B6E07 /* libtscsvn.a */; };
+		DED91A4E24644E22000B6E07 /* libsipsdp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED919FD24644E1C000B6E07 /* libsipsdp.a */; };
+		DED91A4F24644E22000B6E07 /* libtup_call_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED919FE24644E1C000B6E07 /* libtup_call_service.a */; };
+		DED91A5024644E22000B6E07 /* libsipsmpbam.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED919FF24644E1C000B6E07 /* libsipsmpbam.a */; };
+		DED91A5124644E22000B6E07 /* libsipmultipartbody.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0024644E1C000B6E07 /* libsipmultipartbody.a */; };
+		DED91A5224644E22000B6E07 /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0124644E1C000B6E07 /* CloudLinkMeetingScreenShare.framework */; };
+		DED91A5324644E22000B6E07 /* libtup_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0224644E1D000B6E07 /* libtup_base.a */; };
+		DED91A5424644E22000B6E07 /* libHME-Video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0324644E1D000B6E07 /* libHME-Video.a */; };
+		DED91A5524644E22000B6E07 /* libHW_MPT_IOS_AMR_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0424644E1D000B6E07 /* libHW_MPT_IOS_AMR_LIB.a */; };
+		DED91A5624644E22000B6E07 /* libtup_confctrl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0524644E1D000B6E07 /* libtup_confctrl.a */; };
+		DED91A5724644E22000B6E07 /* libtup_logone.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0624644E1D000B6E07 /* libtup_logone.a */; };
+		DED91A5824644E22000B6E07 /* libipsi_osal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0724644E1D000B6E07 /* libipsi_osal.a */; };
+		DED91A5924644E22000B6E07 /* libHW_MPT_IOS_G729AB_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0824644E1D000B6E07 /* libHW_MPT_IOS_G729AB_LIB.a */; };
+		DED91A5A24644E22000B6E07 /* libtup_ldap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0924644E1D000B6E07 /* libtup_ldap.a */; };
+		DED91A5B24644E22000B6E07 /* libtup_xml.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0A24644E1D000B6E07 /* libtup_xml.a */; };
+		DED91A5C24644E22000B6E07 /* libsecurec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0B24644E1D000B6E07 /* libsecurec.a */; };
+		DED91A5D24644E22000B6E07 /* libtup_call_video.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0C24644E1D000B6E07 /* libtup_call_video.a */; };
+		DED91A5E24644E22000B6E07 /* libjsoncpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0D24644E1D000B6E07 /* libjsoncpp.a */; };
+		DED91A5F24644E22000B6E07 /* libtup_call_bfcp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0E24644E1D000B6E07 /* libtup_call_bfcp.a */; };
+		DED91A6024644E22000B6E07 /* libtup_ftp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0F24644E1D000B6E07 /* libtup_ftp.a */; };
+		DED91A6124644E22000B6E07 /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1024644E1D000B6E07 /* libwebsockets.a */; };
+		DED91A6224644E22000B6E07 /* libipsi_eap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1124644E1D000B6E07 /* libipsi_eap.a */; };
+		DED91A6324644E22000B6E07 /* libsasl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1224644E1D000B6E07 /* libsasl.a */; };
+		DED91A6424644E22000B6E07 /* libtup_os_adapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1324644E1E000B6E07 /* libtup_os_adapter.a */; };
+		DED91A6524644E22000B6E07 /* libtup_tools.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1424644E1E000B6E07 /* libtup_tools.a */; };
+		DED91A6624644E22000B6E07 /* libTupConf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1524644E1E000B6E07 /* libTupConf.a */; };
+		DED91A6724644E22000B6E07 /* libtup_conf_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1624644E1F000B6E07 /* libtup_conf_agent.a */; };
+		DED91A6824644E22000B6E07 /* libsipstacktup.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1724644E1F000B6E07 /* libsipstacktup.a */; };
+		DED91A6924644E22000B6E07 /* libsdp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1824644E1F000B6E07 /* libsdp.a */; };
+		DED91A6A24644E22000B6E07 /* libHW_MPT_IOS_G722_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1924644E1F000B6E07 /* libHW_MPT_IOS_G722_LIB.a */; };
+		DED91A6B24644E22000B6E07 /* libtup_plugin_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1A24644E1F000B6E07 /* libtup_plugin_base.a */; };
+		DED91A6C24644E22000B6E07 /* libvcom.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1B24644E1F000B6E07 /* libvcom.a */; };
+		DED91A6D24644E22000B6E07 /* libtup_call_audio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1C24644E1F000B6E07 /* libtup_call_audio.a */; };
+		DED91A6E24644E22000B6E07 /* libtup_call_sip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1D24644E1F000B6E07 /* libtup_call_sip.a */; };
+		DED91A6F24644E22000B6E07 /* libtup_ldapstack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1E24644E1F000B6E07 /* libtup_ldapstack.a */; };
+		DED91A7024644E22000B6E07 /* libtup_ipdetect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A1F24644E20000B6E07 /* libtup_ipdetect.a */; };
+		DED91A7124644E22000B6E07 /* libtup_call_mediaservice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2024644E20000B6E07 /* libtup_call_mediaservice.a */; };
+		DED91A7224644E22000B6E07 /* libssl_ossl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2124644E20000B6E07 /* libssl_ossl.a */; };
+		DED91A7324644E22000B6E07 /* libtup_publiclib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2224644E20000B6E07 /* libtup_publiclib.a */; };
+		DED91A7424644E22000B6E07 /* libtup_call_mediacommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2324644E20000B6E07 /* libtup_call_mediacommon.a */; };
+		DED91A7524644E22000B6E07 /* libHW_MPT_IOS_ILBC_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2424644E20000B6E07 /* libHW_MPT_IOS_ILBC_LIB.a */; };
+		DED91A7624644E22000B6E07 /* libresizeLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2524644E20000B6E07 /* libresizeLib.a */; };
+		DED91A7724644E22000B6E07 /* libtup_cmpt_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2624644E20000B6E07 /* libtup_cmpt_service.a */; };
+		DED91A7824644E22000B6E07 /* libplib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2724644E20000B6E07 /* libplib.a */; };
+		DED91A7924644E22000B6E07 /* libtup_service_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2824644E20000B6E07 /* libtup_service_base.a */; };
+		DED91A7A24644E22000B6E07 /* libtup_socket_stg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2924644E20000B6E07 /* libtup_socket_stg.a */; };
+		DED91A7B24644E22000B6E07 /* libtup_socket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2A24644E20000B6E07 /* libtup_socket.a */; };
+		DED91A7C24644E22000B6E07 /* libuspsdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2B24644E20000B6E07 /* libuspsdk.a */; };
+		DED91A7D24644E22000B6E07 /* libxcap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2C24644E20000B6E07 /* libxcap.a */; };
+		DED91A7E24644E22000B6E07 /* libsipserialization.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2D24644E20000B6E07 /* libsipserialization.a */; };
+		DED91A7F24644E22000B6E07 /* libsipsigcomp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2E24644E20000B6E07 /* libsipsigcomp.a */; };
+		DED91A8024644E22000B6E07 /* libtup_commonlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A2F24644E20000B6E07 /* libtup_commonlib.a */; };
+		DED91A8124644E22000B6E07 /* libipsi_pse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3024644E20000B6E07 /* libipsi_pse.a */; };
+		DED91A8224644E22000B6E07 /* libtup_httptrans.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3124644E21000B6E07 /* libtup_httptrans.a */; };
+		DED91A8324644E22000B6E07 /* libtup_ldapfrontstage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3224644E21000B6E07 /* libtup_ldapfrontstage.a */; };
+		DED91A8424644E22000B6E07 /* libtup_msg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3324644E21000B6E07 /* libtup_msg.a */; };
+		DED91A8524644E22000B6E07 /* libtup_dns.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3424644E21000B6E07 /* libtup_dns.a */; };
+		DED91A8624644E22000B6E07 /* libsiputf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3524644E21000B6E07 /* libsiputf.a */; };
+		DED91A8724644E22000B6E07 /* libtup_cwmp_h5.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3624644E21000B6E07 /* libtup_cwmp_h5.a */; };
+		DED91A8824644E22000B6E07 /* libtup_support.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3724644E21000B6E07 /* libtup_support.a */; };
+		DED91A8924644E22000B6E07 /* libtupService.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3824644E21000B6E07 /* libtupService.a */; };
+		DED91A8A24644E22000B6E07 /* libKMC.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3924644E21000B6E07 /* libKMC.a */; };
+		DED91A8B24644E22000B6E07 /* libACE.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3A24644E21000B6E07 /* libACE.a */; };
+		DED91A8C24644E22000B6E07 /* libsipresolver.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3B24644E21000B6E07 /* libsipresolver.a */; };
+		DED91A8D24644E22000B6E07 /* libtup_track.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3C24644E21000B6E07 /* libtup_track.a */; };
+		DED91A8E24644E22000B6E07 /* libipsi_crypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3D24644E21000B6E07 /* libipsi_crypto.a */; };
+		DED91A8F24644E22000B6E07 /* libSRTP.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3E24644E21000B6E07 /* libSRTP.a */; };
+		DED91A9024644E22000B6E07 /* libipsi_http.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A3F24644E21000B6E07 /* libipsi_http.a */; };
+		DED91A9124644E22000B6E07 /* libHW_MPT_IOS_OPUS_LIB.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4024644E21000B6E07 /* libHW_MPT_IOS_OPUS_LIB.a */; };
+		DED91A9224644E22000B6E07 /* libhme-audio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4124644E21000B6E07 /* libhme-audio.a */; };
+		DED91A9324644E22000B6E07 /* libssl_ex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4224644E21000B6E07 /* libssl_ex.a */; };
+		DED91A9424644E22000B6E07 /* libtup_svnapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4324644E22000B6E07 /* libtup_svnapi.a */; };
+		DED91A9524644E22000B6E07 /* libtup_login.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4424644E22000B6E07 /* libtup_login.a */; };
+		DED91A9624644E22000B6E07 /* libcrypto_ossl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4524644E22000B6E07 /* libcrypto_ossl.a */; };
+		DED91A9724644E22000B6E07 /* libsipsscc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4624644E22000B6E07 /* libsipsscc.a */; };
+		DED91A9824644E22000B6E07 /* libtup_zip.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4724644E22000B6E07 /* libtup_zip.a */; };
+		DED91A9924644E22000B6E07 /* libipsi_ssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4824644E22000B6E07 /* libipsi_ssl.a */; };
+		DED91A9A24644E22000B6E07 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4924644E22000B6E07 /* libcurl.a */; };
+		DED91A9B24644E22000B6E07 /* libtup_https_srv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4A24644E22000B6E07 /* libtup_https_srv.a */; };
+		DED91A9C24644E22000B6E07 /* libminidopra.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A4B24644E22000B6E07 /* libminidopra.a */; };
+		DED91A9D24644E36000B6E07 /* CloudLinkMeetingScreenShare.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A0124644E1C000B6E07 /* CloudLinkMeetingScreenShare.framework */; };
+		DED91A9F24644F02000B6E07 /* libtsdk_service.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DED91A9E24644F02000B6E07 /* libtsdk_service.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -252,7 +260,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DEB768142423A2B700AC52E0 /* websockets.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,6 +475,22 @@
 		D0C5768222A553CC00C6559A /* ECMarkupToolboxPopoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECMarkupToolboxPopoverView.h; sourceTree = "<group>"; };
 		D0C5768622A556C400C6559A /* UIButton+VerticalLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+VerticalLayout.h"; sourceTree = "<group>"; };
 		D0C5768722A556C500C6559A /* UIButton+VerticalLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+VerticalLayout.m"; sourceTree = "<group>"; };
+		DE012F9E245975C1001B215A /* tsdk_call_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_call_interface.h; sourceTree = "<group>"; };
+		DE012F9F245975C1001B215A /* tsdk_error_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_error_def.h; sourceTree = "<group>"; };
+		DE012FA1245975C1001B215A /* tsdk_call_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_call_def.h; sourceTree = "<group>"; };
+		DE012FA2245975C1001B215A /* tsdk_ws_service_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_ws_service_def.h; sourceTree = "<group>"; };
+		DE012FA3245975C1001B215A /* tsdk_ws_service_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_ws_service_interface.h; sourceTree = "<group>"; };
+		DE012FA4245975C1001B215A /* tsdk_common_macro_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_common_macro_def.h; sourceTree = "<group>"; };
+		DE012FA5245975C1001B215A /* tsdk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk.h; sourceTree = "<group>"; };
+		DE012FA6245975C1001B215A /* tsdk_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_def.h; sourceTree = "<group>"; };
+		DE012FA7245975C1001B215A /* tsdk_ctd_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_ctd_def.h; sourceTree = "<group>"; };
+		DE012FA8245975C1001B215A /* tsdk_login_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_login_interface.h; sourceTree = "<group>"; };
+		DE012FA9245975C2001B215A /* tsdk_conference_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_conference_def.h; sourceTree = "<group>"; };
+		DE012FAA245975C2001B215A /* tsdk_conference_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_conference_interface.h; sourceTree = "<group>"; };
+		DE012FAB245975C2001B215A /* tsdk_login_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_login_def.h; sourceTree = "<group>"; };
+		DE012FAC245975C2001B215A /* tsdk_ctd_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_ctd_interface.h; sourceTree = "<group>"; };
+		DE012FAD245975C2001B215A /* tsdk_manager_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_def.h; sourceTree = "<group>"; };
+		DE012FAE245975C2001B215A /* tsdk_manager_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_interface.h; sourceTree = "<group>"; };
 		DE248F07230FD98C00395123 /* ECSDKProgressHud.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECSDKProgressHud.h; sourceTree = "<group>"; };
 		DE248F08230FD98C00395123 /* ECSDKProgressHud.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ECSDKProgressHud.m; sourceTree = "<group>"; };
 		DE34C00F233218DC000D6957 /* NSTimer+Extension.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSTimer+Extension.h"; sourceTree = "<group>"; };
@@ -479,21 +502,6 @@
 		DE4527C8234D82DC006A60A4 /* ECBaseTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECBaseTableViewController.h; sourceTree = "<group>"; };
 		DE4527C9234D82DC006A60A4 /* ECBaseTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ECBaseTableViewController.m; sourceTree = "<group>"; };
 		DE48C71923025F0400413A73 /* tup_call_closeCramea_img.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = tup_call_closeCramea_img.bmp; sourceTree = "<group>"; };
-		DE53D7F92138E9D000804D42 /* tsdk_manager_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_interface.h; sourceTree = "<group>"; };
-		DE53D7FA2138E9D000804D42 /* tsdk_conference_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_conference_def.h; sourceTree = "<group>"; };
-		DE53D7FB2138E9D000804D42 /* tsdk_eaddr_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_eaddr_interface.h; sourceTree = "<group>"; };
-		DE53D7FC2138E9D100804D42 /* tsdk_conference_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_conference_interface.h; sourceTree = "<group>"; };
-		DE53D7FD2138E9D100804D42 /* tsdk_call_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_call_interface.h; sourceTree = "<group>"; };
-		DE53D7FE2138E9D100804D42 /* tsdk_manager_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_manager_def.h; sourceTree = "<group>"; };
-		DE53D7FF2138E9D100804D42 /* tsdk_error_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_error_def.h; sourceTree = "<group>"; };
-		DE53D8002138E9D100804D42 /* tsdk_ctd_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_ctd_def.h; sourceTree = "<group>"; };
-		DE53D8012138E9D100804D42 /* tsdk_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_def.h; sourceTree = "<group>"; };
-		DE53D8022138E9D100804D42 /* tsdk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk.h; sourceTree = "<group>"; };
-		DE53D8032138E9D100804D42 /* tsdk_ctd_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_ctd_interface.h; sourceTree = "<group>"; };
-		DE53D8042138E9D200804D42 /* tsdk_login_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_login_def.h; sourceTree = "<group>"; };
-		DE53D8052138E9D200804D42 /* tsdk_call_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_call_def.h; sourceTree = "<group>"; };
-		DE53D8062138E9D200804D42 /* tsdk_eaddr_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_eaddr_def.h; sourceTree = "<group>"; };
-		DE53D8072138E9D200804D42 /* tsdk_login_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_login_interface.h; sourceTree = "<group>"; };
 		DE586F5E2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SVCConfWatchAttendeeInfo.h; sourceTree = "<group>"; };
 		DE586F5F2313DBD100F52C77 /* SVCConfWatchAttendeeInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SVCConfWatchAttendeeInfo.m; sourceTree = "<group>"; };
 		DE586F612314BFFA00F52C77 /* VideoStreamInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoStreamInfo.h; sourceTree = "<group>"; };
@@ -512,7 +520,6 @@
 		DE90F10423053B8C0006AD50 /* SignalScrollView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignalScrollView.xib; sourceTree = "<group>"; };
 		DE90F10523053B8C0006AD50 /* SignalScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalScrollView.h; sourceTree = "<group>"; };
 		DE92157121183A7000843CDE /* libstdc++.6.0.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.6.0.9.tbd"; path = "usr/lib/libstdc++.6.0.9.tbd"; sourceTree = SDKROOT; };
-		DE961C8D242DF9DE0085855F /* libtup_track.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_track.a; sourceTree = "<group>"; };
 		DE9B8FD9230D452E00AC7AE7 /* ECSLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ECSLogger.m; sourceTree = "<group>"; };
 		DE9B8FDB230D452E00AC7AE7 /* ECSDDASLLogCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSDDASLLogCapture.h; sourceTree = "<group>"; };
 		DE9B8FDC230D452E00AC7AE7 /* ECSDDLog+LOGV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ECSDDLog+LOGV.h"; sourceTree = "<group>"; };
@@ -542,83 +549,10 @@
 		DE9B8FF6230D452E00AC7AE7 /* ECSLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ECSLogger.h; sourceTree = "<group>"; };
 		DEA2B581230583C0001C6FAA /* ImageViewBtn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageViewBtn.h; sourceTree = "<group>"; };
 		DEA2B582230583C0001C6FAA /* ImageViewBtn.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageViewBtn.m; sourceTree = "<group>"; };
-		DEAB43D7229D5A1800615452 /* tsdk_common_macro_def.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tsdk_common_macro_def.h; sourceTree = "<group>"; };
 		DEAB8F1E212E5DCE005BC744 /* CommonUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonUtils.h; sourceTree = "<group>"; };
 		DEAB8F1F212E5DCE005BC744 /* CommonUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CommonUtils.mm; sourceTree = "<group>"; };
 		DEAB8F21212E6308005BC744 /* CallLogMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CallLogMessage.h; sourceTree = "<group>"; };
 		DEAB8F22212E6308005BC744 /* CallLogMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CallLogMessage.m; sourceTree = "<group>"; };
-		DEB7677E2423A06E00AC52E0 /* libtup_cwmp_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cwmp_h5.a; sourceTree = "<group>"; };
-		DEB7677F2423A06E00AC52E0 /* libtup_login.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_login.a; sourceTree = "<group>"; };
-		DEB767802423A06E00AC52E0 /* libtup_msg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_msg.a; sourceTree = "<group>"; };
-		DEB767812423A06F00AC52E0 /* libjsoncpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libjsoncpp.a; sourceTree = "<group>"; };
-		DEB767822423A06F00AC52E0 /* libtup_commonlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_commonlib.a; sourceTree = "<group>"; };
-		DEB767832423A06F00AC52E0 /* libHW_MPT_IOS_G729AB_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_G729AB_LIB.a; sourceTree = "<group>"; };
-		DEB767842423A06F00AC52E0 /* libtup_os_adapter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_os_adapter.a; sourceTree = "<group>"; };
-		DEB767852423A06F00AC52E0 /* libipsi_ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_ssl.a; sourceTree = "<group>"; };
-		DEB767862423A06F00AC52E0 /* libHME-Video.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libHME-Video.a"; sourceTree = "<group>"; };
-		DEB767872423A06F00AC52E0 /* libipsi_osal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_osal.a; sourceTree = "<group>"; };
-		DEB767882423A06F00AC52E0 /* libminidopra.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libminidopra.a; sourceTree = "<group>"; };
-		DEB767892423A06F00AC52E0 /* libHW_MPT_IOS_G722_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_G722_LIB.a; sourceTree = "<group>"; };
-		DEB7678B2423A06F00AC52E0 /* libtup_call_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_service.a; sourceTree = "<group>"; };
-		DEB7678C2423A06F00AC52E0 /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
-		DEB7678D2423A06F00AC52E0 /* libtup_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_base.a; sourceTree = "<group>"; };
-		DEB7678E2423A06F00AC52E0 /* libtup_ldap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ldap.a; sourceTree = "<group>"; };
-		DEB7678F2423A07000AC52E0 /* libtup_call_mediacommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_mediacommon.a; sourceTree = "<group>"; };
-		DEB767902423A07000AC52E0 /* libtup_httptrans.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_httptrans.a; sourceTree = "<group>"; };
-		DEB767912423A07000AC52E0 /* libtup_eaddr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_eaddr.a; sourceTree = "<group>"; };
-		DEB767922423A07000AC52E0 /* libtup_svnapi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_svnapi.a; sourceTree = "<group>"; };
-		DEB767932423A07000AC52E0 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
-		DEB767942423A07000AC52E0 /* libipsi_pse.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_pse.a; sourceTree = "<group>"; };
-		DEB767952423A07000AC52E0 /* libipsi_eap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_eap.a; sourceTree = "<group>"; };
-		DEB767962423A07000AC52E0 /* libtup_eaddr_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_eaddr_h5.a; sourceTree = "<group>"; };
-		DEB767972423A07000AC52E0 /* libtup_confctrl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_confctrl.a; sourceTree = "<group>"; };
-		DEB767982423A07000AC52E0 /* libtup_call_mediaservice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_mediaservice.a; sourceTree = "<group>"; };
-		DEB767992423A07100AC52E0 /* libtup_xml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_xml.a; sourceTree = "<group>"; };
-		DEB7679A2423A07100AC52E0 /* libKMC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libKMC.a; sourceTree = "<group>"; };
-		DEB7679B2423A07100AC52E0 /* libtsdk_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtsdk_service.a; sourceTree = "<group>"; };
-		DEB7679C2423A07100AC52E0 /* libtup_cmpt_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cmpt_service.a; sourceTree = "<group>"; };
-		DEB7679D2423A07100AC52E0 /* libtup_support.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_support.a; sourceTree = "<group>"; };
-		DEB7679E2423A07100AC52E0 /* libtup_https_srv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_https_srv.a; sourceTree = "<group>"; };
-		DEB7679F2423A07100AC52E0 /* libipsi_crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_crypto.a; sourceTree = "<group>"; };
-		DEB767A02423A07100AC52E0 /* libtup_socket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_socket.a; sourceTree = "<group>"; };
-		DEB767A12423A07100AC52E0 /* libtup_call_bfcp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_bfcp.a; sourceTree = "<group>"; };
-		DEB767A22423A07100AC52E0 /* libtup_ipdetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ipdetect.a; sourceTree = "<group>"; };
-		DEB767A32423A07200AC52E0 /* libvcom.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libvcom.a; sourceTree = "<group>"; };
-		DEB767A42423A07200AC52E0 /* libTupConf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTupConf.a; sourceTree = "<group>"; };
-		DEB767A52423A07200AC52E0 /* libplib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libplib.a; sourceTree = "<group>"; };
-		DEB767A62423A07200AC52E0 /* libtup_https_clt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_https_clt.a; sourceTree = "<group>"; };
-		DEB767A72423A07200AC52E0 /* libtup_call_video.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_video.a; sourceTree = "<group>"; };
-		DEB767A82423A07200AC52E0 /* libuspsdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libuspsdk.a; sourceTree = "<group>"; };
-		DEB767A92423A07200AC52E0 /* libsipstacktup.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipstacktup.a; sourceTree = "<group>"; };
-		DEB767AA2423A07200AC52E0 /* libtup_service_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_service_base.a; sourceTree = "<group>"; };
-		DEB767AB2423A07200AC52E0 /* libtup_ctd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ctd.a; sourceTree = "<group>"; };
-		DEB767AC2423A07200AC52E0 /* libsecurec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsecurec.a; sourceTree = "<group>"; };
-		DEB767AD2423A07300AC52E0 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
-		DEB767AE2423A07300AC52E0 /* libHW_MPT_IOS_OPUS_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_OPUS_LIB.a; sourceTree = "<group>"; };
-		DEB767AF2423A07300AC52E0 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcurl.a; sourceTree = "<group>"; };
-		DEB767B02423A07300AC52E0 /* libtup_ftp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ftp.a; sourceTree = "<group>"; };
-		DEB767B12423A07300AC52E0 /* libtup_ldapstack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ldapstack.a; sourceTree = "<group>"; };
-		DEB767B22423A07300AC52E0 /* libACE.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libACE.a; sourceTree = "<group>"; };
-		DEB767B32423A07300AC52E0 /* libsdp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsdp.a; sourceTree = "<group>"; };
-		DEB767B42423A07300AC52E0 /* libtup_conf_agent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_conf_agent.a; sourceTree = "<group>"; };
-		DEB767B52423A07300AC52E0 /* libipsi_http.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_http.a; sourceTree = "<group>"; };
-		DEB767B62423A07400AC52E0 /* libtup_ldapfrontstage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ldapfrontstage.a; sourceTree = "<group>"; };
-		DEB767B72423A07400AC52E0 /* libtup_tools.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_tools.a; sourceTree = "<group>"; };
-		DEB767B82423A07400AC52E0 /* libtup_socket_stg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_socket_stg.a; sourceTree = "<group>"; };
-		DEB767B92423A07400AC52E0 /* libtupService.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtupService.a; sourceTree = "<group>"; };
-		DEB767BA2423A07400AC52E0 /* libHW_MPT_IOS_ILBC_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_ILBC_LIB.a; sourceTree = "<group>"; };
-		DEB767BB2423A07400AC52E0 /* libtup_logone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_logone.a; sourceTree = "<group>"; };
-		DEB767BC2423A07400AC52E0 /* libtup_dns.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_dns.a; sourceTree = "<group>"; };
-		DEB767BD2423A07400AC52E0 /* libhme-audio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libhme-audio.a"; sourceTree = "<group>"; };
-		DEB767BE2423A07400AC52E0 /* libtscsvn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtscsvn.a; sourceTree = "<group>"; };
-		DEB767BF2423A07400AC52E0 /* libsasl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsasl.a; sourceTree = "<group>"; };
-		DEB767C02423A07500AC52E0 /* libtup_publiclib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_publiclib.a; sourceTree = "<group>"; };
-		DEB767C12423A07500AC52E0 /* libtup_zip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_zip.a; sourceTree = "<group>"; };
-		DEB767C22423A07500AC52E0 /* libHW_MPT_IOS_AMRWB_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_AMRWB_LIB.a; sourceTree = "<group>"; };
-		DEB767C32423A07500AC52E0 /* libHW_MPT_IOS_AMR_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_AMR_LIB.a; sourceTree = "<group>"; };
-		DEB767C42423A07500AC52E0 /* libtup_call_audio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_audio.a; sourceTree = "<group>"; };
-		DEB767C52423A07500AC52E0 /* libtup_call_sip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_sip.a; sourceTree = "<group>"; };
-		DEB768122423A2AA00AC52E0 /* websockets.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = websockets.framework; sourceTree = "<group>"; };
 		DEBA4AA523155688005B771A /* SignalDataScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalDataScrollView.h; sourceTree = "<group>"; };
 		DEBA4AA623155688005B771A /* SignalDataScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SignalDataScrollView.m; sourceTree = "<group>"; };
 		DEBA4AB2231610EC005B771A /* VideoAndDataQualityTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoAndDataQualityTableViewCell.h; sourceTree = "<group>"; };
@@ -642,6 +576,88 @@
 		DED4CC1622EF16AF0035334C /* SampleHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SampleHandler.m; sourceTree = "<group>"; };
 		DED4CC1822EF16AF0035334C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DED4CC2122EF197D0035334C /* ECSdkScreenShareExtension.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = ECSdkScreenShareExtension.entitlements; sourceTree = "<group>"; };
+		DED919FB24644E1C000B6E07 /* libHW_MPT_IOS_AMRWB_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_AMRWB_LIB.a; sourceTree = "<group>"; };
+		DED919FC24644E1C000B6E07 /* libtscsvn.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtscsvn.a; sourceTree = "<group>"; };
+		DED919FD24644E1C000B6E07 /* libsipsdp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipsdp.a; sourceTree = "<group>"; };
+		DED919FE24644E1C000B6E07 /* libtup_call_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_service.a; sourceTree = "<group>"; };
+		DED919FF24644E1C000B6E07 /* libsipsmpbam.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipsmpbam.a; sourceTree = "<group>"; };
+		DED91A0024644E1C000B6E07 /* libsipmultipartbody.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipmultipartbody.a; sourceTree = "<group>"; };
+		DED91A0124644E1C000B6E07 /* CloudLinkMeetingScreenShare.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CloudLinkMeetingScreenShare.framework; sourceTree = "<group>"; };
+		DED91A0224644E1D000B6E07 /* libtup_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_base.a; sourceTree = "<group>"; };
+		DED91A0324644E1D000B6E07 /* libHME-Video.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libHME-Video.a"; sourceTree = "<group>"; };
+		DED91A0424644E1D000B6E07 /* libHW_MPT_IOS_AMR_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_AMR_LIB.a; sourceTree = "<group>"; };
+		DED91A0524644E1D000B6E07 /* libtup_confctrl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_confctrl.a; sourceTree = "<group>"; };
+		DED91A0624644E1D000B6E07 /* libtup_logone.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_logone.a; sourceTree = "<group>"; };
+		DED91A0724644E1D000B6E07 /* libipsi_osal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_osal.a; sourceTree = "<group>"; };
+		DED91A0824644E1D000B6E07 /* libHW_MPT_IOS_G729AB_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_G729AB_LIB.a; sourceTree = "<group>"; };
+		DED91A0924644E1D000B6E07 /* libtup_ldap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ldap.a; sourceTree = "<group>"; };
+		DED91A0A24644E1D000B6E07 /* libtup_xml.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_xml.a; sourceTree = "<group>"; };
+		DED91A0B24644E1D000B6E07 /* libsecurec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsecurec.a; sourceTree = "<group>"; };
+		DED91A0C24644E1D000B6E07 /* libtup_call_video.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_video.a; sourceTree = "<group>"; };
+		DED91A0D24644E1D000B6E07 /* libjsoncpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libjsoncpp.a; sourceTree = "<group>"; };
+		DED91A0E24644E1D000B6E07 /* libtup_call_bfcp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_bfcp.a; sourceTree = "<group>"; };
+		DED91A0F24644E1D000B6E07 /* libtup_ftp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ftp.a; sourceTree = "<group>"; };
+		DED91A1024644E1D000B6E07 /* libwebsockets.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebsockets.a; sourceTree = "<group>"; };
+		DED91A1124644E1D000B6E07 /* libipsi_eap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_eap.a; sourceTree = "<group>"; };
+		DED91A1224644E1D000B6E07 /* libsasl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsasl.a; sourceTree = "<group>"; };
+		DED91A1324644E1E000B6E07 /* libtup_os_adapter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_os_adapter.a; sourceTree = "<group>"; };
+		DED91A1424644E1E000B6E07 /* libtup_tools.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_tools.a; sourceTree = "<group>"; };
+		DED91A1524644E1E000B6E07 /* libTupConf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTupConf.a; sourceTree = "<group>"; };
+		DED91A1624644E1F000B6E07 /* libtup_conf_agent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_conf_agent.a; sourceTree = "<group>"; };
+		DED91A1724644E1F000B6E07 /* libsipstacktup.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipstacktup.a; sourceTree = "<group>"; };
+		DED91A1824644E1F000B6E07 /* libsdp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsdp.a; sourceTree = "<group>"; };
+		DED91A1924644E1F000B6E07 /* libHW_MPT_IOS_G722_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_G722_LIB.a; sourceTree = "<group>"; };
+		DED91A1A24644E1F000B6E07 /* libtup_plugin_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_plugin_base.a; sourceTree = "<group>"; };
+		DED91A1B24644E1F000B6E07 /* libvcom.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libvcom.a; sourceTree = "<group>"; };
+		DED91A1C24644E1F000B6E07 /* libtup_call_audio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_audio.a; sourceTree = "<group>"; };
+		DED91A1D24644E1F000B6E07 /* libtup_call_sip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_sip.a; sourceTree = "<group>"; };
+		DED91A1E24644E1F000B6E07 /* libtup_ldapstack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ldapstack.a; sourceTree = "<group>"; };
+		DED91A1F24644E20000B6E07 /* libtup_ipdetect.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ipdetect.a; sourceTree = "<group>"; };
+		DED91A2024644E20000B6E07 /* libtup_call_mediaservice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_mediaservice.a; sourceTree = "<group>"; };
+		DED91A2124644E20000B6E07 /* libssl_ossl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl_ossl.a; sourceTree = "<group>"; };
+		DED91A2224644E20000B6E07 /* libtup_publiclib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_publiclib.a; sourceTree = "<group>"; };
+		DED91A2324644E20000B6E07 /* libtup_call_mediacommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_call_mediacommon.a; sourceTree = "<group>"; };
+		DED91A2424644E20000B6E07 /* libHW_MPT_IOS_ILBC_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_ILBC_LIB.a; sourceTree = "<group>"; };
+		DED91A2524644E20000B6E07 /* libresizeLib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libresizeLib.a; sourceTree = "<group>"; };
+		DED91A2624644E20000B6E07 /* libtup_cmpt_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cmpt_service.a; sourceTree = "<group>"; };
+		DED91A2724644E20000B6E07 /* libplib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libplib.a; sourceTree = "<group>"; };
+		DED91A2824644E20000B6E07 /* libtup_service_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_service_base.a; sourceTree = "<group>"; };
+		DED91A2924644E20000B6E07 /* libtup_socket_stg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_socket_stg.a; sourceTree = "<group>"; };
+		DED91A2A24644E20000B6E07 /* libtup_socket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_socket.a; sourceTree = "<group>"; };
+		DED91A2B24644E20000B6E07 /* libuspsdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libuspsdk.a; sourceTree = "<group>"; };
+		DED91A2C24644E20000B6E07 /* libxcap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libxcap.a; sourceTree = "<group>"; };
+		DED91A2D24644E20000B6E07 /* libsipserialization.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipserialization.a; sourceTree = "<group>"; };
+		DED91A2E24644E20000B6E07 /* libsipsigcomp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipsigcomp.a; sourceTree = "<group>"; };
+		DED91A2F24644E20000B6E07 /* libtup_commonlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_commonlib.a; sourceTree = "<group>"; };
+		DED91A3024644E20000B6E07 /* libipsi_pse.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_pse.a; sourceTree = "<group>"; };
+		DED91A3124644E21000B6E07 /* libtup_httptrans.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_httptrans.a; sourceTree = "<group>"; };
+		DED91A3224644E21000B6E07 /* libtup_ldapfrontstage.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_ldapfrontstage.a; sourceTree = "<group>"; };
+		DED91A3324644E21000B6E07 /* libtup_msg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_msg.a; sourceTree = "<group>"; };
+		DED91A3424644E21000B6E07 /* libtup_dns.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_dns.a; sourceTree = "<group>"; };
+		DED91A3524644E21000B6E07 /* libsiputf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsiputf.a; sourceTree = "<group>"; };
+		DED91A3624644E21000B6E07 /* libtup_cwmp_h5.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_cwmp_h5.a; sourceTree = "<group>"; };
+		DED91A3724644E21000B6E07 /* libtup_support.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_support.a; sourceTree = "<group>"; };
+		DED91A3824644E21000B6E07 /* libtupService.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtupService.a; sourceTree = "<group>"; };
+		DED91A3924644E21000B6E07 /* libKMC.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libKMC.a; sourceTree = "<group>"; };
+		DED91A3A24644E21000B6E07 /* libACE.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libACE.a; sourceTree = "<group>"; };
+		DED91A3B24644E21000B6E07 /* libsipresolver.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipresolver.a; sourceTree = "<group>"; };
+		DED91A3C24644E21000B6E07 /* libtup_track.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_track.a; sourceTree = "<group>"; };
+		DED91A3D24644E21000B6E07 /* libipsi_crypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_crypto.a; sourceTree = "<group>"; };
+		DED91A3E24644E21000B6E07 /* libSRTP.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libSRTP.a; sourceTree = "<group>"; };
+		DED91A3F24644E21000B6E07 /* libipsi_http.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_http.a; sourceTree = "<group>"; };
+		DED91A4024644E21000B6E07 /* libHW_MPT_IOS_OPUS_LIB.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libHW_MPT_IOS_OPUS_LIB.a; sourceTree = "<group>"; };
+		DED91A4124644E21000B6E07 /* libhme-audio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libhme-audio.a"; sourceTree = "<group>"; };
+		DED91A4224644E21000B6E07 /* libssl_ex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl_ex.a; sourceTree = "<group>"; };
+		DED91A4324644E22000B6E07 /* libtup_svnapi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_svnapi.a; sourceTree = "<group>"; };
+		DED91A4424644E22000B6E07 /* libtup_login.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_login.a; sourceTree = "<group>"; };
+		DED91A4524644E22000B6E07 /* libcrypto_ossl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto_ossl.a; sourceTree = "<group>"; };
+		DED91A4624644E22000B6E07 /* libsipsscc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsipsscc.a; sourceTree = "<group>"; };
+		DED91A4724644E22000B6E07 /* libtup_zip.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_zip.a; sourceTree = "<group>"; };
+		DED91A4824644E22000B6E07 /* libipsi_ssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libipsi_ssl.a; sourceTree = "<group>"; };
+		DED91A4924644E22000B6E07 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcurl.a; sourceTree = "<group>"; };
+		DED91A4A24644E22000B6E07 /* libtup_https_srv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtup_https_srv.a; sourceTree = "<group>"; };
+		DED91A4B24644E22000B6E07 /* libminidopra.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libminidopra.a; sourceTree = "<group>"; };
+		DED91A9E24644F02000B6E07 /* libtsdk_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtsdk_service.a; sourceTree = "<group>"; };
 		DEF009482118375D002F7757 /* libc++.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.1.tbd"; path = "usr/lib/libc++.1.tbd"; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -650,89 +666,98 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEB767DB2423A07500AC52E0 /* libssl.a in Frameworks */,
-				DEB767F12423A07500AC52E0 /* libsipstacktup.a in Frameworks */,
-				DEB768022423A07500AC52E0 /* libHW_MPT_IOS_ILBC_LIB.a in Frameworks */,
+				DED91A4C24644E22000B6E07 /* libHW_MPT_IOS_AMRWB_LIB.a in Frameworks */,
+				DED91A8D24644E22000B6E07 /* libtup_track.a in Frameworks */,
+				DED91A5A24644E22000B6E07 /* libtup_ldap.a in Frameworks */,
+				DED91A6E24644E22000B6E07 /* libtup_call_sip.a in Frameworks */,
+				DED91A6C24644E22000B6E07 /* libvcom.a in Frameworks */,
+				DED91A7224644E22000B6E07 /* libssl_ossl.a in Frameworks */,
+				DED91A5224644E22000B6E07 /* CloudLinkMeetingScreenShare.framework in Frameworks */,
+				DED91A6724644E22000B6E07 /* libtup_conf_agent.a in Frameworks */,
+				DED91A8324644E22000B6E07 /* libtup_ldapfrontstage.a in Frameworks */,
+				DED91A7624644E22000B6E07 /* libresizeLib.a in Frameworks */,
+				DED91A7424644E22000B6E07 /* libtup_call_mediacommon.a in Frameworks */,
+				DED91A5624644E22000B6E07 /* libtup_confctrl.a in Frameworks */,
+				DED91A6324644E22000B6E07 /* libsasl.a in Frameworks */,
+				DED91A9024644E22000B6E07 /* libipsi_http.a in Frameworks */,
+				DED91A7D24644E22000B6E07 /* libxcap.a in Frameworks */,
+				DED91A6A24644E22000B6E07 /* libHW_MPT_IOS_G722_LIB.a in Frameworks */,
+				DED91A7A24644E22000B6E07 /* libtup_socket_stg.a in Frameworks */,
+				DED91A8E24644E22000B6E07 /* libipsi_crypto.a in Frameworks */,
+				DED91A6224644E22000B6E07 /* libipsi_eap.a in Frameworks */,
 				DEC49B76221CE7940089A88A /* libc++.tbd in Frameworks */,
-				DEB767ED2423A07500AC52E0 /* libplib.a in Frameworks */,
-				DEB767C72423A07500AC52E0 /* libtup_login.a in Frameworks */,
-				DEB767F72423A07500AC52E0 /* libcurl.a in Frameworks */,
-				DEB767EE2423A07500AC52E0 /* libtup_https_clt.a in Frameworks */,
+				DED91A9724644E22000B6E07 /* libsipsscc.a in Frameworks */,
 				41640D292109748B0050D2B9 /* PushKit.framework in Frameworks */,
-				DEB767D02423A07500AC52E0 /* libminidopra.a in Frameworks */,
-				DEB767CF2423A07500AC52E0 /* libipsi_osal.a in Frameworks */,
-				DEB767FE2423A07500AC52E0 /* libtup_ldapfrontstage.a in Frameworks */,
-				DEB767C92423A07500AC52E0 /* libjsoncpp.a in Frameworks */,
-				DEB767FA2423A07500AC52E0 /* libACE.a in Frameworks */,
-				DEB767CA2423A07500AC52E0 /* libtup_commonlib.a in Frameworks */,
-				DEB767CE2423A07500AC52E0 /* libHME-Video.a in Frameworks */,
-				DEB767DD2423A07500AC52E0 /* libipsi_eap.a in Frameworks */,
-				DEB767F32423A07500AC52E0 /* libtup_ctd.a in Frameworks */,
-				DEB7680C2423A07500AC52E0 /* libtup_call_audio.a in Frameworks */,
-				DEB767F62423A07500AC52E0 /* libHW_MPT_IOS_OPUS_LIB.a in Frameworks */,
-				DEB767E92423A07500AC52E0 /* libtup_call_bfcp.a in Frameworks */,
-				DEB767EC2423A07500AC52E0 /* libTupConf.a in Frameworks */,
-				DEB767D92423A07500AC52E0 /* libtup_eaddr.a in Frameworks */,
-				DEB767E22423A07500AC52E0 /* libKMC.a in Frameworks */,
-				DEB767FB2423A07500AC52E0 /* libsdp.a in Frameworks */,
-				DEB767DC2423A07500AC52E0 /* libipsi_pse.a in Frameworks */,
-				DEB768092423A07500AC52E0 /* libtup_zip.a in Frameworks */,
 				1258C1EA1F39E27D00654D80 /* libiconv.2.dylib in Frameworks */,
-				DEB767E82423A07500AC52E0 /* libtup_socket.a in Frameworks */,
-				DEB767EA2423A07500AC52E0 /* libtup_ipdetect.a in Frameworks */,
+				DED91A5424644E22000B6E07 /* libHME-Video.a in Frameworks */,
+				DED91A8C24644E22000B6E07 /* libsipresolver.a in Frameworks */,
 				1258C1D81F39593100654D80 /* libresolv.9.dylib in Frameworks */,
-				DEB767F02423A07500AC52E0 /* libuspsdk.a in Frameworks */,
-				DEB767FD2423A07500AC52E0 /* libipsi_http.a in Frameworks */,
-				DEB767DF2423A07500AC52E0 /* libtup_confctrl.a in Frameworks */,
-				DEB767E12423A07500AC52E0 /* libtup_xml.a in Frameworks */,
-				DEB768052423A07500AC52E0 /* libhme-audio.a in Frameworks */,
-				DEB767EB2423A07500AC52E0 /* libvcom.a in Frameworks */,
-				DEB767E62423A07500AC52E0 /* libtup_https_srv.a in Frameworks */,
-				DEB767CD2423A07500AC52E0 /* libipsi_ssl.a in Frameworks */,
-				DEB767CC2423A07500AC52E0 /* libtup_os_adapter.a in Frameworks */,
-				DEB768062423A07500AC52E0 /* libtscsvn.a in Frameworks */,
-				DEB767F22423A07500AC52E0 /* libtup_service_base.a in Frameworks */,
+				DED91A9524644E22000B6E07 /* libtup_login.a in Frameworks */,
+				DED91A5C24644E22000B6E07 /* libsecurec.a in Frameworks */,
+				DED91A7024644E22000B6E07 /* libtup_ipdetect.a in Frameworks */,
+				DED91A9F24644F02000B6E07 /* libtsdk_service.a in Frameworks */,
 				1258C1DA1F39593100654D80 /* libz.1.dylib in Frameworks */,
-				DEB768072423A07500AC52E0 /* libsasl.a in Frameworks */,
-				DEB767E32423A07500AC52E0 /* libtsdk_service.a in Frameworks */,
-				DEB767D62423A07500AC52E0 /* libtup_ldap.a in Frameworks */,
-				DEB767D72423A07500AC52E0 /* libtup_call_mediacommon.a in Frameworks */,
-				DEB768082423A07500AC52E0 /* libtup_publiclib.a in Frameworks */,
+				DED91A6024644E22000B6E07 /* libtup_ftp.a in Frameworks */,
+				DED91A7924644E22000B6E07 /* libtup_service_base.a in Frameworks */,
+				DED91A4D24644E22000B6E07 /* libtscsvn.a in Frameworks */,
+				DED91A8A24644E22000B6E07 /* libKMC.a in Frameworks */,
+				DED91A7124644E22000B6E07 /* libtup_call_mediaservice.a in Frameworks */,
+				DED91A7F24644E22000B6E07 /* libsipsigcomp.a in Frameworks */,
+				DED91A7B24644E22000B6E07 /* libtup_socket.a in Frameworks */,
+				DED91A9824644E22000B6E07 /* libtup_zip.a in Frameworks */,
+				DED91A9124644E22000B6E07 /* libHW_MPT_IOS_OPUS_LIB.a in Frameworks */,
+				DED91A8B24644E22000B6E07 /* libACE.a in Frameworks */,
+				DED91A5E24644E22000B6E07 /* libjsoncpp.a in Frameworks */,
+				DED91A9224644E22000B6E07 /* libhme-audio.a in Frameworks */,
+				DED91A8924644E22000B6E07 /* libtupService.a in Frameworks */,
+				DED91A5924644E22000B6E07 /* libHW_MPT_IOS_G729AB_LIB.a in Frameworks */,
+				DED91A6124644E22000B6E07 /* libwebsockets.a in Frameworks */,
+				DED91A5F24644E22000B6E07 /* libtup_call_bfcp.a in Frameworks */,
+				DED91A7C24644E22000B6E07 /* libuspsdk.a in Frameworks */,
+				DED91A9624644E22000B6E07 /* libcrypto_ossl.a in Frameworks */,
+				DED91A5324644E22000B6E07 /* libtup_base.a in Frameworks */,
+				DED91A5124644E22000B6E07 /* libsipmultipartbody.a in Frameworks */,
 				1258C1D41F39590400654D80 /* CoreMedia.framework in Frameworks */,
-				DEB7680D2423A07500AC52E0 /* libtup_call_sip.a in Frameworks */,
-				DEB7680A2423A07500AC52E0 /* libHW_MPT_IOS_AMRWB_LIB.a in Frameworks */,
-				DEB767D32423A07500AC52E0 /* libtup_call_service.a in Frameworks */,
-				DEB768132423A2AA00AC52E0 /* websockets.framework in Frameworks */,
-				DEB767F52423A07500AC52E0 /* libcrypto.a in Frameworks */,
-				DEB767FF2423A07500AC52E0 /* libtup_tools.a in Frameworks */,
-				DEB767E72423A07500AC52E0 /* libipsi_crypto.a in Frameworks */,
-				DEB767EF2423A07500AC52E0 /* libtup_call_video.a in Frameworks */,
-				DEB768032423A07500AC52E0 /* libtup_logone.a in Frameworks */,
-				DEB768002423A07500AC52E0 /* libtup_socket_stg.a in Frameworks */,
-				DEB767D82423A07500AC52E0 /* libtup_httptrans.a in Frameworks */,
-				DEB767C62423A07500AC52E0 /* libtup_cwmp_h5.a in Frameworks */,
-				DE961C8E242DF9DE0085855F /* libtup_track.a in Frameworks */,
-				DEB768042423A07500AC52E0 /* libtup_dns.a in Frameworks */,
-				DEB767FC2423A07500AC52E0 /* libtup_conf_agent.a in Frameworks */,
-				DEB767F42423A07500AC52E0 /* libsecurec.a in Frameworks */,
-				DEB767CB2423A07500AC52E0 /* libHW_MPT_IOS_G729AB_LIB.a in Frameworks */,
+				DED91A9424644E22000B6E07 /* libtup_svnapi.a in Frameworks */,
+				DED91A5824644E22000B6E07 /* libipsi_osal.a in Frameworks */,
+				DED91A5724644E22000B6E07 /* libtup_logone.a in Frameworks */,
+				DED91A7724644E22000B6E07 /* libtup_cmpt_service.a in Frameworks */,
+				DED91A8224644E22000B6E07 /* libtup_httptrans.a in Frameworks */,
+				DED91A9A24644E22000B6E07 /* libcurl.a in Frameworks */,
 				1258C1D21F3958FF00654D80 /* MediaPlayer.framework in Frameworks */,
-				DEB767D42423A07500AC52E0 /* CloudLinkMeetingScreenShare.framework in Frameworks */,
-				DEB767E52423A07500AC52E0 /* libtup_support.a in Frameworks */,
-				DEB768012423A07500AC52E0 /* libtupService.a in Frameworks */,
+				DED91A6F24644E22000B6E07 /* libtup_ldapstack.a in Frameworks */,
+				DED91A9C24644E22000B6E07 /* libminidopra.a in Frameworks */,
+				DED91A8F24644E22000B6E07 /* libSRTP.a in Frameworks */,
+				DED91A4F24644E22000B6E07 /* libtup_call_service.a in Frameworks */,
+				DED91A7324644E22000B6E07 /* libtup_publiclib.a in Frameworks */,
 				1258C1D01F3958F900654D80 /* AVFoundation.framework in Frameworks */,
-				DEB767D12423A07500AC52E0 /* libHW_MPT_IOS_G722_LIB.a in Frameworks */,
-				DEB767DE2423A07500AC52E0 /* libtup_eaddr_h5.a in Frameworks */,
-				DEB767E02423A07500AC52E0 /* libtup_call_mediaservice.a in Frameworks */,
-				DEB767DA2423A07500AC52E0 /* libtup_svnapi.a in Frameworks */,
-				DEB767E42423A07500AC52E0 /* libtup_cmpt_service.a in Frameworks */,
-				DEB767D52423A07500AC52E0 /* libtup_base.a in Frameworks */,
-				DEB767F92423A07500AC52E0 /* libtup_ldapstack.a in Frameworks */,
-				DEB7680B2423A07500AC52E0 /* libHW_MPT_IOS_AMR_LIB.a in Frameworks */,
-				DEB767F82423A07500AC52E0 /* libtup_ftp.a in Frameworks */,
+				DED91A5524644E22000B6E07 /* libHW_MPT_IOS_AMR_LIB.a in Frameworks */,
+				DED91A5B24644E22000B6E07 /* libtup_xml.a in Frameworks */,
+				DED91A8124644E22000B6E07 /* libipsi_pse.a in Frameworks */,
+				DED91A9924644E22000B6E07 /* libipsi_ssl.a in Frameworks */,
+				DED91A6B24644E22000B6E07 /* libtup_plugin_base.a in Frameworks */,
+				DED91A6424644E22000B6E07 /* libtup_os_adapter.a in Frameworks */,
+				DED91A6D24644E22000B6E07 /* libtup_call_audio.a in Frameworks */,
+				DED91A5024644E22000B6E07 /* libsipsmpbam.a in Frameworks */,
 				1258C1CE1F3958F500654D80 /* VideoToolbox.framework in Frameworks */,
+				DED91A4E24644E22000B6E07 /* libsipsdp.a in Frameworks */,
+				DED91A7824644E22000B6E07 /* libplib.a in Frameworks */,
+				DED91A7E24644E22000B6E07 /* libsipserialization.a in Frameworks */,
+				DED91A6824644E22000B6E07 /* libsipstacktup.a in Frameworks */,
+				DED91A9324644E22000B6E07 /* libssl_ex.a in Frameworks */,
+				DED91A6524644E22000B6E07 /* libtup_tools.a in Frameworks */,
+				DED91A6624644E22000B6E07 /* libTupConf.a in Frameworks */,
+				DED91A8724644E22000B6E07 /* libtup_cwmp_h5.a in Frameworks */,
+				DED91A8024644E22000B6E07 /* libtup_commonlib.a in Frameworks */,
+				DED91A6924644E22000B6E07 /* libsdp.a in Frameworks */,
+				DED91A8524644E22000B6E07 /* libtup_dns.a in Frameworks */,
+				DED91A8424644E22000B6E07 /* libtup_msg.a in Frameworks */,
 				1258C1CC1F3958EF00654D80 /* AudioToolbox.framework in Frameworks */,
-				DEB767C82423A07500AC52E0 /* libtup_msg.a in Frameworks */,
+				DED91A9B24644E22000B6E07 /* libtup_https_srv.a in Frameworks */,
+				DED91A8824644E22000B6E07 /* libtup_support.a in Frameworks */,
+				DED91A7524644E22000B6E07 /* libHW_MPT_IOS_ILBC_LIB.a in Frameworks */,
+				DED91A8624644E22000B6E07 /* libsiputf.a in Frameworks */,
+				DED91A5D24644E22000B6E07 /* libtup_call_video.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -740,7 +765,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DEB7680E2423A0AD00AC52E0 /* CloudLinkMeetingScreenShare.framework in Frameworks */,
+				DED91A9D24644E36000B6E07 /* CloudLinkMeetingScreenShare.framework in Frameworks */,
 				DED4CC1322EF16AF0035334C /* ReplayKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1320,79 +1345,88 @@
 		DEAB8F26212E9823005BC744 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				DE961C8D242DF9DE0085855F /* libtup_track.a */,
-				DEB768122423A2AA00AC52E0 /* websockets.framework */,
-				DEB7678C2423A06F00AC52E0 /* CloudLinkMeetingScreenShare.framework */,
-				DEB767B22423A07300AC52E0 /* libACE.a */,
-				DEB767AD2423A07300AC52E0 /* libcrypto.a */,
-				DEB767AF2423A07300AC52E0 /* libcurl.a */,
-				DEB767BD2423A07400AC52E0 /* libhme-audio.a */,
-				DEB767862423A06F00AC52E0 /* libHME-Video.a */,
-				DEB767C32423A07500AC52E0 /* libHW_MPT_IOS_AMR_LIB.a */,
-				DEB767C22423A07500AC52E0 /* libHW_MPT_IOS_AMRWB_LIB.a */,
-				DEB767892423A06F00AC52E0 /* libHW_MPT_IOS_G722_LIB.a */,
-				DEB767832423A06F00AC52E0 /* libHW_MPT_IOS_G729AB_LIB.a */,
-				DEB767BA2423A07400AC52E0 /* libHW_MPT_IOS_ILBC_LIB.a */,
-				DEB767AE2423A07300AC52E0 /* libHW_MPT_IOS_OPUS_LIB.a */,
-				DEB7679F2423A07100AC52E0 /* libipsi_crypto.a */,
-				DEB767952423A07000AC52E0 /* libipsi_eap.a */,
-				DEB767B52423A07300AC52E0 /* libipsi_http.a */,
-				DEB767872423A06F00AC52E0 /* libipsi_osal.a */,
-				DEB767942423A07000AC52E0 /* libipsi_pse.a */,
-				DEB767852423A06F00AC52E0 /* libipsi_ssl.a */,
-				DEB767812423A06F00AC52E0 /* libjsoncpp.a */,
-				DEB7679A2423A07100AC52E0 /* libKMC.a */,
-				DEB767882423A06F00AC52E0 /* libminidopra.a */,
-				DEB767A52423A07200AC52E0 /* libplib.a */,
-				DEB767BF2423A07400AC52E0 /* libsasl.a */,
-				DEB767B32423A07300AC52E0 /* libsdp.a */,
-				DEB767AC2423A07200AC52E0 /* libsecurec.a */,
-				DEB767A92423A07200AC52E0 /* libsipstacktup.a */,
-				DEB767932423A07000AC52E0 /* libssl.a */,
-				DEB767BE2423A07400AC52E0 /* libtscsvn.a */,
-				DEB7679B2423A07100AC52E0 /* libtsdk_service.a */,
-				DEB7678D2423A06F00AC52E0 /* libtup_base.a */,
-				DEB767C42423A07500AC52E0 /* libtup_call_audio.a */,
-				DEB767A12423A07100AC52E0 /* libtup_call_bfcp.a */,
-				DEB7678F2423A07000AC52E0 /* libtup_call_mediacommon.a */,
-				DEB767982423A07000AC52E0 /* libtup_call_mediaservice.a */,
-				DEB7678B2423A06F00AC52E0 /* libtup_call_service.a */,
-				DEB767C52423A07500AC52E0 /* libtup_call_sip.a */,
-				DEB767A72423A07200AC52E0 /* libtup_call_video.a */,
-				DEB7679C2423A07100AC52E0 /* libtup_cmpt_service.a */,
-				DEB767822423A06F00AC52E0 /* libtup_commonlib.a */,
-				DEB767B42423A07300AC52E0 /* libtup_conf_agent.a */,
-				DEB767972423A07000AC52E0 /* libtup_confctrl.a */,
-				DEB767AB2423A07200AC52E0 /* libtup_ctd.a */,
-				DEB7677E2423A06E00AC52E0 /* libtup_cwmp_h5.a */,
-				DEB767BC2423A07400AC52E0 /* libtup_dns.a */,
-				DEB767962423A07000AC52E0 /* libtup_eaddr_h5.a */,
-				DEB767912423A07000AC52E0 /* libtup_eaddr.a */,
-				DEB767B02423A07300AC52E0 /* libtup_ftp.a */,
-				DEB767A62423A07200AC52E0 /* libtup_https_clt.a */,
-				DEB7679E2423A07100AC52E0 /* libtup_https_srv.a */,
-				DEB767902423A07000AC52E0 /* libtup_httptrans.a */,
-				DEB767A22423A07100AC52E0 /* libtup_ipdetect.a */,
-				DEB7678E2423A06F00AC52E0 /* libtup_ldap.a */,
-				DEB767B62423A07400AC52E0 /* libtup_ldapfrontstage.a */,
-				DEB767B12423A07300AC52E0 /* libtup_ldapstack.a */,
-				DEB7677F2423A06E00AC52E0 /* libtup_login.a */,
-				DEB767BB2423A07400AC52E0 /* libtup_logone.a */,
-				DEB767802423A06E00AC52E0 /* libtup_msg.a */,
-				DEB767842423A06F00AC52E0 /* libtup_os_adapter.a */,
-				DEB767C02423A07500AC52E0 /* libtup_publiclib.a */,
-				DEB767AA2423A07200AC52E0 /* libtup_service_base.a */,
-				DEB767B82423A07400AC52E0 /* libtup_socket_stg.a */,
-				DEB767A02423A07100AC52E0 /* libtup_socket.a */,
-				DEB7679D2423A07100AC52E0 /* libtup_support.a */,
-				DEB767922423A07000AC52E0 /* libtup_svnapi.a */,
-				DEB767B72423A07400AC52E0 /* libtup_tools.a */,
-				DEB767992423A07100AC52E0 /* libtup_xml.a */,
-				DEB767C12423A07500AC52E0 /* libtup_zip.a */,
-				DEB767A42423A07200AC52E0 /* libTupConf.a */,
-				DEB767B92423A07400AC52E0 /* libtupService.a */,
-				DEB767A82423A07200AC52E0 /* libuspsdk.a */,
-				DEB767A32423A07200AC52E0 /* libvcom.a */,
+				DED91A9E24644F02000B6E07 /* libtsdk_service.a */,
+				DED91A0124644E1C000B6E07 /* CloudLinkMeetingScreenShare.framework */,
+				DED91A3A24644E21000B6E07 /* libACE.a */,
+				DED91A4524644E22000B6E07 /* libcrypto_ossl.a */,
+				DED91A4924644E22000B6E07 /* libcurl.a */,
+				DED91A4124644E21000B6E07 /* libhme-audio.a */,
+				DED91A0324644E1D000B6E07 /* libHME-Video.a */,
+				DED91A0424644E1D000B6E07 /* libHW_MPT_IOS_AMR_LIB.a */,
+				DED919FB24644E1C000B6E07 /* libHW_MPT_IOS_AMRWB_LIB.a */,
+				DED91A1924644E1F000B6E07 /* libHW_MPT_IOS_G722_LIB.a */,
+				DED91A0824644E1D000B6E07 /* libHW_MPT_IOS_G729AB_LIB.a */,
+				DED91A2424644E20000B6E07 /* libHW_MPT_IOS_ILBC_LIB.a */,
+				DED91A4024644E21000B6E07 /* libHW_MPT_IOS_OPUS_LIB.a */,
+				DED91A3D24644E21000B6E07 /* libipsi_crypto.a */,
+				DED91A1124644E1D000B6E07 /* libipsi_eap.a */,
+				DED91A3F24644E21000B6E07 /* libipsi_http.a */,
+				DED91A0724644E1D000B6E07 /* libipsi_osal.a */,
+				DED91A3024644E20000B6E07 /* libipsi_pse.a */,
+				DED91A4824644E22000B6E07 /* libipsi_ssl.a */,
+				DED91A0D24644E1D000B6E07 /* libjsoncpp.a */,
+				DED91A3924644E21000B6E07 /* libKMC.a */,
+				DED91A4B24644E22000B6E07 /* libminidopra.a */,
+				DED91A2724644E20000B6E07 /* libplib.a */,
+				DED91A2524644E20000B6E07 /* libresizeLib.a */,
+				DED91A1224644E1D000B6E07 /* libsasl.a */,
+				DED91A1824644E1F000B6E07 /* libsdp.a */,
+				DED91A0B24644E1D000B6E07 /* libsecurec.a */,
+				DED91A0024644E1C000B6E07 /* libsipmultipartbody.a */,
+				DED91A3B24644E21000B6E07 /* libsipresolver.a */,
+				DED919FD24644E1C000B6E07 /* libsipsdp.a */,
+				DED91A2D24644E20000B6E07 /* libsipserialization.a */,
+				DED91A2E24644E20000B6E07 /* libsipsigcomp.a */,
+				DED919FF24644E1C000B6E07 /* libsipsmpbam.a */,
+				DED91A4624644E22000B6E07 /* libsipsscc.a */,
+				DED91A1724644E1F000B6E07 /* libsipstacktup.a */,
+				DED91A3524644E21000B6E07 /* libsiputf.a */,
+				DED91A3E24644E21000B6E07 /* libSRTP.a */,
+				DED91A4224644E21000B6E07 /* libssl_ex.a */,
+				DED91A2124644E20000B6E07 /* libssl_ossl.a */,
+				DED919FC24644E1C000B6E07 /* libtscsvn.a */,
+				DED91A0224644E1D000B6E07 /* libtup_base.a */,
+				DED91A1C24644E1F000B6E07 /* libtup_call_audio.a */,
+				DED91A0E24644E1D000B6E07 /* libtup_call_bfcp.a */,
+				DED91A2324644E20000B6E07 /* libtup_call_mediacommon.a */,
+				DED91A2024644E20000B6E07 /* libtup_call_mediaservice.a */,
+				DED919FE24644E1C000B6E07 /* libtup_call_service.a */,
+				DED91A1D24644E1F000B6E07 /* libtup_call_sip.a */,
+				DED91A0C24644E1D000B6E07 /* libtup_call_video.a */,
+				DED91A2624644E20000B6E07 /* libtup_cmpt_service.a */,
+				DED91A2F24644E20000B6E07 /* libtup_commonlib.a */,
+				DED91A1624644E1F000B6E07 /* libtup_conf_agent.a */,
+				DED91A0524644E1D000B6E07 /* libtup_confctrl.a */,
+				DED91A3624644E21000B6E07 /* libtup_cwmp_h5.a */,
+				DED91A3424644E21000B6E07 /* libtup_dns.a */,
+				DED91A0F24644E1D000B6E07 /* libtup_ftp.a */,
+				DED91A4A24644E22000B6E07 /* libtup_https_srv.a */,
+				DED91A3124644E21000B6E07 /* libtup_httptrans.a */,
+				DED91A1F24644E20000B6E07 /* libtup_ipdetect.a */,
+				DED91A0924644E1D000B6E07 /* libtup_ldap.a */,
+				DED91A3224644E21000B6E07 /* libtup_ldapfrontstage.a */,
+				DED91A1E24644E1F000B6E07 /* libtup_ldapstack.a */,
+				DED91A4424644E22000B6E07 /* libtup_login.a */,
+				DED91A0624644E1D000B6E07 /* libtup_logone.a */,
+				DED91A3324644E21000B6E07 /* libtup_msg.a */,
+				DED91A1324644E1E000B6E07 /* libtup_os_adapter.a */,
+				DED91A1A24644E1F000B6E07 /* libtup_plugin_base.a */,
+				DED91A2224644E20000B6E07 /* libtup_publiclib.a */,
+				DED91A2824644E20000B6E07 /* libtup_service_base.a */,
+				DED91A2924644E20000B6E07 /* libtup_socket_stg.a */,
+				DED91A2A24644E20000B6E07 /* libtup_socket.a */,
+				DED91A3724644E21000B6E07 /* libtup_support.a */,
+				DED91A4324644E22000B6E07 /* libtup_svnapi.a */,
+				DED91A1424644E1E000B6E07 /* libtup_tools.a */,
+				DED91A3C24644E21000B6E07 /* libtup_track.a */,
+				DED91A0A24644E1D000B6E07 /* libtup_xml.a */,
+				DED91A4724644E22000B6E07 /* libtup_zip.a */,
+				DED91A1524644E1E000B6E07 /* libTupConf.a */,
+				DED91A3824644E21000B6E07 /* libtupService.a */,
+				DED91A2B24644E20000B6E07 /* libuspsdk.a */,
+				DED91A1B24644E1F000B6E07 /* libvcom.a */,
+				DED91A1024644E1D000B6E07 /* libwebsockets.a */,
+				DED91A2C24644E20000B6E07 /* libxcap.a */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -1400,22 +1434,22 @@
 		DEAB8F8D212E9823005BC744 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				DEAB43D7229D5A1800615452 /* tsdk_common_macro_def.h */,
-				DE53D8052138E9D200804D42 /* tsdk_call_def.h */,
-				DE53D7FD2138E9D100804D42 /* tsdk_call_interface.h */,
-				DE53D7FA2138E9D000804D42 /* tsdk_conference_def.h */,
-				DE53D7FC2138E9D100804D42 /* tsdk_conference_interface.h */,
-				DE53D8002138E9D100804D42 /* tsdk_ctd_def.h */,
-				DE53D8032138E9D100804D42 /* tsdk_ctd_interface.h */,
-				DE53D8012138E9D100804D42 /* tsdk_def.h */,
-				DE53D8062138E9D200804D42 /* tsdk_eaddr_def.h */,
-				DE53D7FB2138E9D000804D42 /* tsdk_eaddr_interface.h */,
-				DE53D7FF2138E9D100804D42 /* tsdk_error_def.h */,
-				DE53D8042138E9D200804D42 /* tsdk_login_def.h */,
-				DE53D8072138E9D200804D42 /* tsdk_login_interface.h */,
-				DE53D7FE2138E9D100804D42 /* tsdk_manager_def.h */,
-				DE53D7F92138E9D000804D42 /* tsdk_manager_interface.h */,
-				DE53D8022138E9D100804D42 /* tsdk.h */,
+				DE012FA1245975C1001B215A /* tsdk_call_def.h */,
+				DE012F9E245975C1001B215A /* tsdk_call_interface.h */,
+				DE012FA4245975C1001B215A /* tsdk_common_macro_def.h */,
+				DE012FA9245975C2001B215A /* tsdk_conference_def.h */,
+				DE012FAA245975C2001B215A /* tsdk_conference_interface.h */,
+				DE012FA7245975C1001B215A /* tsdk_ctd_def.h */,
+				DE012FAC245975C2001B215A /* tsdk_ctd_interface.h */,
+				DE012FA6245975C1001B215A /* tsdk_def.h */,
+				DE012F9F245975C1001B215A /* tsdk_error_def.h */,
+				DE012FAB245975C2001B215A /* tsdk_login_def.h */,
+				DE012FA8245975C1001B215A /* tsdk_login_interface.h */,
+				DE012FAD245975C2001B215A /* tsdk_manager_def.h */,
+				DE012FAE245975C2001B215A /* tsdk_manager_interface.h */,
+				DE012FA2245975C1001B215A /* tsdk_ws_service_def.h */,
+				DE012FA3245975C1001B215A /* tsdk_ws_service_interface.h */,
+				DE012FA5245975C1001B215A /* tsdk.h */,
 			);
 			path = include;
 			sourceTree = "<group>";

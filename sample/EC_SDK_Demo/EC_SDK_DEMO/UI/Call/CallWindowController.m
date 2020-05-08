@@ -319,32 +319,32 @@ static CallWindowController *g_windowCtrl = nil;
     dispatch_async(dispatch_get_main_queue(), ^{
         [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
         
-        [weakSelf removeCallView:[weakSelf getSelfCurrentConfId]];
-        [weakSelf.callWindow setHidden:YES];
-        weakSelf.isJoinConfCall = YES;
+        [self removeCallView:[self getSelfCurrentConfId]];
+        [self.callWindow setHidden:YES];
+        self.isJoinConfCall = YES;
         
-        weakSelf.firstSVCView = [EAGLView getFirstSVCView];
-        weakSelf.secondSVCView = [EAGLView getSecondSVCView];
-        weakSelf.thirdSVCView = [EAGLView getThirdSVCView];
+        self.firstSVCView = [EAGLView getFirstSVCView];
+        self.secondSVCView = [EAGLView getSecondSVCView];
+        self.thirdSVCView = [EAGLView getThirdSVCView];
         
-        weakSelf.firstSVCView.currentlabel = 0;
-        weakSelf.firstSVCView.currentAttendee = nil;
-        weakSelf.secondSVCView.currentlabel = 0;
-        weakSelf.secondSVCView.currentAttendee = nil;
-        weakSelf.thirdSVCView.currentlabel = 0;
-        weakSelf.secondSVCView.currentAttendee = nil;
+        self.firstSVCView.currentlabel = 0;
+        self.firstSVCView.currentAttendee = nil;
+        self.secondSVCView.currentlabel = 0;
+        self.secondSVCView.currentAttendee = nil;
+        self.thirdSVCView.currentlabel = 0;
+        self.secondSVCView.currentAttendee = nil;
         
-        weakSelf.isFirstSetWindow = YES;
+        self.isFirstSetWindow = YES;
         
-        [weakSelf updateVideoWindows];
+        [self updateVideoWindows];
         
         if (![ManagerService confService].hasConfResumedFirstRewatch) {
             [AppDelegate goConference];
         }
         
-        BOOL isSuccess = [[ManagerService callService] switchCameraIndex:weakSelf.cameraCaptureIndex callId:[weakSelf getSelfCurrentConfId]];
+        BOOL isSuccess = [[ManagerService callService] switchCameraIndex:self.cameraCaptureIndex callId:[self getSelfCurrentConfId]];
         if (isSuccess) {
-            [weakSelf deviceMotionOrientationChanged];
+            [self deviceMotionOrientationChanged];
         }
         
     });
@@ -459,7 +459,7 @@ static CallWindowController *g_windowCtrl = nil;
 
 - (void)deviceMotionOrientationChanged
 {
-    __weak typeof(self) weakSelf = self;
+    //__weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
         NSUInteger cameraRotation = 0;
         NSUInteger displayRotation = 0;
@@ -473,10 +473,10 @@ static CallWindowController *g_windowCtrl = nil;
             return;
         }
         BOOL needAdjust = YES;
-        if (weakSelf.isJoinConfCall) {
-            needAdjust = [[DeviceMotionManager sharedInstance] conferenceAdjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:weakSelf.cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
+        if (self.isJoinConfCall) {
+            needAdjust = [[DeviceMotionManager sharedInstance] conferenceAdjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:self.cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
         }else{
-            needAdjust = [[DeviceMotionManager sharedInstance] adjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:weakSelf.cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
+            needAdjust = [[DeviceMotionManager sharedInstance] adjustCamerRotation:&cameraRotation displayRotation:&displayRotation byCamerIndex:self.cameraCaptureIndex interfaceOrientation:UIInterfaceOrientationPortrait];
         }
         
         if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive)
@@ -495,18 +495,18 @@ static CallWindowController *g_windowCtrl = nil;
         NSUInteger newCameraRotation = cameraRotation;
         NSUInteger newDisplayRotation = displayRotation;
         
-        [[ManagerService callService] rotationCameraCapture:newCameraRotation callId:[weakSelf getSelfCurrentConfId]];
+        [[ManagerService callService] rotationCameraCapture:newCameraRotation callId:[self getSelfCurrentConfId]];
         
-        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[weakSelf getSelfCurrentConfId] isLocalWnd:YES];
+        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:YES];
         
         BOOL isLandscape = NO;
         if ([DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationLandscapeLeft || [DeviceMotionManager sharedInstance].lastOrientation == UIDeviceOrientationLandscapeRight) {
             isLandscape = YES;
         }
-        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[weakSelf getSelfCurrentConfId] isLandscape:isLandscape];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowlacal andCallId:[self getSelfCurrentConfId] isLandscape:isLandscape];
         
-        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[weakSelf getSelfCurrentConfId] isLocalWnd:NO];
-        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[weakSelf getSelfCurrentConfId] isLandscape:isLandscape];
+        [[ManagerService callService] rotationVideoDisplay:newDisplayRotation callId:[self getSelfCurrentConfId] isLocalWnd:NO];
+        [[ManagerService callService] updateVideoRenderInfoWithVideoIndex:CameraIndexFront withRenderType:TsdkVideoWindowRemote andCallId:[self getSelfCurrentConfId] isLandscape:isLandscape];
         
     });
 }
@@ -566,8 +566,14 @@ static CallWindowController *g_windowCtrl = nil;
         }
         case CALL_DESTROY:
         {
-            [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
-            [[ManagerService confService] restoreConfParamsInitialValue];
+            NSString *callId = resultDictionary[CALL_ID];
+            NSString *currentId = [NSString stringWithFormat:@"%d",[self getSelfCurrentConfId]];
+            DDLogInfo(@"CALL_DESTROY,callId:%@,  currentId:%@",callId,currentId);
+            if ([callId isEqualToString:currentId]) {
+                [[DeviceMotionManager sharedInstance] stopDeviceMotionManager];
+                [[ManagerService confService] restoreConfParamsInitialValue];
+            }
+            
 //            [[CallTipView shareInstance] removeCommingCallTipView];
 //            self.cameraClose = NO;
 //            [self.callWindow setHidden:YES];
@@ -624,6 +630,9 @@ static CallWindowController *g_windowCtrl = nil;
         }
         case CALL_REFUSE_OPEN_VIDEO:
         {
+            if (self.isJoinConfCall) {
+                return;
+            }
             __weak typeof(self) weakSelf = self;
             NSString *callId = resultDictionary[CALL_ID];
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -688,6 +697,29 @@ static CallWindowController *g_windowCtrl = nil;
             });
             break;
         }
+        case CALL_EVT_NO_STREAM:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *ip = [CommonUtils getLocalIpAddressWithIsVPN:[CommonUtils checkIsVPNConnect]];
+                if (![ip isEqualToString:@"0.0.0.0"]) {
+                    NSString* durationTime = resultDictionary[NO_STREAM_DURATION_TIME];
+                    if ([durationTime isEqualToString:@"30"]) {
+                        TSDK_S_LOCAL_ADDRESS local_ip;
+                        memset(&local_ip, 0, sizeof(TSDK_S_LOCAL_ADDRESS));
+                        DDLogInfo(@"tsdk_set_config_param,IP:%@",ip);
+                        strcpy(local_ip.ip_address, [ip UTF8String]);
+                        local_ip.is_try_resume = TSDK_TRUE;
+                        TSDK_RESULT configResult = tsdk_set_config_param(TSDK_E_CONFIG_LOCAL_ADDRESS, &local_ip);
+                        DDLogInfo(@"config local address result: %d; local ip is: %@", configResult, ip);
+                    }
+                    
+                    [[ECSDKProgressHud shareInstance] makeProgressHUD:[NSString stringWithFormat:@"网络异常，连续%@秒无码流",durationTime] duration:2.0];
+                }
+                
+            });
+            
+        }
+        break;
         default:
             break;
     }

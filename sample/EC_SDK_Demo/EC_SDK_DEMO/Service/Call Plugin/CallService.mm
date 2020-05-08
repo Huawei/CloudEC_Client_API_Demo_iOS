@@ -384,8 +384,11 @@
         case TSDK_E_CALL_EVT_CALL_DESTROY:
         {
             DDLogInfo(@"Call_Log: recv call notify :TSDK_E_CALL_EVT_CALL_DESTROY");
-
-            [self respondsCallDelegateWithType:CALL_DESTROY result:nil];
+            NSString *callId = [NSString stringWithFormat:@"%d",notify.param1];
+            NSDictionary *callDestroyInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                    callId,CALL_ID,
+                                                    nil];
+            [self respondsCallDelegateWithType:CALL_DESTROY result:callDestroyInfo];
         }
             break;
         case TSDK_E_CALL_EVT_REFRESH_VIEW_IND:
@@ -549,6 +552,18 @@
             
             [self callStatisticInfoTransCallStatisticInfo:statistic_info callId:call_id needUpdateSignalStrength:YES SignalStrength:signal_strength];
             
+            
+        }
+            break;
+        case TSDK_E_CALL_EVT_NO_STREAM:
+        {
+            
+            NSString *callId = [NSString stringWithFormat:@"%d",notify.param1];
+            NSString *durationTime = [NSString stringWithFormat:@"%d",notify.param2];
+            NSDictionary *noStreamInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                      callId,CALL_ID,durationTime,NO_STREAM_DURATION_TIME,
+                                                      nil];
+            [self respondsCallDelegateWithType:CALL_EVT_NO_STREAM result:noStreamInfo];
             
         }
             break;
@@ -1195,16 +1210,15 @@
 {
     if (openCamera)
     {
-        [self videoControlWithCmd:OPEN_AND_START andModule:LOCAL_AND_REMOTE andIsSync:NO callId:callId];
+        //[self videoControlWithCmd:OPEN_AND_START andModule:LOCAL_AND_REMOTE andIsSync:NO callId:callId];
         //reopen local camera
         _cameraRotation = 0;
         [self rotationCameraCapture:_cameraRotation callId:callId];
     }
     else
     {
+        //[self videoControlWithCmd:STOP andModule:LOCAL_AND_REMOTE andIsSync:NO callId:callId];
         [self setVideoCaptureFileWithcallId:callId];
-        [self videoControlWithCmd:STOP andModule:LOCAL_AND_REMOTE andIsSync:YES callId:callId];
-//        [self pauseVideoCapture:YES callId:callId];
     }
     return YES;
 }
