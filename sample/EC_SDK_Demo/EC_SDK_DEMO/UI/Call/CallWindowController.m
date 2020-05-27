@@ -521,7 +521,7 @@ static CallWindowController *g_windowCtrl = nil;
 - (int)getSelfCurrentConfId
 {
     int callId = _currentTupCallInfo.stateInfo.callId;
-    if (_isJoinConfCall) {
+    if (_isJoinConfCall && callId <= 0) {
         callId =  [ManagerService confService].currentCallId;
     }
     return callId;
@@ -1088,6 +1088,8 @@ static CallWindowController *g_windowCtrl = nil;
         {
             if (_isJoinConfCall) {
                 [[ManagerService confService] rejectConfCall];
+                [[CallTipView shareInstance] removeCommingCallTipView];
+                [self.callWindow setHidden:YES];
             }else{
                 [[ManagerService callService] closeCall:[self getSelfCurrentConfId]];
             }

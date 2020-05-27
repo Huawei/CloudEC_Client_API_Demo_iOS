@@ -2035,6 +2035,7 @@
 - (void)onClickStopShare {
     DDLogInfo(@"userClick stop share screen ");
     [self stopSharingScreen];
+    [self hideScreenShareView];
 }
 
 

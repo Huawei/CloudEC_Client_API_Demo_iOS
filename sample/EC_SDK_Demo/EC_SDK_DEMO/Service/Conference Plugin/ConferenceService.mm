@@ -179,7 +179,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
         
         [self initScreenShareManager];
          
-         [self addObserver:self forKeyPath:@"lastConfSharedData" options:NSKeyValueObservingOptionNew context:nil];
+//         [self addObserver:self forKeyPath:@"lastConfSharedData" options:NSKeyValueObservingOptionNew context:nil];
     }
     return self;
 }
@@ -743,7 +743,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             if (isStopSharing) {
                 __weak typeof(self) weakSelf = self;
                 dispatch_async(espace_dataconf_datashare_queue, ^{
-//                    [weakSelf stopSharedData];
+                    [weakSelf stopSharedData];
                     [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
                     weakSelf.isStartScreenSharing = NO;
                 });
@@ -801,7 +801,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                     [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
                 //});
                 
-//                [weakSelf stopSharedData];
+                [weakSelf stopSharedData];
                 _currentDataShareTypeId = 0;
                 
             });
@@ -835,7 +835,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                     [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
                 //});
                 
-//                [weakSelf stopSharedData];
+                [weakSelf stopSharedData];
                 weakSelf.currentDataShareTypeId = 0;
                 
             });
@@ -974,7 +974,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
             dispatch_async(espace_dataconf_datashare_queue, ^{
                 [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
             });
-//            [self stopSharedData];
+            [self stopSharedData];
             return;
         }
         case TSDK_E_SHARE_STATUS_SHARING: {
@@ -986,7 +986,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 dispatch_async(espace_dataconf_datashare_queue, ^{
                     [weakSelf respondsECConferenceDelegateWithType:DATACONF_SHARE_SCREEN_DATA_STOP result:nil];
                 });
-                //                [self stopSharedData];
+                                [self stopSharedData];
                 return;
             }
             //            // 当前的模块纪录为上一次的模块
@@ -1039,7 +1039,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     [self respondsECConferenceDelegateWithType:DATA_CONF_AS_ON_SCREEN_DATA result:shareDataInfo];
 //    __weak typeof(self) weakSelf = self;
 //    dispatch_async(espace_dataconf_datashare_queue, ^{
-//        [weakSelf receiveSharedData:imageData];
+        [self receiveSharedData:imageData];
 //    });
 }
 
@@ -1066,7 +1066,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                 DDLogInfo(@"[Meeting] Make image from data failed.");
                 return;
             }
-            //            [weakSelf receiveSharedData:imgData];
+                        [self receiveSharedData:imgData];
             NSDictionary *shareDataInfo = @{
                 DATACONF_SHARE_DATA_KEY:imgData
             };
@@ -1122,7 +1122,7 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
                                             DATACONF_SHARE_DATA_KEY:imgData
                                             };
             [weakSelf respondsECConferenceDelegateWithType:DATA_CONF_AS_ON_SCREEN_DATA result:shareDataInfo];
-//            [weakSelf receiveSharedData:imgData];
+            [weakSelf receiveSharedData:imgData];
             
         }
         
@@ -2176,7 +2176,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
 }
 
 -(void)receiveSharedData:(NSData*)data{
-    return;
     if ([data length] > 0 ) {
         [self willChangeValueForKey:@"lastConfSharedData"];
         self.lastConfSharedData = data;
@@ -2185,7 +2184,6 @@ dispatch_queue_t espace_dataconf_datashare_queue = 0;
     
 }
 -(void)stopSharedData{
-    return;
     [self willChangeValueForKey:@"lastConfSharedData"];
     self.lastConfSharedData = nil;
     [self didChangeValueForKey:@"lastConfSharedData"];
